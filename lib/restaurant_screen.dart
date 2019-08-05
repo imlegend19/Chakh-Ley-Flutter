@@ -31,6 +31,9 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   int cartItemCount = 0;
   int expandingIndex;
   ScrollController _scrollController;
+  List<Category> staticCategories;
+
+  bool isVegSwitched = false;
 
   @override
   void initState() {
@@ -69,38 +72,31 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             children: <Widget>[
               Container(
                 color: Colors.grey,
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height * 0.3,
+                height: MediaQuery.of(context).size.height * 0.3,
                 child: widget.restaurant.images.length == 0
                     ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image(
-                    image: AssetImage('assets/logo.png'),
-                  ),
-                )
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image(
+                          image: AssetImage('assets/logo.png'),
+                        ),
+                      )
                     : CachedNetworkImage(
-                  imageUrl: widget.restaurant.images[0],
-                  imageBuilder: (context, imageProvider) =>
-                      Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: imageProvider,
-                            fit: BoxFit.cover,
+                        imageUrl: widget.restaurant.images[0],
+                        imageBuilder: (context, imageProvider) => Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
+                        placeholder: (context, url) =>
+                            Center(child: ColorLoader()),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
-                  placeholder: (context, url) =>
-                      Center(child: ColorLoader()),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                ),
               ),
               Container(
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height * 0.7,
+                height: MediaQuery.of(context).size.height * 0.7,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,7 +151,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                       children: <Widget>[
                         Padding(
                           padding:
-                          const EdgeInsets.only(left: 15.0, right: 5.0),
+                              const EdgeInsets.only(left: 15.0, right: 5.0),
                           child: Text(
                             'Veg Only',
                             style: TextStyle(
@@ -175,10 +171,15 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                               onChanged: widget.restaurant.isVeg
                                   ? null
                                   : (bool value) {
-                                setState(() {
-                                  _enabled = value;
-                                });
-                              },
+                                      setState(() {
+                                        _enabled = value;
+                                        if (value) {
+                                          isVegSwitched = true;
+                                        } else {
+                                          isVegSwitched = false;
+                                        }
+                                      });
+                                    },
                               inactiveThumbColor: widget.restaurant.isVeg
                                   ? Colors.green
                                   : Colors.red,
@@ -196,90 +197,59 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                       padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                       child: Divider(color: Colors.grey),
                     ),
-                    FutureBuilder<GetCategory>(
-                      future: widget.category,
-                      builder: (context, response) {
-                        if (response.hasData) {
-                          return Flexible(
-                            child: MediaQuery.removePadding(
-                              removeTop: true,
-                              child: ListView.builder(
-                                controller: _scrollController,
-                                itemCount: response.data.count + 1,
-                                itemBuilder: (context, int index) {
-                                  if (index < response.data.count) {
-                                    return ExpansionTile(
-                                      title: AutoSizeText(
-                                        response.data.categories[index].name,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontFamily: 'Avenir-Bold',
-                                          fontWeight: FontWeight.bold,
+                    staticCategories == null
+                        ? ConstantVariables
+                                    .categoryList[widget.restaurant.id] ==
+                                null
+                            ? FutureBuilder<GetCategory>(
+                                future: widget.category,
+                                builder: (context, response) {
+                                  if (response.hasData) {
+                                    staticCategories = response.data.categories;
+                                    ConstantVariables.categoryList[widget
+                                        .restaurant
+                                        .id] = response.data.categories;
+                                    return _buildContent(response.data.count,
+                                        response.data.categories);
+                                  } else {
+                                    return MediaQuery.removePadding(
+                                      removeTop: true,
+                                      child: Expanded(
+                                        child: ListView.builder(
+                                          itemCount:
+                                              widget.restaurant.categoryCount,
+                                          itemBuilder: (context, int index) {
+                                            return SkeletonAnimation(
+                                              child: ExpansionTile(
+                                                title: Container(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.6,
+                                                  height: 15.0,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10.0),
+                                                      color: Colors.grey[300]),
+                                                ),
+                                              ),
+                                            );
+                                          },
                                         ),
                                       ),
-                                      children: index == expandingIndex
-                                          ? <Widget>[
-                                        productExpandedList(
-                                          response.data.categories[index]
-                                              .products,
-                                          databaseHelper,
-                                          cartItemCount,
-                                          response.data.categories[index],
-                                        )
-                                      ]
-                                          : <Widget>[],
-                                      onExpansionChanged: (bool expanding) =>
-                                          setState(() {
-                                            expandingIndex = index;
-                                            if (expanding) {
-                                              _scrollController.animateTo(
-                                                  index * 58.0,
-                                                  duration:
-                                                  new Duration(seconds: 1),
-                                                  curve: Curves.ease);
-                                            }
-                                          }),
+                                      context: context,
                                     );
-                                  } else {
-                                    return SizedBox(height: 150.0);
                                   }
                                 },
-                              ),
-                              context: context,
-                            ),
-                          );
-                        } else {
-                          return MediaQuery.removePadding(
-                            removeTop: true,
-                            child: Expanded(
-                              child: ListView.builder(
-                                itemCount: widget.restaurant.categoryCount,
-                                itemBuilder: (context, int index) {
-                                  return SkeletonAnimation(
-                                    child: ExpansionTile(
-                                      title: Container(
-                                        width:
-                                        MediaQuery
-                                            .of(context)
-                                            .size
-                                            .width *
-                                            0.6,
-                                        height: 15.0,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                            BorderRadius.circular(10.0),
-                                            color: Colors.grey[300]),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            context: context,
-                          );
-                        }
-                      },
-                    ),
+                              )
+                            : _buildContent(
+                                ConstantVariables
+                                    .categoryList[widget.restaurant.id].length,
+                                ConstantVariables
+                                    .categoryList[widget.restaurant.id])
+                        : _buildContent(
+                            staticCategories.length, staticCategories),
                   ],
                 ),
               ),
@@ -304,17 +274,24 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     );
   }
 
-  Widget productExpandedList(List<dynamic> products, DatabaseHelper dh,
-      int count, Category category) {
-    return Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: _buildExpandableContent(dh, count, products));
+  Widget productExpandedList(Category category, DatabaseHelper dh, int count) {
+    if (isVegSwitched) {
+      return Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: _buildExpandableContent(dh, count, category.vegProducts));
+    } else {
+      return Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: _buildExpandableContent(dh, count, category.products),);
+    }
   }
 
-  List<Widget> _buildExpandableContent(DatabaseHelper databaseHelper, int count,
-      List<dynamic> products) {
+  List<Widget> _buildExpandableContent(
+      DatabaseHelper databaseHelper, int count, List<dynamic> products) {
     List<Widget> columnContent = [];
 
     for (final product in products) {
@@ -336,7 +313,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             children: <Widget>[
               Padding(
                 padding:
-                const EdgeInsets.only(top: 5.0, bottom: 5.0, right: 8.0),
+                    const EdgeInsets.only(top: 5.0, bottom: 5.0, right: 8.0),
                 child: Image(
                   image: image,
                   fit: BoxFit.contain,
@@ -388,26 +365,25 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                   color: product[ProductStatic.keyActive]
                       ? Colors.green
                       : Colors.green.shade200,
-                  fontSize: product[ProductStatic.keyActive] ? 13.0 : 10.0
-              ),
+                  fontSize: product[ProductStatic.keyActive] ? 13.0 : 10.0),
               textAlign: TextAlign.center,
             ),
             onPressed: disableAdd
                 ? null
                 : product[ProductStatic.keyActive]
-                ? () {
-              switchAdd(disableAdd);
-              _insertItemToCart(
-                name,
-                product[ProductStatic.keyPrice],
-                product[APIStatic.keyID],
-                databaseHelper,
-                count,
-                widget.restaurant,
-              );
-              _updateRestaurant(widget.restaurant);
-            }
-                : null,
+                    ? () {
+                        switchAdd(disableAdd);
+                        _insertItemToCart(
+                          name,
+                          product[ProductStatic.keyPrice],
+                          product[APIStatic.keyID],
+                          databaseHelper,
+                          count,
+                          widget.restaurant,
+                        );
+                        _updateRestaurant(widget.restaurant);
+                      }
+                    : null,
             splashColor: Colors.green.shade100,
             highlightedBorderColor: Colors.green,
             shape: RoundedRectangleBorder(
@@ -496,5 +472,50 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     }
 
     return restoId;
+  }
+
+  Widget _buildContent(int count, List<Category> categories) {
+    return Flexible(
+      child: MediaQuery.removePadding(
+        removeTop: true,
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: count + 1,
+          itemBuilder: (context, int index) {
+            if (index < count) {
+              return ExpansionTile(
+                title: AutoSizeText(
+                  categories[index].name,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'Avenir-Bold',
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                children: index == expandingIndex
+                    ? <Widget>[
+                        productExpandedList(
+                          categories[index],
+                          databaseHelper,
+                          cartItemCount,
+                        )
+                      ]
+                    : <Widget>[],
+                onExpansionChanged: (bool expanding) => setState(() {
+                  expandingIndex = index;
+                  if (expanding) {
+                    _scrollController.animateTo(index * 58.0,
+                        duration: new Duration(seconds: 1), curve: Curves.ease);
+                  }
+                }),
+              );
+            } else {
+              return SizedBox(height: 150.0);
+            }
+          },
+        ),
+        context: context,
+      ),
+    );
   }
 }

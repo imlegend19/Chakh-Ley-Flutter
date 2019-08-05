@@ -118,6 +118,11 @@ class _HomeMainPageState extends State<HomeMainPage>
         future: widget.restaurant,
         builder: (context, response) {
           if (response.hasData) {
+            if (ConstantVariables.categoryList.length != response.data.count) {
+              for (int i=0; i<response.data.count; i++) {
+                ConstantVariables.categoryList.add(null);
+              }
+            }
             for (int i = 0; i < response.data.restaurants.length; i++) {
               ConstantVariables.restaurantList
                   .add(response.data.restaurants.elementAt(i));

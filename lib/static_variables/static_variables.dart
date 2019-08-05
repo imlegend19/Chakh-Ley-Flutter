@@ -49,8 +49,7 @@ class ConstantVariables {
   ];
 
   static String userCity;
-
   static int businessID;
-
   static double totalDistance;
+  static var categoryList = [];
 }
