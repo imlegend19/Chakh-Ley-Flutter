@@ -50,10 +50,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             if (response.data.count == 0) {
               return Container(
                 width: double.infinity,
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height - 60.0,
+                height: MediaQuery.of(context).size.height - 60.0,
                 color: Colors.white,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -82,10 +79,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                     Transform.translate(
                       offset: Offset(0, -40),
                       child: Container(
-                        width: MediaQuery
-                            .of(context)
-                            .size
-                            .width * 0.7,
+                        width: MediaQuery.of(context).size.width * 0.7,
                         child: Text(
                           "Look's like you, haven't made your menu yet.",
                           style: TextStyle(
@@ -111,14 +105,14 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                       padding: const EdgeInsets.only(
                           top: 10.0, left: 10.0, right: 10.0, bottom: 5.0),
                       child:
-                      _buildOrderHistoryCard(index, response.data.orders),
+                          _buildOrderHistoryCard(index, response.data.orders),
                     );
                   } else {
                     return Padding(
                       padding: const EdgeInsets.only(
                           top: 5.0, left: 10.0, right: 10.0, bottom: 5.0),
                       child:
-                      _buildOrderHistoryCard(index, response.data.orders),
+                          _buildOrderHistoryCard(index, response.data.orders),
                     );
                   }
                 },
@@ -195,7 +189,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             children: <Widget>[
               Padding(
                 padding:
-                const EdgeInsets.only(top: 13.0, left: 5.0, right: 5.0),
+                    const EdgeInsets.only(top: 13.0, left: 5.0, right: 5.0),
                 child: Text(
                   orders[index].status,
                   style: TextStyle(
@@ -208,10 +202,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               Padding(
                 padding: const EdgeInsets.only(right: 10.0, bottom: 8.0),
                 child: Container(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.35,
+                  width: MediaQuery.of(context).size.width * 0.35,
                   height: 45.0,
                   child: RawMaterialButton(
                     disabledElevation: 0.0,
@@ -228,17 +219,15 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    onPressed: () =>
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                OrderPage(
-                                  order: orders[index],
-                                  orderId: orders[index].id,
-                                ),
-                          ),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OrderPage(
+                          order: orders[index],
+                          orderId: orders[index].id,
                         ),
+                      ),
+                    ),
                   ),
                 ),
               )

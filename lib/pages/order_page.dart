@@ -119,14 +119,8 @@ class _OrderPageState extends State<OrderPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * 0.4,
-            width: MediaQuery
-                .of(context)
-                .size
-                .width,
+            height: MediaQuery.of(context).size.height * 0.4,
+            width: MediaQuery.of(context).size.width,
             child: GoogleMap(
               polylines: _polyline,
               markers: _markers,
@@ -141,18 +135,16 @@ class _OrderPageState extends State<OrderPage> {
                 mapController = controller;
               },
               mapType: MapType.normal,
-              onCameraMoveStarted: () =>
-                  mapController.animateCamera(
-                    CameraUpdate.newCameraPosition(
-                      CameraPosition(
-                        target: LatLng(
-                            (origin.latitude + destination.latitude) / 2,
-                            (origin.longitude + destination.longitude) / 2),
-                        zoom: ConstantVariables.totalDistance > 15 ? 5.0 : 14.0,
-                        tilt: 90,
-                      ),
-                    ),
+              onCameraMoveStarted: () => mapController.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: LatLng((origin.latitude + destination.latitude) / 2,
+                        (origin.longitude + destination.longitude) / 2),
+                    zoom: ConstantVariables.totalDistance > 15 ? 5.0 : 14.0,
+                    tilt: 90,
                   ),
+                ),
+              ),
             ),
           ),
           Padding(
@@ -169,33 +161,32 @@ class _OrderPageState extends State<OrderPage> {
                     width: 75.0,
                     height: 75.0,
                     child: widget.order.restaurant[RestaurantStatic.keyImages]
-                        .length ==
-                        0
+                                .length ==
+                            0
                         ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image(image: AssetImage('assets/logo.png')),
-                    )
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image(image: AssetImage('assets/logo.png')),
+                          )
                         : CachedNetworkImage(
-                      imageUrl: widget.order
-                          .restaurant[RestaurantStatic.keyImages][0],
-                      imageBuilder: (context, imageProvider) =>
-                          Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.cover,
+                            imageUrl: widget.order
+                                .restaurant[RestaurantStatic.keyImages][0],
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
+                            placeholder: (context, url) =>
+                                Center(child: ColorLoader()),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
                           ),
-                      placeholder: (context, url) =>
-                          Center(child: ColorLoader()),
-                      errorWidget: (context, url, error) =>
-                          Icon(Icons.error),
-                    ),
                     decoration: BoxDecoration(
                       color: widget.order.restaurant[RestaurantStatic.keyImages]
-                          .length ==
-                          0
+                                  .length ==
+                              0
                           ? Colors.grey
                           : Colors.grey[200],
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -225,13 +216,9 @@ class _OrderPageState extends State<OrderPage> {
                         padding: const EdgeInsets.only(
                             left: 4.0, right: 4.0, top: 2.0, bottom: 2.0),
                         child: Container(
-                          width: MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.7,
+                          width: MediaQuery.of(context).size.width * 0.7,
                           child: AutoSizeText(
-                            "${widget.order.restaurant[RestaurantStatic
-                                .keyFullAddress]}",
+                            "${widget.order.restaurant[RestaurantStatic.keyFullAddress]}",
                             style: TextStyle(
                                 color: Colors.black45,
                                 fontFamily: 'Avenir-Black',
@@ -246,17 +233,14 @@ class _OrderPageState extends State<OrderPage> {
                         padding: const EdgeInsets.only(
                             left: 4.0, right: 4.0, top: 2.0, bottom: 2.0),
                         child: Container(
-                          width: MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.3,
+                          width: MediaQuery.of(context).size.width * 0.3,
                           child: AutoSizeText(
                             widget.order.restaurant[RestaurantStatic.keyOpen]
                                 ? "Open"
                                 : "Closed",
                             style: TextStyle(
                                 color: widget.order
-                                    .restaurant[RestaurantStatic.keyOpen]
+                                        .restaurant[RestaurantStatic.keyOpen]
                                     ? Colors.green
                                     : Colors.red,
                                 fontFamily: 'Avenir-Black',
@@ -281,10 +265,7 @@ class _OrderPageState extends State<OrderPage> {
               SizedBox(
                   child: _buildTimeLine(widget.order.status,
                       ConstantVariables.order.indexOf(widget.order.status) + 1),
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width,
+                  width: MediaQuery.of(context).size.width,
                   height: _getTimeLineHeight(
                       ConstantVariables.order.indexOf(widget.order.status) +
                           1)),
@@ -312,10 +293,7 @@ class _OrderPageState extends State<OrderPage> {
                 ),
                 Container(
                   color: Colors.white,
-                  height: MediaQuery
-                      .of(context)
-                      .size
-                      .height *
+                  height: MediaQuery.of(context).size.height *
                       (widget.order.suborderSet.length * 0.05 + 0.3),
                   child: _billDetails(widget.order.suborderSet),
                 ),
@@ -336,10 +314,7 @@ class _OrderPageState extends State<OrderPage> {
       children: <Widget>[
         Container(
           height:
-          MediaQuery
-              .of(context)
-              .size
-              .height * 0.06 * suborderSet.length,
+              MediaQuery.of(context).size.height * 0.06 * suborderSet.length,
           child: ListView.builder(
             itemCount: suborderSet.length,
             itemBuilder: (BuildContext context, int index) {
@@ -358,8 +333,8 @@ class _OrderPageState extends State<OrderPage> {
                         children: <TextSpan>[
                           TextSpan(
                             text: suborderSet[index]
-                            [SuborderSetStatic.keyProduct]
-                            [APIStatic.keyName],
+                                    [SuborderSetStatic.keyProduct]
+                                [APIStatic.keyName],
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Avenir-Black',
@@ -369,7 +344,7 @@ class _OrderPageState extends State<OrderPage> {
                           TextSpan(text: ' x '),
                           TextSpan(
                             text: suborderSet[index]
-                            [SuborderSetStatic.keyQuantity]
+                                    [SuborderSetStatic.keyQuantity]
                                 .toString(),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -481,31 +456,31 @@ class _OrderPageState extends State<OrderPage> {
         ),
         value != null
             ? Padding(
-          padding:
-          const EdgeInsets.only(right: 8.0, top: 5.0, bottom: 5.0),
-          child: Text(
-            value != 0
-                ? (value != -1 ? "₹" + value.toString() : "NA")
-                : "Free",
-            style: TextStyle(
-              fontFamily: 'Avelir-Bold',
-              fontSize: 13.0,
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        )
+                padding:
+                    const EdgeInsets.only(right: 8.0, top: 5.0, bottom: 5.0),
+                child: Text(
+                  value != 0
+                      ? (value != -1 ? "₹" + value.toString() : "NA")
+                      : "Free",
+                  style: TextStyle(
+                    fontFamily: 'Avelir-Bold',
+                    fontSize: 13.0,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              )
             : Padding(
-          padding:
-          const EdgeInsets.only(right: 8.0, top: 5.0, bottom: 5.0),
-          child: SkeletonAnimation(
-            child: Container(
-              width: 50,
-              height: 13,
-              color: Colors.grey[300],
-            ),
-          ),
-        ),
+                padding:
+                    const EdgeInsets.only(right: 8.0, top: 5.0, bottom: 5.0),
+                child: SkeletonAnimation(
+                  child: Container(
+                    width: 50,
+                    height: 13,
+                    color: Colors.grey[300],
+                  ),
+                ),
+              ),
       ],
     );
   }
@@ -566,7 +541,7 @@ class _OrderPageState extends State<OrderPage> {
         Padding(
           padding: const EdgeInsets.only(left: 4.0, right: 4.0),
           child:
-          Icon(Icons.fiber_manual_record, color: Colors.black54, size: 8.0),
+              Icon(Icons.fiber_manual_record, color: Colors.black54, size: 8.0),
         ),
         Text(
           '${order.suborderSet.length} Items',
@@ -580,7 +555,7 @@ class _OrderPageState extends State<OrderPage> {
         Padding(
           padding: const EdgeInsets.only(left: 4.0, right: 4.0),
           child:
-          Icon(Icons.fiber_manual_record, color: Colors.black54, size: 8.0),
+              Icon(Icons.fiber_manual_record, color: Colors.black54, size: 8.0),
         ),
         Text(
           '₹${order.total}',
@@ -596,10 +571,7 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   double _getTimeLineHeight(int i) {
-    return MediaQuery
-        .of(context)
-        .size
-        .height * 0.15 * i;
+    return MediaQuery.of(context).size.height * 0.15 * i;
   }
 
   double getItemTotal(List suborderSet) {

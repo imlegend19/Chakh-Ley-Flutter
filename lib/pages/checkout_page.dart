@@ -12,9 +12,10 @@ class CheckoutPage extends StatefulWidget {
   final List<Cart> cartProducts;
   final double total, deliveryFee;
 
-  CheckoutPage({@required this.cartProducts,
-    @required this.total,
-    @required this.deliveryFee});
+  CheckoutPage(
+      {@required this.cartProducts,
+      @required this.total,
+      @required this.deliveryFee});
 
   @override
   _CheckoutPageState createState() => _CheckoutPageState();
@@ -22,7 +23,7 @@ class CheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<CheckoutPage> {
   TextEditingController _controller =
-  TextEditingController(text: ConstantVariables.userAddress);
+      TextEditingController(text: ConstantVariables.userAddress);
   TextEditingController _unitNoController = TextEditingController();
   TextEditingController _landmarkController = TextEditingController();
 
@@ -173,7 +174,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 children: <Widget>[
                   Padding(
                     padding:
-                    const EdgeInsets.only(left: 15.0, right: 5.0, top: 1.0),
+                        const EdgeInsets.only(left: 15.0, right: 5.0, top: 1.0),
                     child: Icon(
                       Icons.report,
                       size: 13.0,
@@ -213,8 +214,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ),
                   onPressed: enableProceed
                       ? () {
-                    checkoutOrder();
-                  }
+                          checkoutOrder();
+                        }
                       : null,
                 ),
               ),
@@ -314,7 +315,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     delivery["unit_no"] = _unitNoController.text.toUpperCase();
     String addressLine = _landmarkController.text;
     delivery["address_line_2"] =
-    '${addressLine[0].toUpperCase()}${addressLine.substring(1)}';
+        '${addressLine[0].toUpperCase()}${addressLine.substring(1)}';
     delivery["amount"] = widget.deliveryFee;
 
     return delivery;

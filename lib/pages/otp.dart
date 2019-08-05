@@ -115,8 +115,9 @@ class _OTPBottomSheetState extends State<OTPBottomSheet> {
   }
 
   Future<http.Response> createOTPPost(VerifyLoginOTPPost post) async {
-    final response = await http.post(UserStatic.keyOtpURL,
-        headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+    final response = await http.post(
+      UserStatic.keyOtpURL,
+      headers: {HttpHeaders.contentTypeHeader: 'application/json'},
       body: postVerifyLoginOTPToJson(post),
     );
 
@@ -196,12 +197,8 @@ class _OTPBottomSheetState extends State<OTPBottomSheet> {
       assert(json is Map);
       String token = json["token"];
       var decodedObject = parseJwt(token);
-      saveUserCredentials(
-          decodedObject['user_id'],
-          decodedObject['email'],
-          decodedObject['mobile'],
-          decodedObject['name']
-      );
+      saveUserCredentials(decodedObject['user_id'], decodedObject['email'],
+          decodedObject['mobile'], decodedObject['name']);
       Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
     }
   }

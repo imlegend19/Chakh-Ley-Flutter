@@ -60,8 +60,7 @@ class IOSSearchBar extends AnimatedWidget {
                   const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
               decoration: BoxDecoration(
                 color: searchBarColor,
-                border:
-                Border.all(width: 0.0, color: CupertinoColors.white),
+                border: Border.all(width: 0.0, color: CupertinoColors.white),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Stack(

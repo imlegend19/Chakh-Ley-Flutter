@@ -283,10 +283,11 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
           children: _buildExpandableContent(dh, count, category.vegProducts));
     } else {
       return Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: _buildExpandableContent(dh, count, category.products),);
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: _buildExpandableContent(dh, count, category.products),
+      );
     }
   }
 

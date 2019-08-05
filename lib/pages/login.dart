@@ -32,7 +32,6 @@ class LoginSheetContent extends StatefulWidget {
 }
 
 class _LoginSheetContentState extends State<LoginSheetContent> {
-
   TextEditingController loginPhoneController = TextEditingController();
   bool enableLoginContinue = false;
 
@@ -114,10 +113,7 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
   Widget loginBottomSheet() {
     return Container(
       alignment: Alignment.topCenter,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height * 0.35,
+      height: MediaQuery.of(context).size.height * 0.35,
       child: Wrap(
         children: <Widget>[
           Padding(
@@ -129,7 +125,7 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
               children: <Widget>[
                 Padding(
                   padding:
-                  const EdgeInsets.only(top: 8.0, bottom: 5.0, left: 15.0),
+                      const EdgeInsets.only(top: 8.0, bottom: 5.0, left: 15.0),
                   child: Text(
                     widget.title,
                     style: TextStyle(
@@ -162,10 +158,7 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
             padding: const EdgeInsets.only(top: 20.0),
             child: Center(
               child: Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.8,
+                width: MediaQuery.of(context).size.width * 0.8,
                 height: 45.0,
                 child: RaisedButton(
                   disabledColor: Colors.red.shade200,
@@ -180,16 +173,16 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
                       fontSize: 15.0,
                       fontFamily: 'Avenir-Bold',
                       color:
-                      enableLoginContinue ? Colors.white : Colors.white70,
+                          enableLoginContinue ? Colors.white : Colors.white70,
                     ),
                   ),
                   onPressed: enableLoginContinue
                       ? () {
-                    setState(() {
-                      enableLoginContinue = false;
-                    });
-                    loginUserPost();
-                  }
+                          setState(() {
+                            enableLoginContinue = false;
+                          });
+                          loginUserPost();
+                        }
                       : null,
                 ),
               ),

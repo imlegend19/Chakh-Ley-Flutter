@@ -29,7 +29,7 @@ class TimelineElement extends StatelessWidget {
       @required this.circleColor,
       @required this.backgroundColor,
       @required this.model,
-        @required this.isCancel,
+      @required this.isCancel,
       this.firstElement = false,
       this.lastElement = false,
       this.controller,
@@ -85,8 +85,8 @@ class TimelineElement extends StatelessWidget {
             child: Text(
               model.description != null
                   ? (model.description.length > 100
-                  ? model.description.substring(0, 100) + "..."
-                  : model.description)
+                      ? model.description.substring(0, 100) + "..."
+                      : model.description)
                   : "",
               style: model.descriptionStyle,
             ),

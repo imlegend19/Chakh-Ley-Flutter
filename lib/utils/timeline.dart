@@ -66,14 +66,10 @@ class TimelineComponentState extends State<TimelineComponent>
       itemBuilder: (_, index) {
         return TimelineElement(
             lineColor: widget.lineColor == null
-                ? Theme
-                .of(context)
-                .accentColor
+                ? Theme.of(context).accentColor
                 : widget.lineColor,
             circleColor: widget.timelineList[index].circleColor == null
-                ? Theme
-                .of(context)
-                .accentColor
+                ? Theme.of(context).accentColor
                 : widget.timelineList[index].circleColor,
             backgroundColor: widget.backgroundColor == null
                 ? Colors.white

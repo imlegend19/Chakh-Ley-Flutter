@@ -6,14 +6,12 @@ class LoginPost {
 
   LoginPost({this.destination, this.isLogin});
 
-  factory LoginPost.fromJson(Map<String, dynamic> json) =>
-      LoginPost(
+  factory LoginPost.fromJson(Map<String, dynamic> json) => LoginPost(
         destination: json["destination"],
         isLogin: json["is_login"],
       );
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "destination": destination,
         "is_login": isLogin,
       };
@@ -35,11 +33,9 @@ class VerifyLoginOTPPost {
       VerifyLoginOTPPost(
           destination: json["destination"],
           isLogin: json["is_login"],
-          verifyOTP: json["verify_otp"]
-      );
+          verifyOTP: json["verify_otp"]);
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "destination": destination,
         "is_login": isLogin,
         "verify_otp": verifyOTP
@@ -65,13 +61,13 @@ class UserPost {
   factory UserPost.fromJson(Map<String, dynamic> json) => UserPost(
         name: json["name"],
         email: json["email"],
-    mobile: json["mobile"],
+        mobile: json["mobile"],
       );
 
   Map<String, dynamic> toJson() => {
         "name": name,
         "email": email,
-    "mobile": mobile,
+        "mobile": mobile,
       };
 }
 
@@ -86,28 +82,16 @@ class UserOTPPost {
   String mobile;
   String verifyOTP;
 
-  UserOTPPost({
-    this.name,
-    this.email,
-    this.mobile,
-    this.verifyOTP
-  });
+  UserOTPPost({this.name, this.email, this.mobile, this.verifyOTP});
 
-  factory UserOTPPost.fromJson(Map<String, dynamic> json) =>
-      UserOTPPost(
-          name: json["name"],
-          email: json["email"],
-          mobile: json["mobile"],
-          verifyOTP: json["verify_otp"]
-      );
+  factory UserOTPPost.fromJson(Map<String, dynamic> json) => UserOTPPost(
+      name: json["name"],
+      email: json["email"],
+      mobile: json["mobile"],
+      verifyOTP: json["verify_otp"]);
 
   Map<String, dynamic> toJson() =>
-      {
-        "name": name,
-        "email": email,
-        "mobile": mobile,
-        "verify_otp": verifyOTP
-      };
+      {"name": name, "email": email, "mobile": mobile, "verify_otp": verifyOTP};
 }
 
 String postUserOTPToJson(UserOTPPost data) {

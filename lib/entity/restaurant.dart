@@ -64,7 +64,7 @@ class GetRestaurant {
           categoryCount: jsonRestaurant[RestaurantStatic.keyCategoryCount],
           latitude: double.parse(jsonRestaurant[RestaurantStatic.keyLatitude]),
           longitude:
-          double.parse(jsonRestaurant[RestaurantStatic.keyLongitude]),
+              double.parse(jsonRestaurant[RestaurantStatic.keyLongitude]),
           commission: jsonRestaurant[RestaurantStatic.keyCommission],
           isVeg: jsonRestaurant[RestaurantStatic.keyIsVeg],
           images: jsonRestaurant[RestaurantStatic.keyImages],
@@ -86,7 +86,7 @@ class GetRestaurant {
 
 Future<GetRestaurant> fetchRestaurant(int businessID) async {
   final response =
-  await http.get(RestaurantStatic.keyRestaurantURL + '$businessID');
+      await http.get(RestaurantStatic.keyRestaurantURL + '$businessID');
 
   if (response.statusCode == 200) {
     int count = jsonDecode(response.body)[APIStatic.keyCount];

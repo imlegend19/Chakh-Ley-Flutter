@@ -144,10 +144,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       _buildAccountTile(
-                              () =>
-                              Fluttertoast.showToast(
+                          () => Fluttertoast.showToast(
                                 msg:
-                                "We are still working on this feature, thanks for your patience.",
+                                    "We are still working on this feature, thanks for your patience.",
                                 toastLength: Toast.LENGTH_SHORT,
                                 timeInSecForIos: 1,
                                 fontSize: 14.0,
@@ -157,15 +156,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           'Offers',
                           Icons.local_play),
                       _buildAccountTile(
-                              () =>
-                              Navigator.push(
+                          () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      OrderHistoryPage(
-                                        order: fetchOrder(
-                                            ConstantVariables.user['mobile']),
-                                      ),
+                                  builder: (context) => OrderHistoryPage(
+                                    order: fetchOrder(
+                                        ConstantVariables.user['mobile']),
+                                  ),
                                 ),
                               ),
                           'Order History',
@@ -230,7 +227,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           Padding(
             padding:
-            const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 10.0),
+                const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 10.0),
             child: Text(
               'Unleash the foodie in you',
               style: TextStyle(
@@ -243,10 +240,10 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           Padding(
             padding:
-            const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 20.0),
+                const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 20.0),
             child: Text(
               'To order amazing food on Chakh Le, create a new account or '
-                  'login with existing account.',
+              'login with existing account.',
               style: TextStyle(
                 fontSize: 13.0,
                 fontWeight: FontWeight.w700,
@@ -256,10 +253,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width * 0.8,
+            width: MediaQuery.of(context).size.width * 0.8,
             height: 45.0,
             child: RaisedButton(
               disabledColor: Colors.red.shade200,
@@ -276,9 +270,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: Colors.white,
                 ),
               ),
-              onPressed: () =>
-                  showLoginBottomSheet(
-                      context, 'LOGIN', 'Enter your phone number to proceed.'),
+              onPressed: () => showLoginBottomSheet(
+                  context, 'LOGIN', 'Enter your phone number to proceed.'),
             ),
           ),
         ],

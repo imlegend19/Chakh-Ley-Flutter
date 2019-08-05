@@ -36,7 +36,7 @@ class _HomeMainPageState extends State<HomeMainPage>
       : null;
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  GlobalKey<RefreshIndicatorState>();
+      GlobalKey<RefreshIndicatorState>();
 
   Future<void> _handleRefresh() {
     final Completer<void> completer = Completer<void>();
@@ -119,7 +119,7 @@ class _HomeMainPageState extends State<HomeMainPage>
         builder: (context, response) {
           if (response.hasData) {
             if (ConstantVariables.categoryList.length != response.data.count) {
-              for (int i=0; i<response.data.count; i++) {
+              for (int i = 0; i < response.data.count; i++) {
                 ConstantVariables.categoryList.add(null);
               }
             }
@@ -148,8 +148,8 @@ class _HomeMainPageState extends State<HomeMainPage>
     }
   }
 
-  Widget restaurantListTile(Restaurant restaurant, Function onTap,
-      BuildContext context) {
+  Widget restaurantListTile(
+      Restaurant restaurant, Function onTap, BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     width = width * 0.30;
 
@@ -171,26 +171,25 @@ class _HomeMainPageState extends State<HomeMainPage>
                 height: 75.0,
                 child: restaurant.images.length == 0
                     ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image(
-                    image: AssetImage('assets/logo.png'),
-                  ),
-                )
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image(
+                          image: AssetImage('assets/logo.png'),
+                        ),
+                      )
                     : CachedNetworkImage(
-                  imageUrl: restaurant.images[0],
-                  imageBuilder: (context, imageProvider) =>
-                      Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: imageProvider,
-                            fit: BoxFit.cover,
+                        imageUrl: restaurant.images[0],
+                        imageBuilder: (context, imageProvider) => Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
+                        placeholder: (context, url) =>
+                            Center(child: ColorLoader()),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
-                  placeholder: (context, url) =>
-                      Center(child: ColorLoader()),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                ),
                 decoration: BoxDecoration(
                   color: restaurant.images.length == 0
                       ? Colors.grey
@@ -282,8 +281,8 @@ class _HomeMainPageState extends State<HomeMainPage>
     );
   }
 
-  Widget _buildRestaurants(List<Restaurant> restaurants,
-      int openRestaurantsCount) {
+  Widget _buildRestaurants(
+      List<Restaurant> restaurants, int openRestaurantsCount) {
     int showIndex = 5;
     List<String> adIds = [
       'ca-app-pub-8388035646909700/7245824266',
@@ -305,7 +304,7 @@ class _HomeMainPageState extends State<HomeMainPage>
             children: <Widget>[
               Padding(
                 padding:
-                const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 5.0),
+                    const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 5.0),
                 child: Center(
                   child: Text(
                     '$openRestaurantsCount Open Restaurants',
@@ -319,7 +318,7 @@ class _HomeMainPageState extends State<HomeMainPage>
               ),
               Padding(
                 padding:
-                const EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0),
+                    const EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0),
                 child: FlatButton.icon(
                   onPressed: () => _filterPressed(),
                   icon: Icon(
@@ -389,18 +388,15 @@ class _HomeMainPageState extends State<HomeMainPage>
                           ),
                           restaurantListTile(
                             restaurant,
-                                () =>
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        RestaurantScreen(
-                                          restaurant: restaurant,
-                                          category: fetchCategory(
-                                              restaurant.id),
-                                        ),
-                                  ),
+                            () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RestaurantScreen(
+                                  restaurant: restaurant,
+                                  category: fetchCategory(restaurant.id),
                                 ),
+                              ),
+                            ),
                             context,
                           ),
                         ],
@@ -408,17 +404,15 @@ class _HomeMainPageState extends State<HomeMainPage>
                     } else {
                       return restaurantListTile(
                         restaurant,
-                            () =>
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    RestaurantScreen(
-                                      restaurant: restaurant,
-                                      category: fetchCategory(restaurant.id),
-                                    ),
-                              ),
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RestaurantScreen(
+                              restaurant: restaurant,
+                              category: fetchCategory(restaurant.id),
                             ),
+                          ),
+                        ),
                         context,
                       );
                     }
@@ -446,10 +440,7 @@ class _HomeMainPageState extends State<HomeMainPage>
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.7,
+                width: MediaQuery.of(context).size.width * 0.7,
                 child: IOSSearchBar(
                   controller: _searchTextController,
                   focusNode: _searchFocusNode,
@@ -482,10 +473,7 @@ class _HomeMainPageState extends State<HomeMainPage>
               )
             ],
           ),
-          SizedBox(height: MediaQuery
-              .of(context)
-              .size
-              .height * 0.2),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.2),
           Transform.translate(
             child: Image(image: AssetImage('assets/not_found.png')),
             offset: Offset(0, -50),
@@ -672,7 +660,7 @@ class FilterBottomSheet extends StatefulWidget {
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
   List<bool> cuisinesVal =
-  List<bool>.generate(ConstantVariables.cuisines.length, (i) => false);
+      List<bool>.generate(ConstantVariables.cuisines.length, (i) => false);
   List<dynamic> cuisines = ConstantVariables.cuisines;
 
   List<String> sort = ['Recommended', 'Cost For Two', 'Delivery Time'];
@@ -798,10 +786,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       body: Stack(
         children: <Widget>[
           VerticalTabs(
-            tabsWidth: MediaQuery
-                .of(context)
-                .size
-                .width * 0.35,
+            tabsWidth: MediaQuery.of(context).size.width * 0.35,
             disabledChangePageFromContentView: true,
             changePageDuration: Duration(milliseconds: 10),
             indicatorColor: Colors.red,
@@ -942,10 +927,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             child: Container(
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade200)),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width * 0.65,
+              width: MediaQuery.of(context).size.width * 0.65,
               height: 65.0,
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -967,26 +949,26 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   onPressed: disableApply
                       ? null
                       : () {
-                    String sortText;
+                          String sortText;
 
-                    if (_result == 'R') {
-                      sortText = null;
-                    } else if (_result == 'CT') {
-                      sortText = sort[1];
-                    } else if (_result == 'DT') {
-                      sortText = sort[2];
-                    }
+                          if (_result == 'R') {
+                            sortText = null;
+                          } else if (_result == 'CT') {
+                            sortText = sort[1];
+                          } else if (_result == 'DT') {
+                            sortText = sort[2];
+                          }
 
-                    List<String> filteredCuisine = [];
+                          List<String> filteredCuisine = [];
 
-                    for (int i = 0; i < cuisinesVal.length; i++) {
-                      if (cuisinesVal[i] == true) {
-                        filteredCuisine.add(cuisines[i]);
-                      }
-                    }
+                          for (int i = 0; i < cuisinesVal.length; i++) {
+                            if (cuisinesVal[i] == true) {
+                              filteredCuisine.add(cuisines[i]);
+                            }
+                          }
 
-                    filter(sortText, filteredCuisine);
-                  },
+                          filter(sortText, filteredCuisine);
+                        },
                 ),
               ),
             ),
@@ -1001,8 +983,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     if (sortText == null) {
       for (int i = 0; i < ConstantVariables.restaurantList.length; i++) {
         for (int j = 0;
-        j < ConstantVariables.restaurantList[i].cuisines.length;
-        j++) {
+            j < ConstantVariables.restaurantList[i].cuisines.length;
+            j++) {
           if (filteredCuisine
               .contains(ConstantVariables.restaurantList[i].cuisines[j])) {
             filteredRestaurant.add(ConstantVariables.restaurantList[i]);
@@ -1018,8 +1000,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       if (filteredCuisine.length != 0) {
         for (int i = 0; i < ConstantVariables.restaurantList.length; i++) {
           for (int j = 0;
-          j < ConstantVariables.restaurantList[i].cuisines.length;
-          j++) {
+              j < ConstantVariables.restaurantList[i].cuisines.length;
+              j++) {
             if (filteredCuisine
                 .contains(ConstantVariables.restaurantList[i].cuisines[j])) {
               filteredRestaurant.add(ConstantVariables.restaurantList[i]);

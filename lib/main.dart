@@ -90,32 +90,32 @@ class _HomePageState extends State<HomePage> {
     connectivity = Connectivity();
     subscription =
         connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-          _connectionStatus = result;
+      _connectionStatus = result;
 
-          if (result == ConnectivityResult.none) {
-            setState(() {
-              if ((selectedIndex == 0) || (selectedIndex == 2)) {
-                body = _buildNoInternet();
-              }
-            });
-          } else if ((result == ConnectivityResult.mobile) ||
-              (result == ConnectivityResult.wifi)) {
-            fetchBusiness().then((value) {
-              for (final i in value.business) {
-                position.add([i.latitude, i.longitude]);
-                businessId.add(i.id);
-              }
-              setState(() {
-                businessFetched = true;
-                selectedTab(0);
-              });
-            });
-
-            if (!locationSetUpCompleted) {
-              _setupLocation();
-            }
+      if (result == ConnectivityResult.none) {
+        setState(() {
+          if ((selectedIndex == 0) || (selectedIndex == 2)) {
+            body = _buildNoInternet();
           }
         });
+      } else if ((result == ConnectivityResult.mobile) ||
+          (result == ConnectivityResult.wifi)) {
+        fetchBusiness().then((value) {
+          for (final i in value.business) {
+            position.add([i.latitude, i.longitude]);
+            businessId.add(i.id);
+          }
+          setState(() {
+            businessFetched = true;
+            selectedTab(0);
+          });
+        });
+
+        if (!locationSetUpCompleted) {
+          _setupLocation();
+        }
+      }
+    });
 
     getRestaurant().then((value) {
       setState(() {
@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
           permissionDenied = false;
           ConstantVariables.hasLocationPermission = true;
           _getLocationDetails(
-              Coordinates(position.latitude, position.longitude))
+                  Coordinates(position.latitude, position.longitude))
               .then((value) {
             setState(() {
               ConstantVariables.userLatitude = position.latitude;
@@ -284,7 +284,7 @@ class _HomePageState extends State<HomePage> {
             for (final i in position) {
               double km;
               calculateDistance(ConstantVariables.userLatitude,
-                  ConstantVariables.userLongitude, i[0], i[1])
+                      ConstantVariables.userLongitude, i[0], i[1])
                   .then((value) {
                 km = value * 0.001;
 
@@ -357,42 +357,38 @@ class _HomePageState extends State<HomePage> {
               Container(
                 child: address != null
                     ? Text(
-                  address
-                      .elementAt(0)
-                      .featureName +
-                      ", " +
-                      address
-                          .elementAt(0)
-                          .locality,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
-                    color: Colors.black54,
-                    letterSpacing: 1.0,
-                    fontFamily: 'Neutraface',
-                  ),
-                )
+                        address.elementAt(0).featureName +
+                            ", " +
+                            address.elementAt(0).locality,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
+                          color: Colors.black54,
+                          letterSpacing: 1.0,
+                          fontFamily: 'Neutraface',
+                        ),
+                      )
                     : !permissionDenied
-                    ? SkeletonAnimation(
-                  child: Container(
-                    width: 100.0,
-                    height: 20.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: Colors.grey[300],
-                    ),
-                  ),
-                )
-                    : Text(
-                  'Permission Denied...',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
-                    color: Colors.black54,
-                    letterSpacing: 1.0,
-                    fontFamily: 'Neutraface',
-                  ),
-                ),
+                        ? SkeletonAnimation(
+                            child: Container(
+                              width: 100.0,
+                              height: 20.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: Colors.grey[300],
+                              ),
+                            ),
+                          )
+                        : Text(
+                            'Permission Denied...',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                              color: Colors.black54,
+                              letterSpacing: 1.0,
+                              fontFamily: 'Neutraface',
+                            ),
+                          ),
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
@@ -466,10 +462,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildLocationUnavailable() {
     return Container(
       width: double.infinity,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
+      height: MediaQuery.of(context).size.height,
       color: Color.fromRGBO(255, 255, 200, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -479,25 +472,16 @@ class _HomePageState extends State<HomePage> {
           Transform.translate(
             offset: Offset(0, -45),
             child: Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width * 0.5,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height * 0.5,
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height * 0.5,
               child:
-              Image(image: AssetImage('assets/location_unavailable.png')),
+                  Image(image: AssetImage('assets/location_unavailable.png')),
             ),
           ),
           Transform.translate(
             offset: Offset(0, -100),
             child: Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width * 0.7,
+              width: MediaQuery.of(context).size.width * 0.7,
               child: Text(
                 "Sorry, we aren't still here. We'll be there soon - hang tight!",
                 style: TextStyle(
@@ -518,10 +502,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildLocationPermission(String buttonText) {
     return Container(
       width: double.infinity,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height - 60.0,
+      height: MediaQuery.of(context).size.height - 60.0,
       color: Color.fromRGBO(246, 246, 240, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -529,24 +510,15 @@ class _HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width,
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * 0.5,
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height * 0.5,
             child: Transform.translate(
               child: Image(image: AssetImage('assets/location_permission.png')),
               offset: Offset(0, -50),
             ),
           ),
           Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width * 0.85,
+            width: MediaQuery.of(context).size.width * 0.85,
             child: Transform.translate(
               offset: Offset(0, -30),
               child: Padding(
@@ -579,52 +551,52 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 buttonText != "Reload Content"
                     ? PermissionHandler()
-                    .shouldShowRequestPermissionRationale(
-                    PermissionGroup.location)
-                    .then((value) {
-                  if (!value) {
-                    PermissionHandler().openAppSettings().then((value) {
-                      if (value) {
-                        setState(() {
-                          body =
-                              _buildLocationPermission("Reload Content");
-                        });
-                      }
-                    });
-                  } else {
-                    PermissionHandler().requestPermissions(
-                        [PermissionGroup.location]).then((value) {
-                      final status = value[PermissionGroup.location];
-                      if (status == PermissionStatus.granted) {
-                        setState(() {
-                          body = _buildLoadingScreen();
-                          permissionDenied = false;
-                          ConstantVariables.hasLocationPermission = true;
-                          _setupLocation();
-                        });
-                      }
-                    });
-                  }
-                })
+                        .shouldShowRequestPermissionRationale(
+                            PermissionGroup.location)
+                        .then((value) {
+                        if (!value) {
+                          PermissionHandler().openAppSettings().then((value) {
+                            if (value) {
+                              setState(() {
+                                body =
+                                    _buildLocationPermission("Reload Content");
+                              });
+                            }
+                          });
+                        } else {
+                          PermissionHandler().requestPermissions(
+                              [PermissionGroup.location]).then((value) {
+                            final status = value[PermissionGroup.location];
+                            if (status == PermissionStatus.granted) {
+                              setState(() {
+                                body = _buildLoadingScreen();
+                                permissionDenied = false;
+                                ConstantVariables.hasLocationPermission = true;
+                                _setupLocation();
+                              });
+                            }
+                          });
+                        }
+                      })
                     : setState(() {
-                  PermissionHandler()
-                      .checkPermissionStatus(PermissionGroup.location)
-                      .then((val) {
-                    if (val == PermissionStatus.granted) {
-                      setState(() {
-                        body = _buildLoadingScreen();
-                        permissionDenied = false;
-                        ConstantVariables.hasLocationPermission = true;
-                        _setupLocation();
+                        PermissionHandler()
+                            .checkPermissionStatus(PermissionGroup.location)
+                            .then((val) {
+                          if (val == PermissionStatus.granted) {
+                            setState(() {
+                              body = _buildLoadingScreen();
+                              permissionDenied = false;
+                              ConstantVariables.hasLocationPermission = true;
+                              _setupLocation();
+                            });
+                          } else {
+                            setState(() {
+                              body = _buildLocationPermission(
+                                  "Enable Location Service");
+                            });
+                          }
+                        });
                       });
-                    } else {
-                      setState(() {
-                        body = _buildLocationPermission(
-                            "Enable Location Service");
-                      });
-                    }
-                  });
-                });
               },
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0),
@@ -649,10 +621,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildNoInternet() {
     return Container(
       width: double.infinity,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height - 60.0,
+      height: MediaQuery.of(context).size.height - 60.0,
       color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -660,25 +629,16 @@ class _HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width * 0.4,
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * 0.4,
+            width: MediaQuery.of(context).size.width * 0.4,
+            height: MediaQuery.of(context).size.height * 0.4,
             child: Transform.translate(
               child:
-              Image(image: AssetImage('assets/no_internet_connection.gif')),
+                  Image(image: AssetImage('assets/no_internet_connection.gif')),
               offset: Offset(0, -50),
             ),
           ),
           Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width * 0.85,
+            width: MediaQuery.of(context).size.width * 0.85,
             child: Transform.translate(
               offset: Offset(0, -50),
               child: Padding(
@@ -697,10 +657,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width * 0.7,
+            width: MediaQuery.of(context).size.width * 0.7,
             child: Transform.translate(
               offset: Offset(0, -40),
               child: Text(
