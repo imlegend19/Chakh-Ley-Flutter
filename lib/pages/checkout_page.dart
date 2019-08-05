@@ -317,6 +317,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
     delivery["address_line_2"] =
         '${addressLine[0].toUpperCase()}${addressLine.substring(1)}';
     delivery["amount"] = widget.deliveryFee;
+    delivery["latitude"] = ConstantVariables.userLatitude;
+    delivery["longitude"] = ConstantVariables.userLongitude;
 
     return delivery;
   }

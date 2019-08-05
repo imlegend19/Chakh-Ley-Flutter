@@ -12,15 +12,16 @@ class PostOrder {
   final Map<String, dynamic> delivery;
   final List<Map<String, int>> subOrderSet;
 
-  PostOrder(
-      {this.name,
-      this.mobile,
-      this.email,
-      this.business,
-      this.restaurant,
-      this.preparationTime,
-      this.delivery,
-      this.subOrderSet});
+  PostOrder({
+    this.name,
+    this.mobile,
+    this.email,
+    this.business,
+    this.restaurant,
+    this.preparationTime,
+    this.delivery,
+    this.subOrderSet,
+  });
 
   factory PostOrder.fromJson(Map<String, dynamic> json) {
     return PostOrder(
@@ -43,7 +44,7 @@ class PostOrder {
         RestaurantStatic.keyPreparationTime: preparationTime,
         RestaurantStatic.keyRestaurant: restaurant,
         RestaurantStatic.keyDelivery: delivery,
-        RestaurantStatic.keySubOrderSet: subOrderSet
+        RestaurantStatic.keySubOrderSet: subOrderSet,
       };
 }
 

@@ -118,35 +118,6 @@ class _OrderPageState extends State<OrderPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height * 0.4,
-            width: MediaQuery.of(context).size.width,
-            child: GoogleMap(
-              polylines: _polyline,
-              markers: _markers,
-              myLocationEnabled: true,
-              initialCameraPosition: CameraPosition(
-                target: LatLng((origin.latitude + destination.latitude) / 2,
-                    (origin.longitude + destination.longitude) / 2),
-                zoom: ConstantVariables.totalDistance > 15 ? 5.0 : 14.0,
-                tilt: 90,
-              ),
-              onMapCreated: (GoogleMapController controller) {
-                mapController = controller;
-              },
-              mapType: MapType.normal,
-              onCameraMoveStarted: () => mapController.animateCamera(
-                CameraUpdate.newCameraPosition(
-                  CameraPosition(
-                    target: LatLng((origin.latitude + destination.latitude) / 2,
-                        (origin.longitude + destination.longitude) / 2),
-                    zoom: ConstantVariables.totalDistance > 15 ? 5.0 : 14.0,
-                    tilt: 90,
-                  ),
-                ),
-              ),
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
             child: Row(
@@ -258,7 +229,7 @@ class _OrderPageState extends State<OrderPage> {
             ),
           ),
           Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -278,7 +249,7 @@ class _OrderPageState extends State<OrderPage> {
               addRepaintBoundaries: true,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
+                  padding: const EdgeInsets.only(bottom: 10.0, top: 8.0),
                   child: Center(
                     child: Text(
                       'Bill Details',
@@ -571,7 +542,11 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   double _getTimeLineHeight(int i) {
-    return MediaQuery.of(context).size.height * 0.15 * i;
+    if (i < 3) {
+      return MediaQuery.of(context).size.height * 0.15 * i;
+    } else {
+      return MediaQuery.of(context).size.height * 0.15 * 2;
+    }
   }
 
   double getItemTotal(List suborderSet) {
