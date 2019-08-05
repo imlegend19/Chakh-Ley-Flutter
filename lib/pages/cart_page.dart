@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:skeleton_text/skeleton_text.dart';
-
+import 'package:chakh_le_flutter/utils/transparent_image.dart';
 import 'cart_skeletons.dart';
 
 class CartPage extends StatefulWidget {
@@ -108,38 +108,44 @@ class _CartPageState extends State<CartPage>
         color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            Transform.translate(
-              child: Image(image: AssetImage('assets/empty_cart.png')),
-              offset: Offset(0, -50),
-            ),
-            Transform.translate(
-              offset: Offset(0, -30),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 5.0),
-                child: Text(
-                  'I am empty :(',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Avenir-Black',
-                  ),
-                ),
+            Padding(
+              padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.05),
+              child: FadeInImage(
+                image: AssetImage('assets/empty_cart.png'),
+                placeholder: MemoryImage(kTransparentImage),
               ),
             ),
-            Transform.translate(
-              offset: Offset(0, -30),
-              child: Text(
-                'Your cart is empty',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Avenir-Bold',
-                ),
+            Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).size.height * 0.2),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Text(
+                    'I am empty :(',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Avenir-Black',
+                    ),
+                  ),
+                  Text(
+                    'Your cart is empty',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Avenir-Bold',
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -410,8 +416,8 @@ class _CartPageState extends State<CartPage>
     );
   }
 
-  Widget _buildRestaurant(String name, String fullAddress, bool open,
-      List<dynamic> images) {
+  Widget _buildRestaurant(
+      String name, String fullAddress, bool open, List<dynamic> images) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -425,23 +431,22 @@ class _CartPageState extends State<CartPage>
             height: 75.0,
             child: images.length == 0
                 ? Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image(image: AssetImage('assets/logo.png')),
-            )
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image(image: AssetImage('assets/logo.png')),
+                  )
                 : CachedNetworkImage(
-              imageUrl: images[0],
-              imageBuilder: (context, imageProvider) =>
-                  Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
+                    imageUrl: images[0],
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
+                    placeholder: (context, url) => Center(child: ColorLoader()),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
-              placeholder: (context, url) => Center(child: ColorLoader()),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-            ),
             decoration: BoxDecoration(
               color: images.length == 0 ? Colors.grey : Colors.grey[200],
               borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -535,14 +540,8 @@ class _CartPageState extends State<CartPage>
       child: Padding(
         padding: const EdgeInsets.all(13.0),
         child: Container(
-          height: MediaQuery
-              .of(context)
-              .size
-              .height * 0.185,
-          width: MediaQuery
-              .of(context)
-              .size
-              .width * 0.9,
+          height: MediaQuery.of(context).size.height * 0.185,
+          width: MediaQuery.of(context).size.width * 0.9,
           decoration: BoxDecoration(
               color: Colors.grey[300],
               borderRadius: BorderRadius.circular(10.0)),
@@ -586,10 +585,7 @@ class _CartPageState extends State<CartPage>
                 SizedBox(height: 5.0),
                 Center(
                   child: Container(
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width * 0.8,
+                    width: MediaQuery.of(context).size.width * 0.8,
                     height: 45.0,
                     child: RaisedButton(
                       disabledColor: Colors.red.shade200,
@@ -606,8 +602,7 @@ class _CartPageState extends State<CartPage>
                           color: Colors.white,
                         ),
                       ),
-                      onPressed: () =>
-                      {
+                      onPressed: () => {
                         showLoginBottomSheet(context, 'ALMOST THERE',
                             'Sign up or Login to proceed')
                       },
@@ -689,24 +684,23 @@ class _CartPageState extends State<CartPage>
                           ),
                           onPressed: ConstantVariables.hasLocationPermission
                               ? disableCheckout
-                              ? null
-                              : ConstantVariables.cartRestaurant.openStatus
-                              ? () =>
-                          {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    CheckoutPage(
-                                        cartProducts:
-                                        cartProducts,
-                                        total: totalCost,
-                                        deliveryFee:
-                                        deliveryFee),
-                              ),
-                            )
-                          }
-                              : null
+                                  ? null
+                                  : ConstantVariables.cartRestaurant.openStatus
+                                      ? () => {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    CheckoutPage(
+                                                        cartProducts:
+                                                            cartProducts,
+                                                        total: totalCost,
+                                                        deliveryFee:
+                                                            deliveryFee),
+                                              ),
+                                            )
+                                          }
+                                      : null
                               : null,
                         ),
                       ),
@@ -785,7 +779,7 @@ class _CartPageState extends State<CartPage>
             ),
             Padding(
               padding:
-              const EdgeInsets.only(right: 15.0, top: 5.0, bottom: 5.0),
+                  const EdgeInsets.only(right: 15.0, top: 5.0, bottom: 5.0),
               child: Text(
                 totalCost != null
                     ? "₹" + (totalCost + deliveryFee).toString()
@@ -864,29 +858,29 @@ Widget _buildInvoiceRow(String title, double value) {
       ),
       value != null
           ? Padding(
-        padding: const EdgeInsets.only(right: 8.0, top: 5.0, bottom: 5.0),
-        child: Text(
-          value != 0
-              ? (value != -1 ? "₹" + value.toString() : "NA")
-              : "Free",
-          style: TextStyle(
-            fontFamily: 'Avelir-Bold',
-            fontSize: 13.0,
-            color: Colors.grey.shade600,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      )
+              padding: const EdgeInsets.only(right: 8.0, top: 5.0, bottom: 5.0),
+              child: Text(
+                value != 0
+                    ? (value != -1 ? "₹" + value.toString() : "NA")
+                    : "Free",
+                style: TextStyle(
+                  fontFamily: 'Avelir-Bold',
+                  fontSize: 13.0,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            )
           : Padding(
-        padding: const EdgeInsets.only(right: 8.0, top: 5.0, bottom: 5.0),
-        child: SkeletonAnimation(
-          child: Container(
-            width: 50,
-            height: 13,
-            color: Colors.grey[300],
-          ),
-        ),
-      ),
+              padding: const EdgeInsets.only(right: 8.0, top: 5.0, bottom: 5.0),
+              child: SkeletonAnimation(
+                child: Container(
+                  width: 50,
+                  height: 13,
+                  color: Colors.grey[300],
+                ),
+              ),
+            ),
     ],
   );
 }
