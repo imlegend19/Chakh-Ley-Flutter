@@ -306,9 +306,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
     });
   }
 
-  ///  "location": "string",
-  ///  "unit_no": "string",
-  ///  "address_line_2": "string"
   Map<String, dynamic> convertAddressToMap() {
     Map<String, dynamic> delivery = Map();
     delivery["location"] = _controller.text;
