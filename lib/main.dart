@@ -125,7 +125,11 @@ class _HomePageState extends State<HomePage> {
 
     Future<int> count = getCartProductCount();
     count.then((value) {
-      ConstantVariables.cartProductsCount = value;
+      if (value <= 0) {
+        ConstantVariables.cartProductsCount = 0;
+      } else {
+        ConstantVariables.cartProductsCount = value;
+      }
     });
 
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {

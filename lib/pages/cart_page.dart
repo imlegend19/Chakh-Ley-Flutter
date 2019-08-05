@@ -35,7 +35,6 @@ class _CartPageState extends State<CartPage>
   bool fetchedDistance = false;
 
   bool userLoggedIn = ConstantVariables.userLoggedIn;
-  int count;
   double km;
 
   void fetchDistance() {
@@ -59,21 +58,18 @@ class _CartPageState extends State<CartPage>
   @override
   void initState() {
     super.initState();
-    if (ConstantVariables.cartProductsCount == null) {
-      count = 0;
-    } else {
-      count = ConstantVariables.cartProductsCount;
-    }
 
-    if (cartProducts == null) {
-      cartProducts = List<Cart>();
-      getData();
+    if (ConstantVariables.cartProductsCount != 0) {
+      if (cartProducts == null) {
+        cartProducts = List<Cart>();
+        getData();
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (count != 0) {
+    if (ConstantVariables.cartProductsCount != 0) {
       if (ConstantVariables.cartRestaurant != null) {
         if (!fetchedDistance) {
           fetchDistance();
@@ -105,7 +101,7 @@ class _CartPageState extends State<CartPage>
           },
         );
       }
-    } else if (count == 0) {
+    } else if (ConstantVariables.cartProductsCount == 0) {
       return Container(
         width: double.infinity,
         height: MediaQuery.of(context).size.height - 60.0,
@@ -219,8 +215,8 @@ class _CartPageState extends State<CartPage>
       cartFuture.then((result) {
         List<Cart> cartList = List<Cart>();
         double cost = 0;
-        count = result.length;
-        for (int i = 0; i < count; i++) {
+        ConstantVariables.cartProductsCount = result.length;
+        for (int i = 0; i < ConstantVariables.cartProductsCount; i++) {
           cartList.add(Cart.fromMapObject(result[i]));
           cost += Cart.fromMapObject(result[i]).price *
               Cart.fromMapObject(result[i]).quantity;
@@ -228,7 +224,6 @@ class _CartPageState extends State<CartPage>
         }
         setState(() {
           cartProducts = cartList;
-          count = count;
           totalCost = cost;
         });
 
@@ -520,11 +515,11 @@ class _CartPageState extends State<CartPage>
         height: MediaQuery.of(context).size.height * 0.38,
         child: ListView.builder(
           physics: BouncingScrollPhysics(),
-          itemCount: count + 1,
+          itemCount: ConstantVariables.cartProductsCount + 1,
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           itemBuilder: (context, int position) {
-            if (position < count) {
+            if (position < ConstantVariables.cartProductsCount) {
               return productListTile(cartProducts[position], position, context);
             } else {
               return invoiceDetails();
