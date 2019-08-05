@@ -1,0 +1,81 @@
+name: chakh_le_flutter
+description: A new Flutter application.
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.2.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^0.1.2
+  shimmer: ^1.0.0
+  fluttertoast: ^3.0.1
+  flutter_launcher_icons: ^0.7.0
+  diamond_fab: ^0.1.0
+  http: ^0.12.0+1
+  auto_size_text: ^1.1.2
+  sqflite:
+  path_provider:
+  intl:
+  skeleton_text: ^1.0.0
+  shared_preferences:
+  location:
+  geolocator:
+  geocoder:
+  latlong:
+  rounded_modal:
+  liquid_pull_to_refresh:
+  pin_code_text_field:
+  package_info:
+  toast:
+  cached_network_image:
+  vertical_tabs:
+  permission_handler:
+  connectivity:
+  admob_flutter:
+  google_maps_flutter:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter_icons:
+  image_path: "assets/logo.png"
+  android: true
+  ios: true
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/logo.png
+    - assets/empty_cart.png
+    - assets/non_veg.png
+    - assets/veg.png
+    - assets/coming_soon.jpg
+    - assets/not_found.png
+    - assets/food.jpg
+    - assets/no_orders.png
+    - assets/location_unavailable.png
+    - assets/location_permission.png
+    - assets/no_internet_connection.gif
+
+  fonts:
+    - family: Avenir
+      fonts:
+        - asset: fonts/AvenirLTStd-Medium.otf
+
+    - family: Avenir-Black
+      fonts:
+        - asset: fonts/AvenirLTStd-Black.otf
+
+    - family: Avenir-Bold
+      fonts:
+        - asset: fonts/AvenirLTStd-Heavy.otf
+
+    - family: Neutraface
+      fonts:
+        - asset: fonts/NeutrafaceCondensed-Bold.otf
+        - asset: fonts/NeutrafaceCondensed-Light.otf
