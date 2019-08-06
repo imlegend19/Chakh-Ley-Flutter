@@ -17,14 +17,13 @@ import 'package:vertical_tabs/vertical_tabs.dart';
 class HomeMainPage extends StatefulWidget {
   @override
   _HomeMainPageState createState() => _HomeMainPageState();
-
-  final Future<GetRestaurant> restaurant;
-  HomeMainPage({this.restaurant});
 }
 
 class _HomeMainPageState extends State<HomeMainPage>
     with SingleTickerProviderStateMixin {
   AdmobBannerSize bannerSize;
+
+  StreamController _restaurantController;
 
   TextEditingController _searchTextController = new TextEditingController();
   FocusNode _searchFocusNode = new FocusNode();
@@ -51,11 +50,23 @@ class _HomeMainPageState extends State<HomeMainPage>
     });
   }
 
+  loadRestaurants() async {
+    fetchRestaurant(ConstantVariables.businessID).then((val) async {
+      _restaurantController.add(val);
+      return val;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
+    _restaurantController = StreamController();
+    Timer.periodic(Duration(seconds: 10), (_) => loadRestaurants());
+
     bannerSize = AdmobBannerSize.BANNER;
+
+    _restaurantController = StreamController();
 
     _animationController = AnimationController(
       duration: Duration(milliseconds: 200),
@@ -114,8 +125,8 @@ class _HomeMainPageState extends State<HomeMainPage>
   @override
   Widget build(BuildContext context) {
     if (ConstantVariables.restaurantList.length == 0) {
-      return FutureBuilder<GetRestaurant>(
-        future: widget.restaurant,
+      return StreamBuilder(
+        stream: _restaurantController.stream,
         builder: (context, response) {
           if (response.hasData) {
             if (ConstantVariables.categoryList.length != response.data.count) {
@@ -123,9 +134,9 @@ class _HomeMainPageState extends State<HomeMainPage>
                 ConstantVariables.categoryList.add(null);
               }
             }
-            for (int i = 0; i < response.data.restaurants.length; i++) {
-              ConstantVariables.restaurantList
-                  .add(response.data.restaurants.elementAt(i));
+
+            if (ConstantVariables.restaurantList.length == 0) {
+              ConstantVariables.restaurantList = response.data.restaurants;
             }
 
             ConstantVariables.openRestaurantsCount =

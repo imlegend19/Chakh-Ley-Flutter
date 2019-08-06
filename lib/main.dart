@@ -230,8 +230,7 @@ class _HomePageState extends State<HomePage> {
         if (_connectionStatus != ConnectivityResult.none) {
           if (!permissionDenied) {
             if (businessPresent == true) {
-              body = HomeMainPage(
-                  restaurant: fetchRestaurant(ConstantVariables.businessID));
+              body = HomeMainPage();
             } else if (businessPresent == false) {
               body = _buildLocationUnavailable();
             }
