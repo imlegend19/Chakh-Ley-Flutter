@@ -357,9 +357,7 @@ class _HomePageState extends State<HomePage> {
               Container(
                 child: address != null
                     ? Text(
-                        address.elementAt(0).featureName +
-                            ", " +
-                            address.elementAt(0).locality,
+                        ConstantVariables.userAddress,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0,
@@ -369,16 +367,27 @@ class _HomePageState extends State<HomePage> {
                         ),
                       )
                     : !permissionDenied
-                        ? SkeletonAnimation(
-                            child: Container(
-                              width: 100.0,
-                              height: 20.0,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Colors.grey[300],
-                              ),
-                            ),
-                          )
+                        ? _connectionStatus == ConnectivityResult.none
+                            ? Text(
+                                'No Internet...',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                  color: Colors.black54,
+                                  letterSpacing: 1.0,
+                                  fontFamily: 'Neutraface',
+                                ),
+                              )
+                            : SkeletonAnimation(
+                                child: Container(
+                                  width: 100.0,
+                                  height: 20.0,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    color: Colors.grey[300],
+                                  ),
+                                ),
+                              )
                         : Text(
                             'Permission Denied...',
                             style: TextStyle(
