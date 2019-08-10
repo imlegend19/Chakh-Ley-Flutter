@@ -59,6 +59,7 @@ flutter:
     - assets/location_unavailable.png
     - assets/location_permission.png
     - assets/no_internet_connection.gif
+    - assets/motorbike.png
 
   fonts:
     - family: Avenir
