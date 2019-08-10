@@ -1,5 +1,6 @@
 import 'package:chakh_le_flutter/entity/business.dart';
 import 'package:chakh_le_flutter/entity/restaurant.dart';
+import 'package:geocoder/geocoder.dart';
 
 class ConstantVariables {
   static var restaurantList = List<Restaurant>();
@@ -52,4 +53,6 @@ class ConstantVariables {
   static int businessID;
   static double totalDistance;
   static var categoryList = [];
+  static bool businessPresent;
+  static List<Address> address;
 }

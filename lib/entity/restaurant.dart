@@ -84,7 +84,7 @@ class GetRestaurant {
   }
 }
 
-Future<GetRestaurant> fetchRestaurant(int businessID) async {
+Future<GetRestaurant> fetchRestaurants(int businessID) async {
   final response =
       await http.get(RestaurantStatic.keyRestaurantURL + '$businessID');
 

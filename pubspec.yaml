@@ -34,8 +34,6 @@ dependencies:
   vertical_tabs:
   permission_handler:
   connectivity:
-  admob_flutter:
-  google_maps_flutter:
 
 dev_dependencies:
   flutter_test:

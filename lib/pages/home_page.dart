@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chakh_le_flutter/entity/category.dart';
@@ -21,7 +19,7 @@ class HomeMainPage extends StatefulWidget {
 
 class _HomeMainPageState extends State<HomeMainPage>
     with SingleTickerProviderStateMixin {
-  AdmobBannerSize bannerSize;
+  bool firstTime = true;
 
   StreamController _restaurantController;
 
@@ -51,7 +49,7 @@ class _HomeMainPageState extends State<HomeMainPage>
   }
 
   loadRestaurants() async {
-    fetchRestaurant(ConstantVariables.businessID).then((val) async {
+    fetchRestaurants(ConstantVariables.businessID).then((val) async {
       _restaurantController.add(val);
       return val;
     });
@@ -62,11 +60,13 @@ class _HomeMainPageState extends State<HomeMainPage>
     super.initState();
 
     _restaurantController = StreamController();
-    Timer.periodic(Duration(seconds: 10), (_) => loadRestaurants());
 
-    bannerSize = AdmobBannerSize.BANNER;
-
-    _restaurantController = StreamController();
+    if (firstTime) {
+      loadRestaurants();
+      firstTime = false;
+    } else {
+      Timer.periodic(Duration(seconds: 5), (_) => loadRestaurants());
+    }
 
     _animationController = AnimationController(
       duration: Duration(milliseconds: 200),
@@ -294,13 +294,6 @@ class _HomeMainPageState extends State<HomeMainPage>
 
   Widget _buildRestaurants(
       List<Restaurant> restaurants, int openRestaurantsCount) {
-    int showIndex = 5;
-    List<String> adIds = [
-      'ca-app-pub-8388035646909700/7245824266',
-      'ca-app-pub-8388035646909700/8263747680',
-      'ca-app-pub-8388035646909700/8044078222',
-    ];
-    int adIndex = 0;
     return Container(
       color: Colors.grey.shade200,
       child: Column(
@@ -380,53 +373,19 @@ class _HomeMainPageState extends State<HomeMainPage>
                     );
                   } else {
                     Restaurant restaurant = restaurants[index];
-                    if (index == showIndex) {
-                      int curIndex = adIndex;
-                      if (adIndex + 1 < adIds.length) {
-                        adIndex += 1;
-                      }
-                      showIndex += 5;
-                      return Column(
-                        children: <Widget>[
-                          Container(
-                            padding: const EdgeInsets.all(8.0),
-                            child: AdmobBanner(
-                              adUnitId: adIds.elementAt(curIndex),
-                              adSize: bannerSize,
-                              listener: (AdmobAdEvent event,
-                                  Map<String, dynamic> args) {},
-                            ),
-                          ),
-                          restaurantListTile(
-                            restaurant,
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RestaurantScreen(
-                                  restaurant: restaurant,
-                                  category: fetchCategory(restaurant.id),
-                                ),
-                              ),
-                            ),
-                            context,
-                          ),
-                        ],
-                      );
-                    } else {
-                      return restaurantListTile(
-                        restaurant,
-                        () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RestaurantScreen(
-                              restaurant: restaurant,
-                              category: fetchCategory(restaurant.id),
-                            ),
+                    return restaurantListTile(
+                      restaurant,
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RestaurantScreen(
+                            restaurant: restaurant,
+                            category: fetchCategory(restaurant.id),
                           ),
                         ),
-                        context,
-                      );
-                    }
+                      ),
+                      context,
+                    );
                   }
                 },
               ),

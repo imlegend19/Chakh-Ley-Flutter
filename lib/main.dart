@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:chakh_le_flutter/entity/restaurant.dart';
 import 'package:chakh_le_flutter/models/user_pref.dart';
 import 'package:chakh_le_flutter/pages/cart_page.dart';
@@ -24,7 +22,6 @@ import 'entity/business.dart';
 import 'models/restaurant_pref.dart';
 
 void main() {
-  Admob.initialize("ca-app-pub-8388035646909700~7166466048");
   runApp(MyApp());
 }
 
@@ -56,13 +53,11 @@ class _HomePageState extends State<HomePage> {
   loc.Location location = loc.Location();
   Geolocator geoLocator = Geolocator();
   Position userLocation;
-  List<Address> address;
   var position = [];
   List<int> businessId = [];
 
   bool permissionDenied = false;
   bool businessFetched = false;
-  bool businessPresent;
   bool fetchedBusinessID = false;
   bool locationSetUpCompleted = false;
 
@@ -125,10 +120,14 @@ class _HomePageState extends State<HomePage> {
 
     Future<int> count = getCartProductCount();
     count.then((value) {
-      if (value <= 0) {
+      if (value == null) {
         ConstantVariables.cartProductsCount = 0;
       } else {
-        ConstantVariables.cartProductsCount = value;
+        if (value <= 0) {
+          ConstantVariables.cartProductsCount = 0;
+        } else {
+          ConstantVariables.cartProductsCount = value;
+        }
       }
     });
 
@@ -160,11 +159,13 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               ConstantVariables.userLatitude = position.latitude;
               ConstantVariables.userLongitude = position.longitude;
-              address = value;
-              ConstantVariables.userAddress = address.elementAt(0).featureName +
-                  ", " +
-                  address.elementAt(0).locality;
-              ConstantVariables.userCity = address.elementAt(0).locality;
+              ConstantVariables.address = value;
+              ConstantVariables.userAddress =
+                  ConstantVariables.address.elementAt(0).featureName +
+                      ", " +
+                      ConstantVariables.address.elementAt(0).locality;
+              ConstantVariables.userCity =
+                  ConstantVariables.address.elementAt(0).locality;
 
               locationSetUpCompleted = true;
             });
@@ -221,7 +222,12 @@ class _HomePageState extends State<HomePage> {
     return currentLocation;
   }
 
-  dynamic body = _buildLoadingScreen();
+  dynamic body = ConstantVariables.businessPresent != null
+      ? ConstantVariables.businessPresent
+          ? HomeMainPage()
+          : _buildLoadingScreen()
+      : _buildLoadingScreen();
+
   int selectedIndex = 0;
 
   void selectedTab(int index) {
@@ -229,9 +235,9 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         if (_connectionStatus != ConnectivityResult.none) {
           if (!permissionDenied) {
-            if (businessPresent == true) {
+            if (ConstantVariables.businessPresent == true) {
               body = HomeMainPage();
-            } else if (businessPresent == false) {
+            } else if (ConstantVariables.businessPresent == false) {
               body = _buildLocationUnavailable();
             }
           } else {
@@ -291,19 +297,19 @@ class _HomePageState extends State<HomePage> {
 
                 if (km < 15) {
                   setState(() {
-                    businessPresent = true;
+                    ConstantVariables.businessPresent = true;
                     ConstantVariables.businessID = 1;
                   });
                 } else {
                   setState(() {
-                    businessPresent = false;
+                    ConstantVariables.businessPresent = false;
                   });
                 }
 
                 selectedTab(0);
               });
 
-              if (businessPresent == true) {
+              if (ConstantVariables.businessPresent == true) {
                 break;
               }
             }
@@ -354,7 +360,7 @@ class _HomePageState extends State<HomePage> {
               Icon(Icons.arrow_forward, color: Colors.black87, size: 15.0),
               SizedBox(width: 3.0),
               Container(
-                child: address != null
+                child: ConstantVariables.address != null
                     ? Text(
                         ConstantVariables.userAddress,
                         style: TextStyle(

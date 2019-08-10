@@ -8,7 +8,6 @@ import 'package:chakh_le_flutter/utils/seperator.dart';
 import 'package:chakh_le_flutter/utils/timeline.dart';
 import 'package:chakh_le_flutter/utils/timeline_model.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 
 class OrderPage extends StatefulWidget {
@@ -22,57 +21,8 @@ class OrderPage extends StatefulWidget {
 }
 
 class _OrderPageState extends State<OrderPage> {
-  List<LatLng> latlng = List();
-  LatLng origin;
-  LatLng destination;
-  GoogleMapController mapController;
-
-  final Set<Marker> _markers = {};
-  final Set<Polyline> _polyline = {};
-
-  @override
-  void initState() {
-    super.initState();
-
-    origin = LatLng(
-        double.parse(widget.order.restaurant[RestaurantStatic.keyLatitude]),
-        double.parse(widget.order.restaurant[RestaurantStatic.keyLongitude]));
-    destination =
-        LatLng(ConstantVariables.userLatitude, ConstantVariables.userLongitude);
-
-    latlng.add(destination);
-    latlng.add(origin);
-  }
-
   @override
   Widget build(BuildContext context) {
-    _markers.add(Marker(
-      markerId: MarkerId(origin.toString()),
-      position: origin,
-      infoWindow: InfoWindow(
-        title: widget.order.restaurant[APIStatic.keyName],
-      ),
-      draggable: false,
-      icon: BitmapDescriptor.defaultMarker,
-    ));
-
-    _markers.add(Marker(
-      markerId: MarkerId(destination.toString()),
-      position: destination,
-      infoWindow: InfoWindow(
-        title: ConstantVariables.userAddress,
-      ),
-      draggable: false,
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-    ));
-
-    _polyline.add(Polyline(
-      polylineId: PolylineId(origin.toString()),
-      visible: true,
-      points: latlng,
-      color: Colors.blue,
-    ));
-
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60.0),
