@@ -286,9 +286,7 @@ class _ProfilePageState extends State<ProfilePage> {
           msg: "Successfully Logged Out",
           toastLength: Toast.LENGTH_SHORT,
           timeInSecForIos: 1,
-          fontSize: 14.0,
-          backgroundColor: Colors.black54,
-          textColor: Colors.white,
+          fontSize: 13.0,
         );
       });
     });

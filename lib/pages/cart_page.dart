@@ -208,10 +208,11 @@ class _CartPageState extends State<CartPage>
 
   void _showToast(String message) {
     Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        timeInSecForIos: 1,
-        fontSize: 13.0);
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      timeInSecForIos: 1,
+      fontSize: 13.0,
+    );
   }
 
   void getData() {

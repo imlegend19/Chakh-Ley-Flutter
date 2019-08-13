@@ -90,8 +90,15 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
         );
       } else if (response.statusCode == 400) {
         // print(response.statusCode);
-      } else {
-        // print(response.statusCode);
+      } else if (response.statusCode >= 500) {
+        Fluttertoast.showToast(
+          msg:
+          "Sorry, something went wrong! A team of highly trained monkeys "
+              "has been dispatched to deal with this situation.",
+          fontSize: 13.0,
+          toastLength: Toast.LENGTH_LONG,
+          timeInSecForIos: 2,
+        );
       }
     }).catchError((error) {
       print('error : $error');

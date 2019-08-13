@@ -147,21 +147,29 @@ class _SignUpPageState extends State<SignUpPage> {
                 width: MediaQuery.of(context).size.width * 0.8,
                 height: 45.0,
                 child: RaisedButton(
-                    disabledColor: Colors.red.shade200,
-                    color: Colors.redAccent,
-                    disabledElevation: 0.0,
-                    elevation: 3.0,
-                    splashColor: Colors.red.shade200,
-                    child: Text(
-                      buttonText,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 15.0,
-                        fontFamily: 'Avenir-Bold',
-                        color: enableSignUp ? Colors.white : Colors.white70,
-                      ),
+                  disabledColor: Colors.red.shade200,
+                  color: Colors.redAccent,
+                  disabledElevation: 0.0,
+                  elevation: 3.0,
+                  splashColor: Colors.red.shade200,
+                  child: Text(
+                    buttonText,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15.0,
+                      fontFamily: 'Avenir-Bold',
+                      color: enableSignUp ? Colors.white : Colors.white70,
                     ),
-                    onPressed: enableSignUp ? () => registerUser() : null),
+                  ),
+                  onPressed: enableSignUp
+                      ? () {
+                          setState(() {
+                            enableSignUp = false;
+                          });
+                          registerUser();
+                        }
+                      : null,
+                ),
               ),
             ),
           ),
@@ -197,12 +205,23 @@ class _SignUpPageState extends State<SignUpPage> {
         OTPBottomSheet.email = _emailController.text;
         OTPBottomSheet.phone = _phoneController.text;
         showOTPBottomSheet(context, _phoneController.text, false);
-      } else {
-//        print(response.statusCode);
-//        print(response.body);
+      } else if (response.statusCode == 400) {
+        Fluttertoast.showToast(
+          msg: "Error! Please verify you credentials.",
+          fontSize: 13.0,
+          toastLength: Toast.LENGTH_LONG,
+          timeInSecForIos: 2,
+        );
+      } else if (response.statusCode >= 500) {
+        Fluttertoast.showToast(
+          msg:
+              "Sorry, something went wrong! A team of highly trained monkeys "
+                  "has been dispatched to deal with this situation.",
+          fontSize: 13.0,
+          toastLength: Toast.LENGTH_LONG,
+          timeInSecForIos: 2,
+        );
       }
-    }).catchError((error) {
-      // print('error : $error');
     });
   }
 }
