@@ -8,6 +8,7 @@ import 'package:chakh_le_flutter/static_variables/static_variables.dart';
 import 'package:chakh_le_flutter/utils/color_loader.dart';
 import 'package:chakh_le_flutter/utils/ios_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 import 'package:vertical_tabs/vertical_tabs.dart';
@@ -23,8 +24,8 @@ class _HomeMainPageState extends State<HomeMainPage>
 
   StreamController _restaurantController;
 
-  TextEditingController _searchTextController = new TextEditingController();
-  FocusNode _searchFocusNode = new FocusNode();
+  TextEditingController _searchTextController = TextEditingController();
+  FocusNode _searchFocusNode = FocusNode();
   Animation _animation;
   AnimationController _animationController;
 
@@ -41,10 +42,7 @@ class _HomeMainPageState extends State<HomeMainPage>
       completer.complete();
     });
     return completer.future.then<void>((_) {
-      setState(() {
-        ConstantVariables.restaurantList = List<Restaurant>();
-        _displayList = List<Restaurant>();
-      });
+      setState(() {});
     });
   }
 
@@ -58,6 +56,13 @@ class _HomeMainPageState extends State<HomeMainPage>
   @override
   void initState() {
     super.initState();
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        if (!visible) {
+          _cancelSearch();
+        }
+      },
+    );
 
     _restaurantController = StreamController();
 
@@ -87,7 +92,7 @@ class _HomeMainPageState extends State<HomeMainPage>
   }
 
   void filterRestaurants() {
-    String text = _searchTextController.text;
+    String text = _searchTextController.text.toLowerCase();
     setState(() {
       _displayList = ConstantVariables.restaurantList.where((restaurant) {
         var restaurantTitle = restaurant.name.toLowerCase();

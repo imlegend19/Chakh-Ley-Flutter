@@ -5,7 +5,8 @@ class Separator extends StatelessWidget {
   final double width;
   final Color color;
 
-  const Separator({this.height = 1.0, @required this.width, this.color = Colors.black});
+  const Separator(
+      {this.height = 1.0, @required this.width, this.color = Colors.black});
 
   @override
   Widget build(BuildContext context) {

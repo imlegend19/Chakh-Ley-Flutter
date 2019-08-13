@@ -57,7 +57,7 @@ class IOSSearchBar extends AnimatedWidget {
           Expanded(
             child: Container(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               decoration: BoxDecoration(
                 color: searchBarColor,
                 border: Border.all(width: 0.0, color: CupertinoColors.white),
@@ -110,24 +110,30 @@ class IOSSearchBar extends AnimatedWidget {
                           ),
                         ),
                       ),
-                      CupertinoButton(
-                        minSize: 10.0,
-                        padding: const EdgeInsets.all(1.0),
-                        borderRadius: BorderRadius.circular(30.0),
-                        color: CupertinoColors.inactiveGray.withOpacity(
-                          1.0 - _opacityTween.evaluate(animation),
+                      Opacity(
+                        opacity: animation.isDismissed ? 0 : 1,
+                        child: Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30.0),
+                            color: Colors.grey
+                          ),
+                          child: IconButton(
+                            padding: const EdgeInsets.all(1.0),
+                            icon: Icon(
+                              Icons.close,
+                              size: 8.0,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              if (animation.isDismissed)
+                                return;
+                              else
+                                onClear();
+                            },
+                          ),
                         ),
-                        child: Icon(
-                          Icons.close,
-                          size: 8.0,
-                          color: CupertinoColors.white,
-                        ),
-                        onPressed: () {
-                          if (animation.isDismissed)
-                            return;
-                          else
-                            onClear();
-                        },
                       ),
                     ],
                   ),

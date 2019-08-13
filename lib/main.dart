@@ -13,7 +13,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
 import 'package:package_info/package_info.dart';
@@ -66,7 +65,7 @@ class _HomePageState extends State<HomePage>
   bool serviceDenied = false;
   bool businessFetched = false;
   bool fetchedBusinessID = false;
-  bool locationError = true;
+  bool locationError = false;
   bool locationSetUpCompleted = false;
 
   Future<double> calculateDistance(double originLat, double originLong,
@@ -213,7 +212,7 @@ class _HomePageState extends State<HomePage>
                     ConstantVariables.address.elementAt(0).locality;
 
                 locationSetUpCompleted = true;
-              } on PlatformException {
+              } on Exception {
                 locationSetUpCompleted = false;
                 locationError = true;
                 body = _buildLocationPermission('Reload Content');
@@ -692,7 +691,9 @@ class _HomePageState extends State<HomePage>
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height - 60.0,
-      color: buttonText == 'Reload Content' ? Colors.black : Color.fromRGBO(246, 246, 240, 0),
+      color: buttonText == 'Reload Content'
+          ? Colors.black
+          : Color.fromRGBO(246, 246, 240, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,

@@ -36,6 +36,7 @@ dependencies:
   connectivity:
   flare_flutter:
   animator:
+  keyboard_visibility:
 
 dev_dependencies:
   flutter_test:

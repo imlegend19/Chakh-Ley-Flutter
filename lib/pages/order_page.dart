@@ -57,8 +57,8 @@ class _OrderPageState extends State<OrderPage> with TickerProviderStateMixin {
     _initDotAnimations();
 
     _initFabAnimationController(); //<--- init fab controller
-    _flightStops.forEach(
-            (stop) => _stopKeys.add(GlobalKey<BikeStopCardState>())); //<-- init card keys
+    _flightStops.forEach((stop) =>
+        _stopKeys.add(GlobalKey<BikeStopCardState>())); //<-- init card keys
     _bikeSizeAnimationController.forward();
 
     _bikeSizeAnimationController.forward();
@@ -206,13 +206,14 @@ class _OrderPageState extends State<OrderPage> with TickerProviderStateMixin {
   }
 
   void _initDotAnimationController() {
-    _dotsAnimationController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 500))
-      ..addStatusListener((status) {   //<--- Add a listener to start card animations
-        if (status == AnimationStatus.completed) {
-          _animateBikeStopCards().then((_) => _animateFab());
-        }
-      });
+    _dotsAnimationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500))
+          ..addStatusListener((status) {
+            //<--- Add a listener to start card animations
+            if (status == AnimationStatus.completed) {
+              _animateBikeStopCards().then((_) => _animateFab());
+            }
+          });
   }
 
   Future _animateBikeStopCards() async {
@@ -224,8 +225,8 @@ class _OrderPageState extends State<OrderPage> with TickerProviderStateMixin {
   }
 
   void _initFabAnimationController() {
-    _fabAnimationController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 300));
+    _fabAnimationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     _fabAnimation = new CurvedAnimation(
         parent: _fabAnimationController, curve: Curves.easeOut);
   }
