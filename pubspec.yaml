@@ -34,6 +34,8 @@ dependencies:
   vertical_tabs:
   permission_handler:
   connectivity:
+  flare_flutter:
+  animator:
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +62,9 @@ flutter:
     - assets/location_permission.png
     - assets/no_internet_connection.gif
     - assets/motorbike.png
+    - assets/delivery_scooter.flr
+    - assets/del_background.png
+    - assets/quote.png
 
   fonts:
     - family: Avenir

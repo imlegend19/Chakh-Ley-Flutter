@@ -183,23 +183,30 @@ class _HomeMainPageState extends State<HomeMainPage>
                 child: restaurant.images.length == 0
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Image(
-                          image: AssetImage('assets/logo.png'),
-                        ),
-                      )
-                    : CachedNetworkImage(
-                        imageUrl: restaurant.images[0],
-                        imageBuilder: (context, imageProvider) => Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: imageProvider,
-                              fit: BoxFit.cover,
-                            ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image(
+                            image: AssetImage('assets/logo.png'),
                           ),
                         ),
-                        placeholder: (context, url) =>
-                            Center(child: ColorLoader()),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      )
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: CachedNetworkImage(
+                          imageUrl: restaurant.images[0],
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          placeholder: (context, url) =>
+                              Center(child: ColorLoader()),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        ),
                       ),
                 decoration: BoxDecoration(
                   color: restaurant.images.length == 0

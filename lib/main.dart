@@ -8,16 +8,18 @@ import 'package:chakh_le_flutter/pages/profile_page.dart';
 import 'package:chakh_le_flutter/static_variables/static_variables.dart';
 import 'package:chakh_le_flutter/utils/color_loader.dart';
 import 'package:chakh_le_flutter/utils/database_helper.dart';
+import 'package:chakh_le_flutter/utils/transparent_image.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skeleton_text/skeleton_text.dart';
-
 import 'entity/business.dart';
 import 'models/restaurant_pref.dart';
 
@@ -48,7 +50,11 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  AnimationController expandController;
+  Animation<double> animation;
+
   var currentLocation;
   loc.Location location = loc.Location();
   Geolocator geoLocator = Geolocator();
@@ -57,8 +63,10 @@ class _HomePageState extends State<HomePage> {
   List<int> businessId = [];
 
   bool permissionDenied = false;
+  bool serviceDenied = false;
   bool businessFetched = false;
   bool fetchedBusinessID = false;
+  bool locationError = true;
   bool locationSetUpCompleted = false;
 
   Future<double> calculateDistance(double originLat, double originLong,
@@ -76,11 +84,47 @@ class _HomePageState extends State<HomePage> {
   var _connectionStatus;
   Connectivity connectivity;
 
+  static bool getStartedClicked;
+
   StreamSubscription<ConnectivityResult> subscription;
 
   @override
   void initState() {
     super.initState();
+
+    getInitialPageStatus().then((val) {
+      setState(() {
+        if (val == null) {
+          getStartedClicked = false;
+        } else {
+          getStartedClicked = val;
+        }
+      });
+    });
+
+    PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.location)
+        .then((value) {
+      print('Value: $value');
+      if (value == PermissionStatus.disabled) {
+        loc.Location().requestService().then((value) {
+          if (value == true) {
+            setState(() {
+              body = _buildLoadingScreen();
+              permissionDenied = false;
+              ConstantVariables.hasLocationPermission = true;
+              _setupLocation();
+            });
+          } else {
+            setState(() {
+              permissionDenied = false;
+              serviceDenied = true;
+              body = _buildLocationPermission("Enable Location Service");
+            });
+          }
+        });
+      }
+    });
 
     connectivity = Connectivity();
     subscription =
@@ -157,24 +201,29 @@ class _HomePageState extends State<HomePage> {
                   Coordinates(position.latitude, position.longitude))
               .then((value) {
             setState(() {
-              ConstantVariables.userLatitude = position.latitude;
-              ConstantVariables.userLongitude = position.longitude;
-              ConstantVariables.address = value;
-              ConstantVariables.userAddress =
-                  ConstantVariables.address.elementAt(0).featureName +
-                      ", " +
-                      ConstantVariables.address.elementAt(0).locality;
-              ConstantVariables.userCity =
-                  ConstantVariables.address.elementAt(0).locality;
+              try {
+                ConstantVariables.userLatitude = position.latitude;
+                ConstantVariables.userLongitude = position.longitude;
+                ConstantVariables.address = value;
+                ConstantVariables.userAddress =
+                    ConstantVariables.address.elementAt(0).featureName +
+                        ", " +
+                        ConstantVariables.address.elementAt(0).locality;
+                ConstantVariables.userCity =
+                    ConstantVariables.address.elementAt(0).locality;
 
-              locationSetUpCompleted = true;
+                locationSetUpCompleted = true;
+              } on PlatformException {
+                locationSetUpCompleted = false;
+                locationError = true;
+                body = _buildLocationPermission('Reload Content');
+              }
             });
           });
         } else {
           setState(() {
             permissionDenied = true;
             ConstantVariables.hasLocationPermission = false;
-
             body = _buildLocationPermission("Enable Location Service");
           });
         }
@@ -319,82 +368,52 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          title: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                child: Shimmer.fromColors(
-                  baseColor: Colors.black,
-                  highlightColor: Colors.red,
-                  direction: ShimmerDirection.ltr,
-                  period: Duration(milliseconds: 2000),
-                  child: Text(
-                    'NOW',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                      color: Colors.black,
-                      fontFamily: 'Avenir-Black',
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                ),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.black54,
-                      style: BorderStyle.solid,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 3.0),
-              Icon(Icons.arrow_forward, color: Colors.black87, size: 15.0),
-              SizedBox(width: 3.0),
-              Container(
-                child: ConstantVariables.address != null
-                    ? Text(
-                        ConstantVariables.userAddress,
+    if (getStartedClicked != null) {
+      if (getStartedClicked) {
+        return Scaffold(
+          resizeToAvoidBottomPadding: false,
+          appBar: AppBar(
+              elevation: 0,
+              backgroundColor: Colors.white,
+              title: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.black,
+                      highlightColor: Colors.red,
+                      direction: ShimmerDirection.ltr,
+                      period: Duration(milliseconds: 2000),
+                      child: Text(
+                        'NOW',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0,
-                          color: Colors.black54,
+                          color: Colors.black,
+                          fontFamily: 'Avenir-Black',
                           letterSpacing: 1.0,
-                          fontFamily: 'Neutraface',
                         ),
-                      )
-                    : !permissionDenied
-                        ? _connectionStatus == ConnectivityResult.none
-                            ? Text(
-                                'No Internet...',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20.0,
-                                  color: Colors.black54,
-                                  letterSpacing: 1.0,
-                                  fontFamily: 'Neutraface',
-                                ),
-                              )
-                            : SkeletonAnimation(
-                                child: Container(
-                                  width: 100.0,
-                                  height: 20.0,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    color: Colors.grey[300],
-                                  ),
-                                ),
-                              )
-                        : Text(
-                            'Permission Denied...',
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.black54,
+                          style: BorderStyle.solid,
+                          width: 2.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 3.0),
+                  Icon(Icons.arrow_forward, color: Colors.black87, size: 15.0),
+                  SizedBox(width: 3.0),
+                  Container(
+                    child: ConstantVariables.address != null
+                        ? Text(
+                            ConstantVariables.userAddress,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20.0,
@@ -402,82 +421,238 @@ class _HomePageState extends State<HomePage> {
                               letterSpacing: 1.0,
                               fontFamily: 'Neutraface',
                             ),
+                          )
+                        : !permissionDenied
+                            ? _connectionStatus == ConnectivityResult.none
+                                ? Text(
+                                    'No Internet...',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.0,
+                                      color: Colors.black54,
+                                      letterSpacing: 1.0,
+                                      fontFamily: 'Neutraface',
+                                    ),
+                                  )
+                                : serviceDenied
+                                    ? Text(
+                                        'Location Service Denied...',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20.0,
+                                          color: Colors.black54,
+                                          letterSpacing: 1.0,
+                                          fontFamily: 'Neutraface',
+                                        ),
+                                      )
+                                    : locationError
+                                        ? Text(
+                                            'Some Error Occurred!',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20.0,
+                                              color: Colors.black54,
+                                              letterSpacing: 1.0,
+                                              fontFamily: 'Neutraface',
+                                            ),
+                                          )
+                                        : SkeletonAnimation(
+                                            child: Container(
+                                              width: 100.0,
+                                              height: 20.0,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                color: Colors.grey[300],
+                                              ),
+                                            ),
+                                          )
+                            : Text(
+                                'Permission Denied...',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                  color: Colors.black54,
+                                  letterSpacing: 1.0,
+                                  fontFamily: 'Neutraface',
+                                ),
+                              ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          style: BorderStyle.none,
+                          width: 3.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )),
+          body: body,
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.redAccent,
+            child: Icon(Icons.group),
+            onPressed: () {},
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: BottomAppBar(
+            notchMargin: 6.0,
+            shape: CircularNotchedRectangle(),
+            child: SizedBox(
+              height: 60.0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.local_dining,
+                        color:
+                            selectedIndex == 0 ? Colors.redAccent : Colors.grey,
+                      ),
+                      onPressed: () => selectedTab(0),
+                    ),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.local_offer,
+                        color:
+                            selectedIndex == 1 ? Colors.redAccent : Colors.grey,
+                      ),
+                      onPressed: () => selectedTab(1),
+                    ),
+                  ),
+                  Expanded(child: Text('')),
+                  Expanded(
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.shopping_cart,
+                        color:
+                            selectedIndex == 2 ? Colors.redAccent : Colors.grey,
+                      ),
+                      onPressed: () => selectedTab(2),
+                    ),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.person,
+                        color:
+                            selectedIndex == 3 ? Colors.redAccent : Colors.grey,
+                      ),
+                      onPressed: () => selectedTab(3),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      } else {
+        return Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Color(0xffdceaea),
+          ),
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.only(right: 15.0),
+            child: FloatingActionButton(
+              child: Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.black54,
+              ),
+              onPressed: () {
+                setState(() {
+                  getStartedClicked = true;
+                  initialPage(true);
+                });
+              },
+              shape: BeveledRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
+              ),
+              backgroundColor: Color(0xffdceaea),
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+          body: Container(
+            color: Color(0xffdceaea),
+            child: Stack(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: FadeInImage(
+                    image: AssetImage('assets/del_background.png'),
+                    placeholder: MemoryImage(kTransparentImage),
+                  ),
+                ),
+                Center(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        FadeInImage(
+                          image: AssetImage('assets/quote.png'),
+                          placeholder: MemoryImage(kTransparentImage),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 20.0, left: 8.0, right: 8.0),
+                          child: Text(
+                            'Delivering\nHappiness',
+                            style: TextStyle(
+                                fontFamily: 'Avenir-Black',
+                                color: Colors.black54,
+                                fontSize: 22.0),
+                            textAlign: TextAlign.center,
                           ),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      style: BorderStyle.none,
-                      width: 3.0,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 20.0, left: 8.0, right: 8.0),
+                          child: Text(
+                            '- Chakh Le',
+                            style: TextStyle(
+                                fontFamily: 'Avenir-Black',
+                                color: Colors.black54,
+                                fontSize: 15.0),
+                            textAlign: TextAlign.right,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-            ],
-          )),
-      body: body,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.redAccent,
-        child: Icon(Icons.group),
-        onPressed: () {},
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        notchMargin: 6.0,
-        shape: CircularNotchedRectangle(),
-        child: SizedBox(
-          height: 60.0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                child: IconButton(
-                  icon: Icon(
-                    Icons.local_dining,
-                    color: selectedIndex == 0 ? Colors.redAccent : Colors.grey,
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: FlareActor(
+                    "assets/delivery_scooter.flr",
+                    animation: "Delivering Soon",
                   ),
-                  onPressed: () => selectedTab(0),
                 ),
-              ),
-              Expanded(
-                child: IconButton(
-                  icon: Icon(
-                    Icons.local_offer,
-                    color: selectedIndex == 1 ? Colors.redAccent : Colors.grey,
-                  ),
-                  onPressed: () => selectedTab(1),
-                ),
-              ),
-              Expanded(child: Text('')),
-              Expanded(
-                child: IconButton(
-                  icon: Icon(
-                    Icons.shopping_cart,
-                    color: selectedIndex == 2 ? Colors.redAccent : Colors.grey,
-                  ),
-                  onPressed: () => selectedTab(2),
-                ),
-              ),
-              Expanded(
-                child: IconButton(
-                  icon: Icon(
-                    Icons.person,
-                    color: selectedIndex == 3 ? Colors.redAccent : Colors.grey,
-                  ),
-                  onPressed: () => selectedTab(3),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+        );
+      }
+    } else {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: Container(),
+      );
+    }
   }
 
   Widget _buildLocationUnavailable() {
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height,
-      color: Color.fromRGBO(255, 255, 200, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -517,7 +692,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height - 60.0,
-      color: Color.fromRGBO(246, 246, 240, 0),
+      color: buttonText == 'Reload Content' ? Colors.black : Color.fromRGBO(246, 246, 240, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -564,34 +739,47 @@ class _HomePageState extends State<HomePage> {
               ),
               onPressed: () {
                 buttonText != "Reload Content"
-                    ? PermissionHandler()
-                        .shouldShowRequestPermissionRationale(
-                            PermissionGroup.location)
-                        .then((value) {
-                        if (!value) {
-                          PermissionHandler().openAppSettings().then((value) {
-                            if (value) {
-                              setState(() {
-                                body =
-                                    _buildLocationPermission("Reload Content");
+                    ? permissionDenied
+                        ? PermissionHandler()
+                            .shouldShowRequestPermissionRationale(
+                                PermissionGroup.location)
+                            .then((value) {
+                            if (!value) {
+                              PermissionHandler()
+                                  .openAppSettings()
+                                  .then((value) {
+                                if (value) {
+                                  setState(() {
+                                    body = _buildLocationPermission(
+                                        "Reload Content");
+                                  });
+                                }
+                              });
+                            } else {
+                              PermissionHandler().requestPermissions(
+                                  [PermissionGroup.location]).then((value) {
+                                final status = value[PermissionGroup.location];
+                                if (status == PermissionStatus.granted) {
+                                  setState(() {
+                                    body = _buildLoadingScreen();
+                                    permissionDenied = false;
+                                    ConstantVariables.hasLocationPermission =
+                                        true;
+                                    _setupLocation();
+                                  });
+                                }
                               });
                             }
-                          });
-                        } else {
-                          PermissionHandler().requestPermissions(
-                              [PermissionGroup.location]).then((value) {
-                            final status = value[PermissionGroup.location];
-                            if (status == PermissionStatus.granted) {
+                          })
+                        : loc.Location().requestService().then((value) {
+                            if (value) {
                               setState(() {
+                                serviceDenied = false;
                                 body = _buildLoadingScreen();
-                                permissionDenied = false;
-                                ConstantVariables.hasLocationPermission = true;
                                 _setupLocation();
                               });
                             }
-                          });
-                        }
-                      })
+                          })
                     : setState(() {
                         PermissionHandler()
                             .checkPermissionStatus(PermissionGroup.location)

@@ -11,6 +11,16 @@ Future<void> saveUser(int id, String name, String email, String mobile) async {
   prefs.setString("mobile", mobile);
 }
 
+Future<void> initialPage(bool clicked) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setBool('initial', clicked);
+}
+
+Future<bool> getInitialPageStatus() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getBool('initial');
+}
+
 Future<Map> getDetails() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Map<String, String> details = Map();
