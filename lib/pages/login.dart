@@ -92,8 +92,7 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
         // print(response.statusCode);
       } else if (response.statusCode >= 500) {
         Fluttertoast.showToast(
-          msg:
-          "Sorry, something went wrong! A team of highly trained monkeys "
+          msg: "Sorry, something went wrong! A team of highly trained monkeys "
               "has been dispatched to deal with this situation.",
           fontSize: 13.0,
           toastLength: Toast.LENGTH_LONG,

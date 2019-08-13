@@ -116,9 +116,8 @@ class IOSSearchBar extends AnimatedWidget {
                           width: 10,
                           height: 10,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30.0),
-                            color: Colors.grey
-                          ),
+                              borderRadius: BorderRadius.circular(30.0),
+                              color: Colors.grey),
                           child: IconButton(
                             padding: const EdgeInsets.all(1.0),
                             icon: Icon(
