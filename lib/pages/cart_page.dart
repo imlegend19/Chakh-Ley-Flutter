@@ -822,18 +822,15 @@ class _CartPageState extends State<CartPage>
       totalCost = null;
       return -1;
     } else {
-      if (subTotal <= 150) {
-        deliveryFee = 40;
-        return 40;
-      } else if (subTotal > 150 && subTotal < 750) {
+      if (subTotal <= 200) {
         deliveryFee = 30;
         return 30;
-      } else if (subTotal >= 750 && subTotal < 1000) {
-        deliveryFee = 20;
-        return 20;
+      } else if (subTotal > 200 && subTotal <= 1000) {
+        deliveryFee = 25;
+        return 25;
       } else {
-        deliveryFee = 0;
-        return 0;
+        deliveryFee = 15;
+        return 15;
       }
     }
   }

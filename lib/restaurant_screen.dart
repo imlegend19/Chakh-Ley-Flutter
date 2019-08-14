@@ -118,22 +118,43 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                       subtitle: Padding(
                         padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(right: 5.0),
-                              child: Icon(Icons.access_alarms,
-                                  color: Colors.black54, size: 20),
+                            Row(
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 5.0),
+                                  child: Icon(Icons.access_alarms,
+                                      color: Colors.black54, size: 20),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 3.0),
+                                  child: Text(
+                                    widget.restaurant.deliveryTime.toString() +
+                                        " min",
+                                    style: TextStyle(
+                                        color: Colors.black45,
+                                        fontFamily: 'Avenir-Black',
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15.0),
+                                  ),
+                                ),
+                              ],
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 3.0),
                               child: Text(
-                                widget.restaurant.deliveryTime.toString() +
-                                    " min",
+                                widget.restaurant.openStatus
+                                    ? 'Open'
+                                    : 'Closed',
                                 style: TextStyle(
-                                    color: Colors.black45,
-                                    fontFamily: 'Avenir-Black',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15.0),
+                                  color: widget.restaurant.openStatus
+                                      ? Colors.green
+                                      : Colors.black54,
+                                  fontFamily: 'Avenir-Black',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
                           ],
@@ -144,71 +165,18 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                       padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                       child: Divider(color: Colors.grey),
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 15.0, right: 5.0),
-                          child: Text(
-                            'Veg Only',
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontFamily: 'Avenir-Bold',
-                              fontWeight: FontWeight.w700,
-                              fontSize: 18.0,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 5.0),
-                          child: Transform.scale(
-                            scale: 1.2,
-                            child: Switch(
-                              value: widget.restaurant.isVeg ? true : _enabled,
-                              onChanged: widget.restaurant.isVeg
-                                  ? null
-                                  : (bool value) {
-                                      setState(() {
-                                        _enabled = value;
-                                        if (value) {
-                                          isVegSwitched = true;
-                                        } else {
-                                          isVegSwitched = false;
-                                        }
-                                      });
-                                    },
-                              inactiveThumbColor: widget.restaurant.isVeg
-                                  ? Colors.green
-                                  : Colors.red,
-                              activeColor: Colors.green,
-                              inactiveTrackColor: widget.restaurant.isVeg
-                                  ? Colors.green.shade200
-                                  : Colors.red.shade200,
-                              activeTrackColor: Colors.green.shade200,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                      child: Divider(color: Colors.grey),
-                    ),
                     staticCategories == null
                         ? ConstantVariables
-                                    .categoryList[widget.restaurant.id] ==
+                                    .categoryList[widget.restaurant.id - 1] ==
                                 null
                             ? FutureBuilder<GetCategory>(
                                 future: widget.category,
                                 builder: (context, response) {
                                   if (response.hasData) {
                                     staticCategories = response.data.categories;
-                                    ConstantVariables.categoryList[widget
-                                        .restaurant
-                                        .id] = response.data.categories;
+                                    ConstantVariables.categoryList[
+                                            widget.restaurant.id - 1] =
+                                        response.data.categories;
                                     return _buildContent(response.data.count,
                                         response.data.categories);
                                   } else {
@@ -245,9 +213,10 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                               )
                             : _buildContent(
                                 ConstantVariables
-                                    .categoryList[widget.restaurant.id].length,
+                                    .categoryList[widget.restaurant.id - 1]
+                                    .length,
                                 ConstantVariables
-                                    .categoryList[widget.restaurant.id])
+                                    .categoryList[widget.restaurant.id - 1])
                         : _buildContent(
                             staticCategories.length, staticCategories),
                   ],

@@ -370,6 +370,7 @@ class _HomePageState extends State<HomePage>
     if (getStartedClicked != null) {
       if (getStartedClicked) {
         return Scaffold(
+          backgroundColor: Colors.white,
           resizeToAvoidBottomPadding: false,
           appBar: AppBar(
               elevation: 0,
@@ -691,9 +692,7 @@ class _HomePageState extends State<HomePage>
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height - 60.0,
-      color: buttonText == 'Reload Content'
-          ? Colors.black
-          : Color.fromRGBO(246, 246, 240, 0),
+      color: Color.fromRGBO(246, 246, 240, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -791,6 +790,23 @@ class _HomePageState extends State<HomePage>
                               permissionDenied = false;
                               ConstantVariables.hasLocationPermission = true;
                               _setupLocation();
+                            });
+                          } else if (val == PermissionStatus.disabled) {
+                            loc.Location().requestService().then((value) {
+                              if (value == true) {
+                                setState(() {
+                                  body = _buildLoadingScreen();
+                                  permissionDenied = false;
+                                  ConstantVariables.hasLocationPermission = true;
+                                  _setupLocation();
+                                });
+                              } else {
+                                setState(() {
+                                  permissionDenied = false;
+                                  serviceDenied = true;
+                                  body = _buildLocationPermission("Enable Location Service");
+                                });
+                              }
                             });
                           } else {
                             setState(() {

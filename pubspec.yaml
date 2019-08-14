@@ -66,6 +66,7 @@ flutter:
     - assets/delivery_scooter.flr
     - assets/del_background.png
     - assets/quote.png
+    - assets/success_check.flr
 
   fonts:
     - family: Avenir

@@ -38,7 +38,7 @@ class ConstantVariables {
     ["Cancelled", "Your order was Cancelled!"]
   ];
 
-  static List<String> order = [
+  static List<String> orderStatus = [
     "New",
     "Accepted",
     "Preparing",

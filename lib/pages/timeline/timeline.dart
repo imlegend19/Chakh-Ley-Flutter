@@ -10,9 +10,10 @@ import 'bike_stop_card.dart';
 class PriceTab extends StatefulWidget {
   final double height;
   final VoidCallback onBikeBikeStart;
-  final List<BikeStop> bikeStops;
+  final String status;
 
-  const PriceTab({Key key, this.height, this.onBikeBikeStart, this.bikeStops})
+  const PriceTab(
+      {Key key, this.height, this.onBikeBikeStart, @required this.status})
       : super(key: key);
 
   @override
@@ -123,10 +124,12 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     );
   }
 
-  Widget _mapBikeStopToDot(stop) {
+  Widget _mapBikeStopToDot(BikeStop stop) {
     int index = _bikeStops.indexOf(stop);
-    bool isStartOrEnd = index == 0 || index == _bikeStops.length - 1;
-    Color color = isStartOrEnd ? Colors.red : Colors.green;
+    Color color = ConstantVariables.orderStatus.indexOf(stop.title) <
+            ConstantVariables.orderStatus.indexOf(widget.status)
+        ? Colors.green
+        : Colors.red;
     return AnimatedDot(
       animation: _dotPositions[index],
       color: color,

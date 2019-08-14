@@ -1,4 +1,5 @@
 import 'package:chakh_le_flutter/pages/timeline/timeline.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -60,11 +61,23 @@ class _ContentCardState extends State<ContentCard> {
           child: IntrinsicHeight(
             child: showInput
                 ? _buildTimeline()
-                : PriceTab(
-                    height: viewportConstraints.maxHeight - 48.0,
-                    onBikeBikeStart: () =>
-                        setState(() => showInputTabOptions = false),
+                : widget.orderStatus == 'Delivery' ? Column(
+              children: <Widget>[
+                Container(
+                  width: 100,
+                  height: 100,
+                  child: FlareActor(
+                    "assets/delivery_scooter.flr",
+                    animation: "Delivering Soon",
                   ),
+                ),
+              ],
+            ) : PriceTab(
+              height: viewportConstraints.maxHeight - 48.0,
+              onBikeBikeStart: () =>
+                  setState(() => showInputTabOptions = false),
+              status: widget.orderStatus,
+            ),
           ),
         ),
       ),
