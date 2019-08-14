@@ -61,23 +61,12 @@ class _ContentCardState extends State<ContentCard> {
           child: IntrinsicHeight(
             child: showInput
                 ? _buildTimeline()
-                : widget.orderStatus == 'Delivery' ? Column(
-              children: <Widget>[
-                Container(
-                  width: 100,
-                  height: 100,
-                  child: FlareActor(
-                    "assets/delivery_scooter.flr",
-                    animation: "Delivering Soon",
+                : PriceTab(
+                    height: viewportConstraints.maxHeight - 48.0,
+                    onBikeBikeStart: () =>
+                        setState(() => showInputTabOptions = false),
+                    status: widget.orderStatus,
                   ),
-                ),
-              ],
-            ) : PriceTab(
-              height: viewportConstraints.maxHeight - 48.0,
-              onBikeBikeStart: () =>
-                  setState(() => showInputTabOptions = false),
-              status: widget.orderStatus,
-            ),
           ),
         ),
       ),
@@ -89,16 +78,85 @@ class _ContentCardState extends State<ContentCard> {
       children: <Widget>[
         Container(color: Colors.black54), // TODO: -> Show bill details
         Expanded(
-            child: Container(
-          height: MediaQuery.of(context).size.height * 0.5,
-        )),
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0),
-          child: FloatingActionButton(
-            onPressed: () => setState(() => showInput = false),
-            child: Icon(Icons.timeline, size: 36.0),
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.5,
           ),
         ),
+        widget.orderStatus == 'Delivered'
+            ? Stack(
+                children: <Widget>[
+                  Positioned(
+                    top: 30,
+                    left: 65,
+                    child: Container(
+                      color: Colors.white,
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: Text(
+                        'Your order has been delivered.\nChakh Ley! India',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'AvenirBold',
+                          color: Colors.black54,
+                          fontSize: 15.0,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      child: FlareActor(
+                        "assets/success_check.flr",
+                        animation: "Untitled",
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : widget.orderStatus == 'Cancelled'
+                ? Stack(
+                    children: <Widget>[
+                      Positioned(
+                        top: 30,
+                        left: 65,
+                        child: Container(
+                          color: Colors.white,
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          child: Text(
+                            'Your order has been cancelled.\nChakh Ke Dekh Ley! India',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'AvenirBold',
+                              color: Colors.black54,
+                              fontSize: 15.0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          child: FlareActor(
+                            "assets/error.flr",
+                            animation: "Error",
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: FloatingActionButton(
+                      onPressed: () => setState(() => showInput = false),
+                      child: Icon(Icons.timeline, size: 36.0),
+                    ),
+                  ),
       ],
     );
   }

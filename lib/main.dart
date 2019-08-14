@@ -198,7 +198,11 @@ class _HomePageState extends State<HomePage>
           ConstantVariables.hasLocationPermission = true;
           _getLocationDetails(
                   Coordinates(position.latitude, position.longitude))
-              .then((value) {
+              .catchError((error) {
+            locationSetUpCompleted = false;
+            locationError = true;
+            body = _buildLocationPermission('Reload Content');
+          }).then((value) {
             setState(() {
               try {
                 ConstantVariables.userLatitude = position.latitude;
@@ -797,14 +801,16 @@ class _HomePageState extends State<HomePage>
                                 setState(() {
                                   body = _buildLoadingScreen();
                                   permissionDenied = false;
-                                  ConstantVariables.hasLocationPermission = true;
+                                  ConstantVariables.hasLocationPermission =
+                                      true;
                                   _setupLocation();
                                 });
                               } else {
                                 setState(() {
                                   permissionDenied = false;
                                   serviceDenied = true;
-                                  body = _buildLocationPermission("Enable Location Service");
+                                  body = _buildLocationPermission(
+                                      "Enable Location Service");
                                 });
                               }
                             });

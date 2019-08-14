@@ -57,10 +57,17 @@ class _ProfilePageState extends State<ProfilePage> {
                         color: Colors.red),
                   ),
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => EditProfile()));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditProfile(
+                          email: ConstantVariables.user['email'],
+                          mobile: ConstantVariables.user['mobile'],
+                        ),
+                      ),
+                    );
                   },
-                )
+                ),
               ],
             ),
           ),
@@ -74,10 +81,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Text(
                   ConstantVariables.user['mobile'],
                   style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Avenir-Black',
-                      fontSize: 13.0),
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Avenir-Black',
+                    fontSize: 13.0,
+                  ),
                 ),
               ),
               Padding(
@@ -87,11 +95,12 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 ConstantVariables.user['email'],
                 style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Avenir-Black',
-                    fontSize: 13.0),
-              )
+                  color: Colors.grey.shade700,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Avenir-Black',
+                  fontSize: 13.0,
+                ),
+              ),
             ],
           ),
           Padding(
@@ -181,10 +190,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 Text(
                   '2019 Chakh Le Inc. App Version ${ConstantVariables.version}',
                   style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w200,
-                      fontFamily: 'Avenir-Black',
-                      fontSize: 10.0),
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.w200,
+                    fontFamily: 'Avenir-Black',
+                    fontSize: 10.0,
+                  ),
                 ),
               ],
             ),

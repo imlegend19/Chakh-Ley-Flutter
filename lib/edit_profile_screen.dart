@@ -5,6 +5,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'main.dart';
 
 class EditProfile extends StatefulWidget {
+  final String email, mobile;
+
+  EditProfile({this.email, this.mobile});
+
   @override
   _EditProfileState createState() => _EditProfileState();
 }
@@ -59,17 +63,21 @@ class _EditProfileState extends State<EditProfile> {
               child: TextFormField(
                 initialValue: ConstantVariables.user['mobile'],
                 style: TextStyle(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.0,
-                    fontFamily: 'Avenir'),
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                  fontFamily: 'Avenir',
+                ),
                 decoration: InputDecoration(
-                    labelText: "PHONE NUMBER",
-                    icon: Icon(Icons.phone_iphone),
-                    labelStyle: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13.0,
-                        fontFamily: 'Avenir')),
+                  labelText: "PHONE NUMBER",
+                  icon: Icon(Icons.phone_iphone),
+                  labelStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13.0,
+                    fontFamily: 'Avenir',
+                  ),
+                  fillColor: Colors.redAccent
+                ),
               ),
             ),
           ),

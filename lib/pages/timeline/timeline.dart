@@ -43,6 +43,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   AnimationController _bikeTravelController;
   AnimationController _dotsAnimationController;
   AnimationController _fabAnimationController;
+  AnimationController _blinker;
   Animation _bikeSizeAnimation;
   Animation _bikeTravelAnimation;
   Animation _fabAnimation;
@@ -71,6 +72,9 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     _initFabAnimationController();
     _bikeStops.forEach((stop) => _stopKeys.add(GlobalKey<BikeStopCardState>()));
     _bikeSizeAnimationController.forward();
+    _blinker = AnimationController(
+        vsync: this, duration: Duration(seconds: 1), lowerBound: 0.5);
+    _blinker.repeat();
   }
 
   @override
@@ -79,6 +83,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     _bikeTravelController.dispose();
     _dotsAnimationController.dispose();
     _fabAnimationController.dispose();
+    _blinker.dispose();
     super.dispose();
   }
 
@@ -130,10 +135,20 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
             ConstantVariables.orderStatus.indexOf(widget.status)
         ? Colors.green
         : Colors.red;
-    return AnimatedDot(
-      animation: _dotPositions[index],
-      color: color,
-    );
+    if (ConstantVariables.orderStatus.indexOf(stop.title) ==
+        ConstantVariables.orderStatus.indexOf(widget.status)) {
+      return AnimatedDot(
+        animation: _dotPositions[index],
+        color: color,
+        pulsing: true,
+        blinker: _blinker,
+      );
+    } else {
+      return AnimatedDot(
+        animation: _dotPositions[index],
+        color: color,
+      );
+    }
   }
 
   Widget _buildBike() {
