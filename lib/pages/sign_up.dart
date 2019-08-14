@@ -39,17 +39,17 @@ class _SignUpPageState extends State<SignUpPage> {
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regExp = RegExp(regex);
 
-    if (_nameController.text.length == 0) {
+    if (_nameController.text.trim().length == 0) {
       setState(() {
         buttonText = "ENTER NAME";
         enableSignUp = false;
       });
-    } else if (!regExp.hasMatch(_emailController.text)) {
+    } else if (!regExp.hasMatch(_emailController.text.trim())) {
       setState(() {
         buttonText = "ENTER VALID EMAIL";
         enableSignUp = false;
       });
-    } else if (_phoneController.text.length != 10) {
+    } else if (_phoneController.text.trim().length != 10) {
       setState(() {
         buttonText = "ENTER VALID PHONE";
         enableSignUp = false;

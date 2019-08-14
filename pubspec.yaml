@@ -37,6 +37,8 @@ dependencies:
   flare_flutter:
   animator:
   keyboard_visibility:
+  sentry:
+  catcher:
 
 dev_dependencies:
   flutter_test:

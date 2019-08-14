@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chakh_le_flutter/entity/category.dart';
 import 'package:chakh_le_flutter/entity/restaurant.dart';
@@ -92,7 +91,7 @@ class _HomeMainPageState extends State<HomeMainPage>
   }
 
   void filterRestaurants() {
-    String text = _searchTextController.text.toLowerCase();
+    String text = _searchTextController.text.trim().toLowerCase();
     setState(() {
       _displayList = ConstantVariables.restaurantList.where((restaurant) {
         var restaurantTitle = restaurant.name.toLowerCase();
@@ -106,7 +105,7 @@ class _HomeMainPageState extends State<HomeMainPage>
     _searchFocusNode.unfocus();
     _animationController.reverse();
 
-    if (_searchTextController.text.length != 0) {
+    if (_searchTextController.text.trim().length != 0) {
       if (!this.mounted) {
         return;
       } else {

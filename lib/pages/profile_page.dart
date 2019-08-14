@@ -1,4 +1,3 @@
-import 'package:chakh_le_flutter/edit_profile_screen.dart';
 import 'package:chakh_le_flutter/entity/order.dart';
 import 'package:chakh_le_flutter/main.dart';
 import 'package:chakh_le_flutter/models/user_pref.dart';
@@ -30,45 +29,14 @@ class _ProfilePageState extends State<ProfilePage> {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 10.0, right: 5.0),
-                  child: Text(
-                    ConstantVariables.user['name'].toUpperCase(),
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Avenir-Black',
-                        fontSize: 18.0),
-                  ),
-                ),
-                FlatButton(
-                  child: Text(
-                    'EDIT',
-                    style: TextStyle(
-                        fontSize: 14.0,
-                        fontFamily: 'Avenir-Bold',
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditProfile(
-                          email: ConstantVariables.user['email'],
-                          mobile: ConstantVariables.user['mobile'],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+            padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 5.0),
+            child: Text(
+              ConstantVariables.user['name'].toUpperCase(),
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Avenir-Black',
+                  fontSize: 18.0),
             ),
           ),
           Row(
@@ -77,7 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(left: 10.0),
+                padding: const EdgeInsets.only(top: 8.0, left: 10.0),
                 child: Text(
                   ConstantVariables.user['mobile'],
                   style: TextStyle(

@@ -21,15 +21,39 @@ import 'package:shimmer/shimmer.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 import 'entity/business.dart';
 import 'models/restaurant_pref.dart';
+import 'package:sentry/sentry.dart';
+import 'package:catcher/catcher_plugin.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  final SentryClient sentryClient =
+      SentryClient(dsn: ConstantVariables.sentryDSN);
+
+  CatcherOptions debugOptions =
+      CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
+  //release configuration
+  CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
+    EmailManualHandler(["mahengandhi19@gmail.com"])
+  ]);
+
+  try {
+    Catcher(
+      MyApp(),
+      debugConfig: debugOptions,
+      releaseConfig: releaseOptions,
+    );
+  } catch (error, stackTrace) {
+    await sentryClient.captureException(
+      exception: error,
+      stackTrace: stackTrace,
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowMaterialGrid: false,
       title: 'Chakh Le',
       theme: ThemeData(
         primarySwatch: Colors.red,
