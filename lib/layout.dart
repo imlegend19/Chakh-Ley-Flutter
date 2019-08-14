@@ -13,10 +13,10 @@ class AnchoredOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      child: new LayoutBuilder(
+    return Container(
+      child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
-        return new OverlayBuilder(
+        return OverlayBuilder(
           showOverlay: showOverlay,
           overlayBuilder: (BuildContext overlayContext) {
             RenderBox box = context.findRenderObject() as RenderBox;
@@ -44,7 +44,7 @@ class OverlayBuilder extends StatefulWidget {
   });
 
   @override
-  _OverlayBuilderState createState() => new _OverlayBuilderState();
+  _OverlayBuilderState createState() => _OverlayBuilderState();
 }
 
 class _OverlayBuilderState extends State<OverlayBuilder> {
@@ -83,7 +83,7 @@ class _OverlayBuilderState extends State<OverlayBuilder> {
   bool isShowingOverlay() => overlayEntry != null;
 
   void showOverlay() {
-    overlayEntry = new OverlayEntry(
+    overlayEntry = OverlayEntry(
       builder: widget.overlayBuilder,
     );
     addToOverlay(overlayEntry);
@@ -123,10 +123,10 @@ class CenterAbout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Positioned(
+    return Positioned(
       top: position.dy,
       left: position.dx,
-      child: new FractionalTranslation(
+      child: FractionalTranslation(
         translation: const Offset(-0.5, -0.5),
         child: child,
       ),

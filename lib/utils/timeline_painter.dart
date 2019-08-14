@@ -65,9 +65,9 @@ class TimelinePainter extends CustomPainter {
       Paint paint = Paint();
       paint.color = Colors.red;
       paint.strokeWidth = 2.5;
-      canvas.drawLine(new Offset(12.5, 46), new Offset(27, 30), paint);
+      canvas.drawLine(Offset(12.5, 46), Offset(27, 30), paint);
 
-      canvas.drawLine(new Offset(27, 46), new Offset(12.5, 30), paint);
+      canvas.drawLine(Offset(27, 46), Offset(12.5, 30), paint);
     } else {
       Paint circleFill = Paint()
         ..color = circleColor

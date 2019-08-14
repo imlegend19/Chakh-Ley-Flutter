@@ -388,7 +388,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             splashColor: Colors.green.shade100,
             highlightedBorderColor: Colors.green,
             shape: RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(30.0),
+              borderRadius: BorderRadius.circular(30.0),
             ),
           ),
         ),
@@ -506,7 +506,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                   expandingIndex = index;
                   if (expanding) {
                     _scrollController.animateTo(index * 58.0,
-                        duration: new Duration(seconds: 1), curve: Curves.ease);
+                        duration: Duration(seconds: 1), curve: Curves.ease);
                   }
                 }),
               );

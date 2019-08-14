@@ -37,7 +37,7 @@ class _SignUpPageState extends State<SignUpPage> {
   void getButtonText() {
     String regex =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-    RegExp regExp = new RegExp(regex);
+    RegExp regExp = RegExp(regex);
 
     if (_nameController.text.length == 0) {
       setState(() {
@@ -110,7 +110,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 Text(
-                  'Create a new account',
+                  'Create a  account',
                   style: TextStyle(
                     fontFamily: 'Avenir-Bold',
                     fontSize: 13.0,

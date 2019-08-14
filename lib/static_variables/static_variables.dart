@@ -29,24 +29,22 @@ class ConstantVariables {
 
   static List<dynamic> cuisines;
 
-  static List<String> order = [
-    "Pending",
-    "Accepted",
-    "Preparing",
-    "Ready",
-    "Dispatched",
-    "Delivered",
-    "Cancelled"
+  static List<List<String>> statusDescription = [
+    ["New", "Your order has been received!"],
+    ["Accepted", "Your order has been placed."],
+    ["Preparing", "Your delicious meal is being prepared!"],
+    ["On its way", "Your order has been dispatched!"],
+    ["Delivered", "Chakh Ley! India."],
+    ["Cancelled", "Your order was Cancelled!"]
   ];
 
-  static List<String> orderDescription = [
-    "We have received your Order. Please wait while we review it.",
-    "Your order has been placed!",
-    "Your delicious meal is being prepared!",
-    "Your order is ready to get dispatched!",
-    "Your order is on the way.",
-    "Enjoy your meal, hope you like it!",
-    "Your order was Cancelled!"
+  static List<String> order = [
+    "New",
+    "Accepted",
+    "Preparing",
+    "On its way",
+    "Delivered",
+    "Cancelled"
   ];
 
   static String userCity;
