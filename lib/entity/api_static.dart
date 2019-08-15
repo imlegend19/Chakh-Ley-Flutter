@@ -1,5 +1,5 @@
 abstract class APIStatic {
-  static const baseURL = "http://13.233.179.130/api/";
+  static const baseURL = "http://admin.chakhley.co.in/api/";
 
   static const keyID = "id";
   static const keyName = "name";
