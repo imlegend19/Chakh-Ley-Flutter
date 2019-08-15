@@ -4,6 +4,7 @@ import 'package:chakh_le_flutter/entity/api_static.dart';
 import 'package:chakh_le_flutter/entity/order_post.dart';
 import 'package:chakh_le_flutter/models/cart.dart';
 import 'package:chakh_le_flutter/static_variables/static_variables.dart';
+import 'package:chakh_le_flutter/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -28,6 +29,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   TextEditingController _landmarkController = TextEditingController();
 
   Future<PostOrder> postOrder;
+  DatabaseHelper databaseHelper = DatabaseHelper();
 
   bool enableProceed = false;
   String buttonText = "ENTER HOUSE / FLAT NO";
@@ -37,7 +39,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   void initState() {
     super.initState();
-
+    databaseHelper.initializeDatabase();
     _controller.addListener(validateText);
     _unitNoController.addListener(validateText);
     _landmarkController.addListener(validateText);
@@ -268,17 +270,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   checkoutOrder() {
     PostOrder post = PostOrder(
-        name: ConstantVariables.user['name'],
-        mobile: ConstantVariables.user['mobile'],
-        email: ConstantVariables.user['email'],
-        business: 1,
-        restaurant: ConstantVariables.cartRestaurant.id,
-        preparationTime: ConstantVariables.cartRestaurant.deliveryTime,
-        delivery: convertAddressToMap(),
-        subOrderSet: suborderSet);
+      name: ConstantVariables.user['name'],
+      mobile: ConstantVariables.user['mobile'],
+      email: ConstantVariables.user['email'],
+      business: 1,
+      restaurant: ConstantVariables.cartRestaurant.id,
+      preparationTime: ConstantVariables.cartRestaurant.deliveryTime,
+      delivery: convertAddressToMap(),
+      subOrderSet: suborderSet,
+    );
 
     createPost(post).then((response) {
       if (response.statusCode == 201) {
+        databaseHelper.clearCart();
         Fluttertoast.showToast(
           msg: "Order has been placed successfully!",
           fontSize: 13.0,
