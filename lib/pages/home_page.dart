@@ -214,7 +214,7 @@ class _HomeMainPageState extends State<HomeMainPage>
                       ),
                 decoration: BoxDecoration(
                   color: restaurant.images.length == 0
-                      ? Colors.grey
+                      ? Colors.grey.shade300
                       : Colors.grey[200],
                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 ),

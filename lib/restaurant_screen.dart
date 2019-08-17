@@ -69,13 +69,16 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Container(
-                color: Colors.grey,
+                color: Colors.grey.shade300,
                 height: MediaQuery.of(context).size.height * 0.3,
                 child: widget.restaurant.images.length == 0
                     ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image(
-                          image: AssetImage('assets/logo.png'),
+                        padding: const EdgeInsets.all(20),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Image(
+                            image: AssetImage('assets/logo.png'),
+                          ),
                         ),
                       )
                     : CachedNetworkImage(
