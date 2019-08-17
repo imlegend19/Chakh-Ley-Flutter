@@ -92,22 +92,26 @@ Future<GetRestaurant> fetchRestaurants(int businessID) async {
     int count = jsonDecode(response.body)[APIStatic.keyCount];
     int execute = count ~/ 10 + 1;
 
-    GetRestaurant restaurant =
-        GetRestaurant.fromJson(jsonDecode(response.body));
-    execute--;
-
-    while (execute != 0) {
-      GetRestaurant tempRestaurant = GetRestaurant.fromJson(jsonDecode(
-          (await http.get(jsonDecode(response.body)[APIStatic.keyNext])).body));
-      restaurant.restaurants += tempRestaurant.restaurants;
-      restaurant.count += tempRestaurant.count;
-
+    try {
+      GetRestaurant restaurant =
+          GetRestaurant.fromJson(jsonDecode(response.body));
       execute--;
-    }
 
-    return restaurant;
+      while (execute != 0) {
+        GetRestaurant tempRestaurant = GetRestaurant.fromJson(jsonDecode(
+            (await http.get(jsonDecode(response.body)[APIStatic.keyNext]))
+                .body));
+        restaurant.restaurants += tempRestaurant.restaurants;
+        restaurant.count += tempRestaurant.count;
+
+        execute--;
+      }
+
+      return restaurant;
+    } on Exception {
+      return null;
+    }
   } else {
-    // Failed to load get
     return null;
   }
 }

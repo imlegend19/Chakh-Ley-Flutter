@@ -640,7 +640,11 @@ class _HomeMainPageState extends State<HomeMainPage>
 
   Widget _buildErrorPage() {
     return Container(
-
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Image(
+        image: AssetImage('assets/error.png'),
+      ),
     );
   }
 }

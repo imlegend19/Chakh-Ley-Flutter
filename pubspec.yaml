@@ -71,6 +71,7 @@ flutter:
     - assets/success_check.flr
     - assets/error.flr
     - assets/pulsing.flr
+    - assets/error.png
 
   fonts:
     - family: Avenir

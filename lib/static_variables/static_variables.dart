@@ -1,6 +1,7 @@
 import 'package:chakh_le_flutter/entity/business.dart';
 import 'package:chakh_le_flutter/entity/restaurant.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:sentry/sentry.dart';
 
 class ConstantVariables {
   static var restaurantList = List<Restaurant>();
@@ -56,4 +57,6 @@ class ConstantVariables {
 
   static String sentryDSN =
       'https://ef4eaa0e0a4f451eaf8f3fb2ddae09f5:567c0b6caf134a82a50846e0a14e7fdf@sentry.io/1531091';
+
+  static SentryClient sentryClient;
 }
