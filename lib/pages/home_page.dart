@@ -20,6 +20,7 @@ class HomeMainPage extends StatefulWidget {
 class _HomeMainPageState extends State<HomeMainPage>
     with SingleTickerProviderStateMixin {
   bool firstTime = true;
+  bool error = false;
 
   StreamController _restaurantController;
 
@@ -47,8 +48,13 @@ class _HomeMainPageState extends State<HomeMainPage>
 
   loadRestaurants() async {
     fetchRestaurants(ConstantVariables.businessID).then((val) async {
-      _restaurantController.add(val);
-      return val;
+      if (val != null) {
+        _restaurantController.add(val);
+      } else {
+        setState(() {
+          error = true;
+        });
+      }
     });
   }
 
@@ -128,7 +134,7 @@ class _HomeMainPageState extends State<HomeMainPage>
 
   @override
   Widget build(BuildContext context) {
-    if (ConstantVariables.restaurantList.length == 0) {
+    if (ConstantVariables.restaurantList.length == 0 && !error) {
       return StreamBuilder(
         stream: _restaurantController.stream,
         builder: (context, response) {
@@ -155,8 +161,10 @@ class _HomeMainPageState extends State<HomeMainPage>
           }
         },
       );
-    } else if (_displayList.length == 0) {
+    } else if (_displayList.length == 0 && !error) {
       return _buildNotFoundPage();
+    } else if (error) {
+      return _buildErrorPage();
     } else {
       return _buildRestaurants(
           _displayList, ConstantVariables.openRestaurantsCount);
@@ -628,6 +636,12 @@ class _HomeMainPageState extends State<HomeMainPage>
         builder: (context) {
           return FilterBottomSheet(callback: this.callback);
         });
+  }
+
+  Widget _buildErrorPage() {
+    return Container(
+
+    );
   }
 }
 

@@ -107,7 +107,8 @@ Future<GetRestaurant> fetchRestaurants(int businessID) async {
 
     return restaurant;
   } else {
-    throw Exception('Failed to load get');
+    // Failed to load get
+    return null;
   }
 }
 
