@@ -204,8 +204,12 @@ class _HomeMainPageState extends State<HomeMainPage>
                           ),
                         ),
                       ),
-                      ribbonSwatch: restaurant.ribbon == "Ex" ? Colors.redAccent : Colors.yellow.shade700,
-                      ribbonShadowSwatch: restaurant.ribbon == "Ex" ? Colors.red.shade800 : Colors.yellow.shade900,
+                      ribbonSwatch: restaurant.ribbon == "Ex"
+                          ? Colors.redAccent
+                          : Colors.yellow.shade700,
+                      ribbonShadowSwatch: restaurant.ribbon == "Ex"
+                          ? Colors.red.shade800
+                          : Colors.yellow.shade900,
                     ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

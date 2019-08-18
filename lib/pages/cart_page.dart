@@ -828,7 +828,8 @@ class _CartPageState extends State<CartPage>
                   const EdgeInsets.only(right: 15.0, top: 5.0, bottom: 5.0),
               child: Text(
                 totalCost != null
-                    ? "₹" + (totalCost + restaurantCharges + deliveryFee).toString()
+                    ? "₹" +
+                        (totalCost + restaurantCharges + deliveryFee).toString()
                     : "NA",
                 style: TextStyle(
                   fontFamily: 'Avelir-Bold',

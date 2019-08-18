@@ -113,11 +113,10 @@ class BikeStopCardState extends State<BikeStopCard>
                     child: Text(
                       "\u00B7 ${widget.bikeStop.title} \u00B7",
                       style: TextStyle(
-                        fontFamily: 'AvenirBold',
-                        fontSize: 14.0 * _titlePositionAnimation.value,
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w700
-                      ),
+                          fontFamily: 'AvenirBold',
+                          fontSize: 14.0 * _titlePositionAnimation.value,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w700),
                     ),
                   ),
                   Padding(
