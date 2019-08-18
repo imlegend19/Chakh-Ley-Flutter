@@ -19,6 +19,7 @@ class DatabaseHelper {
   String colName = 'name';
   String colPrice = 'price';
   String colQuantity = 'quantity';
+  String colIsVeg = 'isVeg';
 
   DatabaseHelper._createInstance();
 
@@ -47,10 +48,10 @@ class DatabaseHelper {
     return cartDatabase;
   }
 
-  void _createDB(Database db, int Version) async {
+  void _createDB(Database db, int version) async {
     await db.execute(
         'CREATE TABLE $cartTable ($colId INTEGER PRIMARY KEY, $colName TEXT,'
-        '$colProductId INTEGER, $colPrice DOUBLE, $colQuantity INTEGER )');
+        '$colProductId INTEGER, $colPrice DOUBLE, $colQuantity INTEGER, $colIsVeg INTEGER)');
   }
 
   Future<List> getCartMapList() async {

@@ -100,7 +100,7 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
         );
       }
     }).catchError((error) {
-      print('error : $error');
+      throw Exception;
     });
   }
 

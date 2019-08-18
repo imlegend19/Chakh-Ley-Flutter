@@ -394,7 +394,9 @@ class _HomePageState extends State<HomePage>
       setState(() {
         if (_connectionStatus != ConnectivityResult.none) {
           body = CartPage(
-              restaurant: fetchRestaurantData(HomePage.spRestaurantID));
+              restaurant: HomePage.spRestaurantID == null
+                  ? null
+                  : fetchRestaurantData(HomePage.spRestaurantID));
         } else {
           body = _buildNoInternet();
         }

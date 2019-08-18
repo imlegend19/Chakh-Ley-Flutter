@@ -4,8 +4,9 @@ class Cart {
   String _name;
   double _price;
   int _quantity;
+  int _isVeg;
 
-  Cart(this._name, this._price, this._quantity, this._productID);
+  Cart(this._name, this._price, this._quantity, this._productID, this._isVeg);
 
   int get quantity => _quantity;
 
@@ -14,6 +15,8 @@ class Cart {
   String get name => _name;
 
   int get productID => _productID;
+
+  int get isVeg => _isVeg;
 
   int get id => _id;
 
@@ -51,6 +54,7 @@ class Cart {
     map['name'] = _name;
     map['price'] = _price;
     map['quantity'] = _quantity;
+    map['isVeg'] = _isVeg;
 
     return map;
   }
@@ -61,5 +65,6 @@ class Cart {
     this._productID = map['productID'];
     this._price = map['price'];
     this._quantity = map['quantity'];
+    this._isVeg = map['isVeg'];
   }
 }

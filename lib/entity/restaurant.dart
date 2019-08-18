@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:chakh_le_flutter/static_variables/static_variables.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import 'api_static.dart';
@@ -132,16 +131,8 @@ Future<GetRestaurant> fetchRestaurantData(int id) async {
   if (response.statusCode == 200) {
     GetRestaurant restaurant =
         GetRestaurant.fromJson(jsonDecode(response.body));
-
     return restaurant;
   } else {
-    Fluttertoast.showToast(
-      msg: "Check your Internet Connection",
-      fontSize: 13.0,
-      toastLength: Toast.LENGTH_SHORT,
-      timeInSecForIos: 1,
-    );
-
     return null;
   }
 }

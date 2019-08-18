@@ -345,13 +345,13 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                     ? () {
                         switchAdd(disableAdd);
                         _insertItemToCart(
-                          name,
-                          product[ProductStatic.keyPrice],
-                          product[APIStatic.keyID],
-                          databaseHelper,
-                          count,
-                          widget.restaurant,
-                        );
+                            name,
+                            product[ProductStatic.keyPrice],
+                            product[APIStatic.keyID],
+                            databaseHelper,
+                            count,
+                            widget.restaurant,
+                            product[ProductStatic.keyIsVeg]);
                         _updateRestaurant(widget.restaurant);
                       }
                     : null,
@@ -377,20 +377,28 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     });
   }
 
-  _insertItemToCart(String name, double price, int productID,
-      DatabaseHelper databaseHelper, int count, Restaurant restaurant) {
+  _insertItemToCart(
+      String name,
+      double price,
+      int productID,
+      DatabaseHelper databaseHelper,
+      int count,
+      Restaurant restaurant,
+      bool isVeg) {
     int restoId = getCartRestaurant();
 
     if (restoId == restaurant.id) {
       if (count == 0) {
-        databaseHelper.insertItem(Cart(name, price, 1, productID));
+        databaseHelper
+            .insertItem(Cart(name, price, 1, productID, isVeg ? 1 : 0));
         saveCartProductCount(1);
       } else {
         Future<int> check = databaseHelper.checkExistence(productID);
 
         check.then((value) {
           if (value == 0) {
-            databaseHelper.insertItem(Cart(name, price, 1, productID));
+            databaseHelper
+                .insertItem(Cart(name, price, 1, productID, isVeg ? 1 : 0));
             Future<int> count = getCartProductCount();
             count.then((value) {
               saveCartProductCount(value + 1);
@@ -412,7 +420,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       );
     } else {
       databaseHelper.clearCart();
-      databaseHelper.insertItem(Cart(name, price, 1, productID));
+      databaseHelper.insertItem(Cart(name, price, 1, productID, isVeg ? 1 : 0));
       saveCartProductCount(1);
 
       cartItemCount = 1;

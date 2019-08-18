@@ -33,10 +33,11 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Text(
               ConstantVariables.user['name'].toUpperCase(),
               style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Avenir-Black',
-                  fontSize: 18.0),
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Avenir-Black',
+                fontSize: 18.0,
+              ),
             ),
           ),
           Row(
@@ -228,6 +229,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 fontFamily: 'Avenir-Black',
                 color: Colors.grey.shade600,
               ),
+              textAlign: TextAlign.center,
             ),
           ),
           Container(

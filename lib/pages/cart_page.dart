@@ -28,7 +28,7 @@ class _CartPageState extends State<CartPage>
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Cart> cartProducts;
   double totalCost = 0;
-
+  double restaurantCharges = 0;
   bool disableCheckout = true;
   double deliveryFee = 0;
 
@@ -87,6 +87,8 @@ class _CartPageState extends State<CartPage>
                 fetchedDistance = true;
               }
               return _buildCartView(response.data.restaurants[0]);
+            } else if (response.hasError) {
+              throw Exception;
             } else {
               return Column(
                 mainAxisSize: MainAxisSize.max,
@@ -94,7 +96,10 @@ class _CartPageState extends State<CartPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   buildSkeletonRestaurant(context),
-                  cartProducts.length == 0 ? Container() : _buildCartItems(),
+                  Center(
+                      child: cartProducts.length == 0
+                          ? Container()
+                          : ColorLoader()),
                 ],
               );
             }
@@ -157,21 +162,25 @@ class _CartPageState extends State<CartPage>
   }
 
   Widget _buildCartView(Restaurant restaurant) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
       children: <Widget>[
-        _buildRestaurant(
-          restaurant.name,
-          restaurant.fullAddress,
-          restaurant.openStatus,
-          restaurant.images,
+        Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _buildRestaurant(restaurant),
+            cartProducts.length == 0
+                ? Container()
+                : _buildCartItems(restaurant),
+          ],
         ),
-        cartProducts.length == 0 ? Container() : _buildCartItems(),
-        userLoggedIn
-            ? _buildCheckOut(restaurant.deliveryTime)
-            : _buildAskLogin(),
+        Positioned(
+          top: MediaQuery.of(context).size.height * 0.52,
+          child: userLoggedIn
+              ? _buildCheckOut(restaurant.deliveryTime)
+              : _buildAskLogin(),
+        ),
       ],
     );
   }
@@ -338,6 +347,14 @@ class _CartPageState extends State<CartPage>
   }
 
   Widget productListTile(Cart cartProduct, int index, BuildContext context) {
+    AssetImage image;
+
+    if (cartProduct.isVeg == 1) {
+      image = AssetImage('assets/veg.png');
+    } else {
+      image = AssetImage('assets/non_veg.png');
+    }
+
     return Container(
       color: index % 2 == 0 ? Colors.grey[200] : Colors.white70,
       child: Padding(
@@ -348,35 +365,51 @@ class _CartPageState extends State<CartPage>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(top: 2.0, bottom: 2.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    child: AutoSizeText(
-                      cartProduct.name,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Avenir-Bold'),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                Image(
+                  image: image,
+                  fit: BoxFit.contain,
+                  height: 23.0,
+                  width: 23.0,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 2.0, bottom: 2.0),
-                  child: Text("₹ " + cartProduct.price.toString(),
-                      style: TextStyle(
-                          color: Colors.black45,
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: AutoSizeText(
+                          cartProduct.name,
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontFamily: 'Avenir-Bold',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          maxLines: 3,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 2.0,
+                      ),
+                      Text(
+                        "₹ " + cartProduct.price.toString(),
+                        style: TextStyle(
+                          color: Colors.black54,
                           fontFamily: 'Avenir-Black',
-                          fontSize: 13.0,
-                          fontWeight: FontWeight.w700)),
-                )
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ],
             ),
             Container(
@@ -417,8 +450,7 @@ class _CartPageState extends State<CartPage>
     );
   }
 
-  Widget _buildRestaurant(
-      String name, String fullAddress, bool open, List<dynamic> images) {
+  Widget _buildRestaurant(Restaurant restaurant) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -430,13 +462,13 @@ class _CartPageState extends State<CartPage>
           child: Container(
             width: 75.0,
             height: 75.0,
-            child: images.length == 0
+            child: restaurant.images.length == 0
                 ? Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Image(image: AssetImage('assets/logo.png')),
                   )
                 : CachedNetworkImage(
-                    imageUrl: images[0],
+                    imageUrl: restaurant.images[0],
                     imageBuilder: (context, imageProvider) => Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
@@ -449,7 +481,9 @@ class _CartPageState extends State<CartPage>
                     errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
             decoration: BoxDecoration(
-              color: images.length == 0 ? Colors.grey : Colors.grey[200],
+              color: restaurant.images.length == 0
+                  ? Colors.grey
+                  : Colors.grey[200],
               borderRadius: BorderRadius.all(Radius.circular(10.0)),
             ),
           ),
@@ -465,7 +499,7 @@ class _CartPageState extends State<CartPage>
                 padding: const EdgeInsets.only(
                     left: 4.0, right: 4.0, top: 2.0, bottom: 2.0),
                 child: Text(
-                  '$name',
+                  '${restaurant.name}',
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -479,7 +513,7 @@ class _CartPageState extends State<CartPage>
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.7,
                   child: AutoSizeText(
-                    "$fullAddress",
+                    "${restaurant.fullAddress}",
                     style: TextStyle(
                         color: Colors.black45,
                         fontFamily: 'Avenir-Black',
@@ -496,9 +530,10 @@ class _CartPageState extends State<CartPage>
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.3,
                   child: AutoSizeText(
-                    open ? "Open" : "Closed",
+                    restaurant.openStatus ? "Open" : "Closed",
                     style: TextStyle(
-                        color: open ? Colors.green : Colors.red,
+                        color:
+                            restaurant.openStatus ? Colors.green : Colors.red,
                         fontFamily: 'Avenir-Black',
                         fontWeight: FontWeight.w700,
                         fontSize: 12.0),
@@ -514,7 +549,7 @@ class _CartPageState extends State<CartPage>
     );
   }
 
-  Widget _buildCartItems() {
+  Widget _buildCartItems(Restaurant restaurant) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Container(
@@ -528,7 +563,7 @@ class _CartPageState extends State<CartPage>
             if (position < ConstantVariables.cartProductsCount) {
               return productListTile(cartProducts[position], position, context);
             } else {
-              return invoiceDetails();
+              return invoiceDetails(restaurant);
             }
           },
         ),
@@ -725,10 +760,11 @@ class _CartPageState extends State<CartPage>
               child: Text(
                 totalCost != null ? "Rs. ${totalCost + deliveryFee}" : "-",
                 style: TextStyle(
-                    fontFamily: 'Avenir-Bold',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15.0,
-                    color: Colors.grey.shade700),
+                  fontFamily: 'Avenir-Bold',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15.0,
+                  color: Colors.grey.shade700,
+                ),
               ),
             ),
           ),
@@ -737,7 +773,7 @@ class _CartPageState extends State<CartPage>
     );
   }
 
-  Widget invoiceDetails() {
+  Widget invoiceDetails(Restaurant restaurant) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -754,9 +790,18 @@ class _CartPageState extends State<CartPage>
                 fontFamily: 'Avenir-Black'),
           ),
         ),
-        _buildInvoiceRow('Item Total', totalCost),
-        _buildInvoiceRow('Container Charges', 0),
-        _buildInvoiceRow('Delivery Fee', getDeliveryFee(km, totalCost)),
+        _buildInvoiceRow('Item Total', totalCost, restaurant),
+        _buildInvoiceRow(
+            'Restaurant Charges',
+            _getRestaurantCharge(restaurant, totalCost),
+            restaurant,
+            restaurant.gst
+                ? Icons.error
+                : double.parse(restaurant.packagingCharge) != 0
+                    ? Icons.error
+                    : null),
+        _buildInvoiceRow(
+            'Delivery Fee', getDeliveryFee(km, totalCost), restaurant),
         Padding(
           padding: const EdgeInsets.only(left: 15.0, right: 15.0),
           child: Divider(color: Colors.grey.shade600),
@@ -783,7 +828,7 @@ class _CartPageState extends State<CartPage>
                   const EdgeInsets.only(right: 15.0, top: 5.0, bottom: 5.0),
               child: Text(
                 totalCost != null
-                    ? "₹" + (totalCost + deliveryFee).toString()
+                    ? "₹" + (totalCost + restaurantCharges + deliveryFee).toString()
                     : "NA",
                 style: TextStyle(
                   fontFamily: 'Avelir-Bold',
@@ -834,26 +879,92 @@ class _CartPageState extends State<CartPage>
       }
     }
   }
+
+  double _getRestaurantCharge(Restaurant restaurant, double totalCost) {
+    double charge = 0;
+
+    if (restaurant.gst) {
+      charge += totalCost * 0.05;
+    }
+
+    if (double.parse(restaurant.packagingCharge) != 0) {
+      charge += double.parse(restaurant.packagingCharge);
+    }
+
+    restaurantCharges = charge;
+
+    return charge;
+  }
 }
 
-Widget _buildInvoiceRow(String title, double value) {
+Widget _buildInvoiceRow(String title, double value, Restaurant restaurant,
+    [IconData icon]) {
+  final key = new GlobalKey();
+
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.max,
     children: <Widget>[
-      Padding(
-        padding: const EdgeInsets.only(left: 8.0, top: 5.0, bottom: 5.0),
-        child: Text(
-          '$title',
-          style: TextStyle(
-            fontFamily: 'Avelir-Bold',
-            fontSize: 13.0,
-            color: Colors.black54,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
+      icon == null
+          ? Padding(
+              padding: const EdgeInsets.only(left: 8.0, top: 5.0, bottom: 5.0),
+              child: Text(
+                '$title',
+                style: TextStyle(
+                  fontFamily: 'Avelir-Bold',
+                  fontSize: 13.0,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 8.0, top: 5.0, bottom: 5.0),
+                  child: Text(
+                    '$title',
+                    style: TextStyle(
+                      fontFamily: 'Avelir-Bold',
+                      fontSize: 13.0,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(3.0),
+                  child: Container(
+                    width: 13,
+                    height: 13.0,
+                    child: Tooltip(
+                      key: key,
+                      message: getMessage(restaurant),
+                      preferBelow: false,
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      child: GestureDetector(
+                        child: Icon(
+                          icon,
+                          size: 20,
+                        ),
+                        onTap: () {
+                          final dynamic tooltip = key.currentState;
+                          tooltip.ensureTooltipVisible();
+                        },
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
       value != null
           ? Padding(
               padding: const EdgeInsets.only(right: 8.0, top: 5.0, bottom: 5.0),
@@ -881,4 +992,22 @@ Widget _buildInvoiceRow(String title, double value) {
             ),
     ],
   );
+}
+
+String getMessage(Restaurant restaurant) {
+  String msg = '';
+
+  if (restaurant.gst) {
+    msg += "CGST - 2.5%, SGST - 2.5%";
+  }
+
+  if (double.parse(restaurant.packagingCharge) != 0) {
+    if (msg.length != 0) {
+      msg += "and Packaging Charge";
+    } else {
+      msg += "Packaging Charge";
+    }
+  }
+
+  return msg;
 }
