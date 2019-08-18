@@ -20,6 +20,9 @@ class Restaurant {
   final bool isVeg;
   final List<dynamic> images;
   final List<dynamic> cuisines;
+  final String packagingCharge;
+  final bool gst;
+  final String ribbon;
 
   Restaurant({
     this.id,
@@ -35,6 +38,9 @@ class Restaurant {
     this.isVeg,
     this.images,
     this.cuisines,
+    this.packagingCharge,
+    this.gst,
+    this.ribbon,
   });
 }
 
@@ -69,6 +75,9 @@ class GetRestaurant {
           isVeg: jsonRestaurant[RestaurantStatic.keyIsVeg],
           images: jsonRestaurant[RestaurantStatic.keyImages],
           cuisines: jsonRestaurant[RestaurantStatic.keyCuisine],
+          packagingCharge: jsonRestaurant[RestaurantStatic.keyPackagingCharge],
+          gst: jsonRestaurant[RestaurantStatic.keyGST],
+          ribbon: jsonRestaurant[RestaurantStatic.keyRibbon],
         ),
       );
     }

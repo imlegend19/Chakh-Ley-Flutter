@@ -11,6 +11,7 @@ import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 import 'package:vertical_tabs/vertical_tabs.dart';
+import 'package:floating_ribbon/floating_ribbon.dart';
 
 class HomeMainPage extends StatefulWidget {
   @override
@@ -19,7 +20,6 @@ class HomeMainPage extends StatefulWidget {
 
 class _HomeMainPageState extends State<HomeMainPage>
     with SingleTickerProviderStateMixin {
-  bool firstTime = true;
   bool error = false;
 
   StreamController _restaurantController;
@@ -50,10 +50,6 @@ class _HomeMainPageState extends State<HomeMainPage>
     fetchRestaurants(ConstantVariables.businessID).then((val) async {
       if (val != null) {
         _restaurantController.add(val);
-      } else {
-        setState(() {
-          error = true;
-        });
       }
     });
   }
@@ -71,12 +67,7 @@ class _HomeMainPageState extends State<HomeMainPage>
 
     _restaurantController = StreamController();
 
-    if (firstTime) {
-      loadRestaurants();
-      firstTime = false;
-    } else {
-      Timer.periodic(Duration(seconds: 5), (_) => loadRestaurants());
-    }
+    Timer.periodic(Duration(seconds: 5), (_) => loadRestaurants());
 
     _animationController = AnimationController(
       duration: Duration(milliseconds: 200),
@@ -189,44 +180,33 @@ class _HomeMainPageState extends State<HomeMainPage>
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Container(
-                width: 75.0,
-                height: 75.0,
-                child: restaurant.images.length == 0
-                    ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image(
-                            image: AssetImage('assets/logo.png'),
+              restaurant.ribbon == null
+                  ? Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: _buildRestaurantImage(restaurant))
+                  : FloatingRibbon(
+                      height: 85,
+                      width: 85,
+                      child: _buildRestaurantImage(restaurant),
+                      childWidth: 75,
+                      childHeight: 75,
+                      clipper: Clipper.right,
+                      ribbon: SkeletonAnimation(
+                        child: Center(
+                          child: Text(
+                            restaurant.ribbon == "Ex" ? "EXCLUSIVE" : "NEW",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'Avenir-Bold'),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: CachedNetworkImage(
-                          imageUrl: restaurant.images[0],
-                          imageBuilder: (context, imageProvider) => Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          placeholder: (context, url) =>
-                              Center(child: ColorLoader()),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
                         ),
                       ),
-                decoration: BoxDecoration(
-                  color: restaurant.images.length == 0
-                      ? Colors.grey.shade300
-                      : Colors.grey[200],
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                ),
-              ),
+                      ribbonSwatch: restaurant.ribbon == "Ex" ? Colors.redAccent : Colors.yellow.shade700,
+                      ribbonShadowSwatch: restaurant.ribbon == "Ex" ? Colors.red.shade800 : Colors.yellow.shade900,
+                    ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -644,6 +624,45 @@ class _HomeMainPageState extends State<HomeMainPage>
       width: MediaQuery.of(context).size.width,
       child: Image(
         image: AssetImage('assets/error.png'),
+      ),
+    );
+  }
+
+  Widget _buildRestaurantImage(Restaurant restaurant) {
+    return Container(
+      width: 75.0,
+      height: 75.0,
+      child: restaurant.images.length == 0
+          ? Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image(
+                  image: AssetImage('assets/logo.png'),
+                ),
+              ),
+            )
+          : ClipRRect(
+              borderRadius: BorderRadius.circular(10.0),
+              child: CachedNetworkImage(
+                imageUrl: restaurant.images[0],
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                placeholder: (context, url) => Center(child: ColorLoader()),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+              ),
+            ),
+      decoration: BoxDecoration(
+        color: restaurant.images.length == 0
+            ? Colors.grey.shade300
+            : Colors.grey[200],
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
       ),
     );
   }
