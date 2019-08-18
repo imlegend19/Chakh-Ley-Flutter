@@ -1002,9 +1002,9 @@ String getMessage(Restaurant restaurant) {
     msg += "CGST - 2.5%, SGST - 2.5%";
   }
 
-  if (double.parse(restaurant.packagingCharge) != 0) {
+  if (double.parse(restaurant.packagingCharge) == 0) {
     if (msg.length != 0) {
-      msg += "and Packaging Charge";
+      msg += " and Packaging Charge";
     } else {
       msg += "Packaging Charge";
     }
