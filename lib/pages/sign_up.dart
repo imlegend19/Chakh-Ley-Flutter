@@ -44,11 +44,6 @@ class _SignUpPageState extends State<SignUpPage> {
         buttonText = "ENTER NAME";
         enableSignUp = false;
       });
-    } else if (!regExp.hasMatch(_emailController.text.trim())) {
-      setState(() {
-        buttonText = "ENTER VALID EMAIL";
-        enableSignUp = false;
-      });
     } else if (_phoneController.text.trim().length != 10) {
       setState(() {
         buttonText = "ENTER VALID PHONE";
@@ -59,6 +54,14 @@ class _SignUpPageState extends State<SignUpPage> {
         enableSignUp = true;
         buttonText = "SIGN UP";
       });
+    }
+
+    if (_emailController.text.trim() != '') {
+      if (!regExp.hasMatch(_emailController.text.trim()))
+        setState(() {
+          buttonText = "ENTER VALID EMAIL";
+          enableSignUp = false;
+        });
     }
   }
 

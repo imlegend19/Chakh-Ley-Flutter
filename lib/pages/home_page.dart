@@ -563,7 +563,7 @@ class LoadingListPage extends StatelessWidget {
       child: SingleChildScrollView(
         child: Shimmer.fromColors(
           baseColor: Colors.grey[300],
-          highlightColor: Colors.grey[100],
+          highlightColor: Colors.grey[50],
           child: Column(
             children: <Widget>[
               Column(
