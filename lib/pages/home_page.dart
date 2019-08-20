@@ -9,6 +9,7 @@ import 'package:chakh_le_flutter/utils/ios_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 import 'package:vertical_tabs/vertical_tabs.dart';
 import 'package:floating_ribbon/floating_ribbon.dart';
@@ -148,7 +149,7 @@ class _HomeMainPageState extends State<HomeMainPage>
             return _buildRestaurants(
                 response.data.restaurants, response.data.openRestaurantsCount);
           } else {
-            return _buildSkeletonRestaurants();
+            return LoadingListPage();
           }
         },
       );
@@ -340,10 +341,11 @@ class _HomeMainPageState extends State<HomeMainPage>
                     child: Text(
                       'Filters',
                       style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontFamily: 'Avenir-Black',
-                          fontSize: 13.0,
-                          fontWeight: FontWeight.w200),
+                        color: Colors.grey.shade700,
+                        fontFamily: 'Avenir-Black',
+                        fontSize: 13.0,
+                        fontWeight: FontWeight.w200,
+                      ),
                     ),
                   ),
                 ),
@@ -494,126 +496,6 @@ class _HomeMainPageState extends State<HomeMainPage>
     );
   }
 
-  Widget _buildSkeletonRestaurants() {
-    return ListView.builder(
-      scrollDirection: Axis.vertical,
-      physics: BouncingScrollPhysics(),
-      itemCount: 14,
-      itemBuilder: (BuildContext context, int index) {
-        return Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              color: Colors.white70),
-          margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-          child: Container(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                SkeletonAnimation(
-                  child: Container(
-                    width: 75.0,
-                    height: 75.0,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                    ),
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15.0, bottom: 5.0),
-                      child: SkeletonAnimation(
-                        child: Container(
-                          height: 15,
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              color: Colors.grey[300]),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15.0),
-                      child: Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(right: 5.0),
-                            child: SkeletonAnimation(
-                              child: Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    color: Colors.grey[300]),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2.5),
-                            child: SkeletonAnimation(
-                              child: Container(
-                                width: 50.0,
-                                height: 13,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    color: Colors.grey[300]),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 5.0, right: 5.0, top: 3.0),
-                            child: Icon(Icons.fiber_manual_record,
-                                color: Colors.grey[400], size: 8.0),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 3.5),
-                            child: SkeletonAnimation(
-                              child: Container(
-                                width: 50.0,
-                                height: 13,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    color: Colors.grey[300]),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 5.0, right: 5.0, top: 3.0),
-                            child: Icon(Icons.fiber_manual_record,
-                                color: Colors.grey[400], size: 8.0),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 3.0),
-                            child: SkeletonAnimation(
-                              child: Container(
-                                width: 50.0,
-                                height: 13,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    color: Colors.grey[300]),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void _filterPressed() {
     showModalBottomSheet(
         context: context,
@@ -667,6 +549,193 @@ class _HomeMainPageState extends State<HomeMainPage>
             ? Colors.grey.shade300
             : Colors.grey[200],
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
+    );
+  }
+}
+
+class LoadingListPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      child: SingleChildScrollView(
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey[300],
+          highlightColor: Colors.grey[100],
+          child: Column(
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 5.0, top: 10.0, bottom: 5.0),
+                        child: Center(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.4,
+                            height: 20.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 5.0, right: 5.0, top: 5.0),
+                        child: Container(
+                          width: 100.0,
+                          height: 20.0,
+                          color: Colors.white,
+                        ),
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 5.0, right: 5.0, top: 15.0),
+                    child: Center(
+                      child: Container(
+                        width: double.infinity,
+                        height: 20.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 40.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+                      .map((_) => Padding(
+                            padding: const EdgeInsets.only(
+                                bottom: 8.0, left: 10.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 75.0,
+                                  height: 75.0,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 15.0, bottom: 5.0),
+                                      child: Container(
+                                        height: 15,
+                                        width: MediaQuery.of(context).size.width *
+                                            0.6,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 15.0),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(right: 5.0),
+                                            child: Container(
+                                              width: 20,
+                                              height: 20,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 2.5),
+                                            child: Container(
+                                              width: 50.0,
+                                              height: 13,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 5.0, right: 5.0, top: 3.0),
+                                            child: Icon(Icons.fiber_manual_record,
+                                                color: Colors.grey[400],
+                                                size: 8.0),
+                                          ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 3.5),
+                                            child: SkeletonAnimation(
+                                              child: Container(
+                                                width: 50.0,
+                                                height: 13,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10.0),
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 5.0, right: 5.0, top: 3.0),
+                                            child: Icon(Icons.fiber_manual_record,
+                                                color: Colors.grey[400],
+                                                size: 8.0),
+                                          ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 3.0),
+                                            child: SkeletonAnimation(
+                                              child: Container(
+                                                width: 50.0,
+                                                height: 13,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10.0),
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ))
+                      .toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
