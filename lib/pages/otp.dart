@@ -10,18 +10,19 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_text_field/pin_code_text_field.dart';
-import 'package:rounded_modal/rounded_modal.dart';
 
-void showOTPBottomSheet(
-    BuildContext context, String destination, bool decider) {
-  showRoundedModalBottomSheet(
-    context: context,
-    builder: (BuildContext bc) {
-      return OTPBottomSheet(destination, decider);
-    },
-    dismissOnTap: false,
-  );
-}
+//import 'package:rounded_modal/rounded_modal.dart';
+
+//void showOTPBottomSheet(
+//    BuildContext context, String destination, bool decider) {
+//  showRoundedModalBottomSheet(
+//    context: context,
+//    builder: (BuildContext bc) {
+//      return OTPBottomSheet(destination, decider);
+//    },
+//    dismissOnTap: false,
+//  );
+//}
 
 class OTPBottomSheet extends StatefulWidget {
   @override
@@ -45,6 +46,14 @@ class _OTPBottomSheetState extends State<OTPBottomSheet> {
     return Container(
       alignment: Alignment.topLeft,
       height: MediaQuery.of(context).size.height * 0.3,
+      margin: const EdgeInsets.only(top: 5, left: 15, right: 15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+        boxShadow: [
+          BoxShadow(blurRadius: 10, color: Colors.grey[300], spreadRadius: 5)
+        ],
+      ),
       child: Wrap(
         children: <Widget>[
           Padding(
@@ -200,6 +209,15 @@ class _OTPBottomSheetState extends State<OTPBottomSheet> {
       saveUserCredentials(decodedObject['user_id'], decodedObject['email'],
           decodedObject['mobile'], decodedObject['name']);
       Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+    } else {
+      var json = JSON.jsonDecode(response.body);
+      assert(json is Map);
+      Fluttertoast.showToast(
+        msg: json['detail'],
+        fontSize: 13.0,
+        toastLength: Toast.LENGTH_LONG,
+        timeInSecForIos: 2,
+      );
     }
   }
 }

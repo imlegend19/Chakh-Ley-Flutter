@@ -60,13 +60,13 @@ class _ContentCardState extends State<ContentCard> {
           ),
           child: IntrinsicHeight(
             child: showInput
-                ? _buildTimeline()
-                : PriceTab(
+                ? PriceTab(
                     height: viewportConstraints.maxHeight - 48.0,
                     onBikeBikeStart: () =>
                         setState(() => showInputTabOptions = false),
                     status: widget.orderStatus,
-                  ),
+                  )
+                : _buildTimeline(),
           ),
         ),
       ),

@@ -65,7 +65,18 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
       if (response.statusCode == 201) {
         // print(response.body);
         Navigator.of(context).pop();
-        showOTPBottomSheet(context, loginPhoneController.text, true);
+        showBottomSheet(
+          context: context,
+          builder: (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.3,
+            color: Colors.transparent,
+            child: OTPBottomSheet(
+              loginPhoneController.text,
+              true,
+            ),
+          ),
+        );
+        // showOTPBottomSheet(context, loginPhoneController.text, true);
         Fluttertoast.showToast(
           msg: "OTP has been sent to your registered email.",
           fontSize: 13.0,
@@ -93,6 +104,15 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
       } else if (response.statusCode >= 500) {
         Fluttertoast.showToast(
           msg: "Sorry, something went wrong!",
+          fontSize: 13.0,
+          toastLength: Toast.LENGTH_LONG,
+          timeInSecForIos: 2,
+        );
+      } else {
+        var json = JSON.jsonDecode(response.body);
+        assert(json is Map);
+        Fluttertoast.showToast(
+          msg: json['detail'],
           fontSize: 13.0,
           toastLength: Toast.LENGTH_LONG,
           timeInSecForIos: 2,

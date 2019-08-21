@@ -88,6 +88,12 @@ class _HomeMainPageState extends State<HomeMainPage>
     _searchTextController.addListener(filterRestaurants);
   }
 
+  @override
+  void dispose() {
+    _restaurantController.close();
+    super.dispose();
+  }
+
   void filterRestaurants() {
     String text = _searchTextController.text.trim().toLowerCase();
     setState(() {

@@ -207,7 +207,17 @@ class _SignUpPageState extends State<SignUpPage> {
         OTPBottomSheet.name = _nameController.text;
         OTPBottomSheet.email = _emailController.text;
         OTPBottomSheet.phone = _phoneController.text;
-        showOTPBottomSheet(context, _phoneController.text, false);
+        showBottomSheet(
+          context: context,
+          builder: (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.3,
+            color: Colors.transparent,
+            child: OTPBottomSheet(
+              _phoneController.text,
+              false,
+            ),
+          ),
+        );
       } else if (response.statusCode == 400) {
         Fluttertoast.showToast(
           msg: "Error! Please verify you credentials.",
@@ -217,8 +227,7 @@ class _SignUpPageState extends State<SignUpPage> {
         );
       } else if (response.statusCode >= 500) {
         Fluttertoast.showToast(
-          msg: "Sorry, something went wrong! A team of highly trained monkeys "
-              "has been dispatched to deal with this situation.",
+          msg: "Sorry, something went wrong!",
           fontSize: 13.0,
           toastLength: Toast.LENGTH_LONG,
           timeInSecForIos: 2,
