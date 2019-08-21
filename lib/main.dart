@@ -22,7 +22,6 @@ import 'package:skeleton_text/skeleton_text.dart';
 import 'entity/business.dart';
 import 'models/restaurant_pref.dart';
 import 'package:sentry/sentry.dart';
-import 'package:catcher/catcher_plugin.dart';
 
 void main() async {
   ConstantVariables.sentryClient =
@@ -95,7 +94,6 @@ class MyApp extends StatelessWidget {
     };
 
     return MaterialApp(
-      navigatorKey: Catcher.navigatorKey,
       debugShowMaterialGrid: false,
       title: 'Chakh Le',
       theme: ThemeData(
