@@ -16,25 +16,8 @@ install:
 cache:
   directories:
   - $HOME/.pub-cache
-static_analysis: &static_analysis
-  name: "Static analysis"
-  script: flutter analyze --no-current-package $TRAVIS_BUILD_DIR/lib
-unit_tests: &unit_tests
-  name: "Unit tests"
-  script: flutter test --coverage test/unit_test.dart
-  after_script: bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
-widget_tests: &widget_tests
-  name: "Widget tests"
-  script: flutter test --coverage test/widget_test.dart
-  after_script: bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
-integration_tests: &integration_tests
-  name: "Integration tests"
-  script: flutter drive --target=test_driver/main.dart
 jobs:
   include:
-  - <<: *static_analysis
-  - <<: *unit_tests
-  - <<: *widget_tests
-  - <<: *integration_tests
+  - stage: test
   - stage: build
   - stage: deploy
