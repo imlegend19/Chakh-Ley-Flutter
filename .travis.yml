@@ -16,11 +16,11 @@ install:
 cache:
   directories:
   - $HOME/.pub-cache
-jobs:
-  include:
-  - stage: test
-  - stage: build
-  - stage: deploy
 static_analysis: &static_analysis
   name: "Static analysis"
   script: flutter analyze --no-current-package $TRAVIS_BUILD_DIR/lib
+jobs:
+  include:
+  - <<: *static_analysis
+  - stage: build
+  - stage: deploy
