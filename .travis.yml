@@ -16,3 +16,8 @@ install:
 cache:
   directories:
   - $HOME/.pub-cache
+jobs:
+  include:
+  - stage: test
+  - stage: build
+  - stage: deploy
