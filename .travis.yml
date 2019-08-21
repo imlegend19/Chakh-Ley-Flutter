@@ -24,3 +24,7 @@ jobs:
   - <<: *static_analysis
   - stage: build
   - stage: deploy
+unit_tests: &unit_tests
+  name: "Unit tests"
+  script: flutter test --coverage test/unit_test.dart
+  after_script: bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
