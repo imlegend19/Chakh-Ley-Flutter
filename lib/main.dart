@@ -28,25 +28,14 @@ void main() async {
   ConstantVariables.sentryClient =
       SentryClient(dsn: ConstantVariables.sentryDSN);
 
-  CatcherOptions debugOptions =
-      CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
-  //release configuration
-  CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
-    EmailManualHandler(["mahengandhi19@gmail.com"])
-  ]);
-
-  try {
-    Catcher(
-      MyApp(),
-      debugConfig: debugOptions,
-      releaseConfig: releaseOptions,
-    );
-  } catch (error, stackTrace) {
+  runZoned(() async {
+    runApp(MyApp());
+  }, onError: (error, stackTrace) async {
     await ConstantVariables.sentryClient.captureException(
       exception: error,
       stackTrace: stackTrace,
     );
-  }
+  });
 }
 
 Widget getErrorWidget(BuildContext context, FlutterErrorDetails error) {
@@ -175,7 +164,6 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-
     getInitialPageStatus().then((val) {
       setState(() {
         if (val == null) {
@@ -301,10 +289,12 @@ class _HomePageState extends State<HomePage>
                     ConstantVariables.address.elementAt(0).locality;
 
                 locationSetUpCompleted = true;
-              } on Exception {
-                locationSetUpCompleted = false;
-                locationError = true;
-                body = _buildLocationPermission('Reload Content');
+              } catch (e) {
+                setState(() {
+                  locationSetUpCompleted = false;
+                  locationError = true;
+                  body = _buildLocationPermission('Reload Content');
+                });
               }
             });
           });

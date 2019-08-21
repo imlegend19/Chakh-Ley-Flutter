@@ -38,7 +38,6 @@ dependencies:
   animator:
   keyboard_visibility:
   sentry:
-  catcher:
   floating_ribbon:
 
 dev_dependencies:

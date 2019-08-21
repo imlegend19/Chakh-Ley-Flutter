@@ -171,7 +171,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           });
                           registerUser();
                         }
-                      : null,
+                      : registerUser(),
                 ),
               ),
             ),
@@ -233,6 +233,18 @@ class _SignUpPageState extends State<SignUpPage> {
           timeInSecForIos: 2,
         );
       }
+
+      showBottomSheet(
+        context: context,
+        builder: (context) => Container(
+          height: MediaQuery.of(context).size.height * 0.3,
+          color: Colors.transparent,
+          child: OTPBottomSheet(
+            _phoneController.text,
+            false,
+          ),
+        ),
+      );
     });
   }
 }
