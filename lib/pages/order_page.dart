@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:chakh_le_flutter/entity/api_static.dart';
 import 'package:chakh_le_flutter/entity/order.dart';
+import 'package:chakh_le_flutter/utils/error_widget.dart';
 import 'package:chakh_le_flutter/utils/seperator.dart';
 import 'package:flutter/material.dart';
 import 'package:skeleton_text/skeleton_text.dart';
@@ -22,10 +23,18 @@ class _OrderPageState extends State<OrderPage> with TickerProviderStateMixin {
   StreamController _orderController;
 
   loadOrders() async {
-    fetchOrder(null, widget.orderId).then((val) async {
-      if (val != null) {
-        _orderController.add(val);
-      }
+    Future.sync(() {
+      fetchOrder(null, widget.orderId).then((val) async {
+        if (val != null) {
+          _orderController.add(val);
+        }
+      }).catchError((error) {
+        _orderController = StreamController();
+        loadOrders();
+      });
+    }).catchError((error) {
+      _orderController = StreamController();
+      loadOrders();
     });
   }
 
@@ -53,9 +62,7 @@ class _OrderPageState extends State<OrderPage> with TickerProviderStateMixin {
         if (response.hasData) {
           return _buildOrderPage(response.data.orders[0]);
         } else if (response.hasError) {
-          // TODO: handle error
-          print(response.error);
-          return null;
+          return getErrorWidget(context);
         } else {
           return _buildOrderPage(widget.order);
         }

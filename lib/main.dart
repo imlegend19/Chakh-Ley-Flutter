@@ -8,6 +8,7 @@ import 'package:chakh_le_flutter/pages/profile_page.dart';
 import 'package:chakh_le_flutter/static_variables/static_variables.dart';
 import 'package:chakh_le_flutter/utils/color_loader.dart';
 import 'package:chakh_le_flutter/utils/database_helper.dart';
+import 'package:chakh_le_flutter/utils/error_widget.dart';
 import 'package:chakh_le_flutter/utils/transparent_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -37,60 +38,11 @@ void main() async {
   });
 }
 
-Widget getErrorWidget(BuildContext context, FlutterErrorDetails error) {
-  return Center(
-    child: Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      color: Color(0xfff1f2f6),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: Image(
-              image: AssetImage('assets/error.png'),
-              height: MediaQuery.of(context).size.height * 0.25,
-              width: MediaQuery.of(context).size.width * 0.8,
-            ),
-          ),
-          Text(
-            "OOPS",
-            style: TextStyle(
-              color: Colors.black87,
-              fontFamily: 'Avenir',
-              fontWeight: FontWeight.w400,
-              fontSize: 15.0,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.84,
-            margin: EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              "Sorry, something went wrong! A team of highly trained monkeys "
-              "has been dispatched to deal with this situation.",
-              style: TextStyle(
-                fontSize: 13.0,
-                color: Colors.grey.shade500,
-                fontFamily: 'Avenir',
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
-      return getErrorWidget(context, errorDetails);
+      return getErrorWidget(context);
     };
 
     return MaterialApp(
@@ -103,12 +55,13 @@ class MyApp extends StatelessWidget {
       home: HomePage(),
       builder: (BuildContext context, Widget widget) {
         ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
-          return getErrorWidget(context, errorDetails);
+          return getErrorWidget(context);
         };
 
         return widget;
       },
       debugShowCheckedModeBanner: false,
+      showSemanticsDebugger: false,
     );
   }
 }

@@ -20,7 +20,7 @@ class HomeMainPage extends StatefulWidget {
 }
 
 class _HomeMainPageState extends State<HomeMainPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   bool error = false;
 
   StreamController _restaurantController;
@@ -48,10 +48,18 @@ class _HomeMainPageState extends State<HomeMainPage>
   }
 
   loadRestaurants() async {
-    fetchRestaurants(ConstantVariables.businessID).then((val) async {
-      if (val != null) {
-        _restaurantController.add(val);
-      }
+    Future.sync(() {
+      fetchRestaurants(ConstantVariables.businessID).then((val) {
+        if (val != null) {
+          _restaurantController.add(val);
+        }
+      }).catchError((error) {
+        _restaurantController = StreamController();
+        loadRestaurants();
+      });
+    }).catchError((error) {
+      _restaurantController = StreamController();
+      loadRestaurants();
     });
   }
 
@@ -116,6 +124,16 @@ class _HomeMainPageState extends State<HomeMainPage>
         setState(() {
           _displayList = ConstantVariables.restaurantList;
         });
+      }
+    }
+  }
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      if (_restaurantController.isClosed) {
+        _restaurantController = StreamController();
       }
     }
   }
@@ -622,8 +640,8 @@ class LoadingListPage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
                       .map((_) => Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: 8.0, left: 10.0),
+                            padding:
+                                const EdgeInsets.only(bottom: 8.0, left: 10.0),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -646,8 +664,9 @@ class LoadingListPage extends StatelessWidget {
                                           left: 15.0, bottom: 5.0),
                                       child: Container(
                                         height: 15,
-                                        width: MediaQuery.of(context).size.width *
-                                            0.6,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.6,
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(10.0),
@@ -655,12 +674,13 @@ class LoadingListPage extends StatelessWidget {
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 15.0),
+                                      padding:
+                                          const EdgeInsets.only(left: 15.0),
                                       child: Row(
                                         children: <Widget>[
                                           Padding(
-                                            padding:
-                                                const EdgeInsets.only(right: 5.0),
+                                            padding: const EdgeInsets.only(
+                                                right: 5.0),
                                             child: Container(
                                               width: 20,
                                               height: 20,
@@ -686,8 +706,11 @@ class LoadingListPage extends StatelessWidget {
                                           ),
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                left: 5.0, right: 5.0, top: 3.0),
-                                            child: Icon(Icons.fiber_manual_record,
+                                                left: 5.0,
+                                                right: 5.0,
+                                                top: 3.0),
+                                            child: Icon(
+                                                Icons.fiber_manual_record,
                                                 color: Colors.grey[400],
                                                 size: 8.0),
                                           ),
@@ -700,7 +723,8 @@ class LoadingListPage extends StatelessWidget {
                                                 height: 13,
                                                 decoration: BoxDecoration(
                                                   borderRadius:
-                                                      BorderRadius.circular(10.0),
+                                                      BorderRadius.circular(
+                                                          10.0),
                                                   color: Colors.white,
                                                 ),
                                               ),
@@ -708,8 +732,11 @@ class LoadingListPage extends StatelessWidget {
                                           ),
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                left: 5.0, right: 5.0, top: 3.0),
-                                            child: Icon(Icons.fiber_manual_record,
+                                                left: 5.0,
+                                                right: 5.0,
+                                                top: 3.0),
+                                            child: Icon(
+                                                Icons.fiber_manual_record,
                                                 color: Colors.grey[400],
                                                 size: 8.0),
                                           ),
@@ -722,7 +749,8 @@ class LoadingListPage extends StatelessWidget {
                                                 height: 13,
                                                 decoration: BoxDecoration(
                                                   borderRadius:
-                                                      BorderRadius.circular(10.0),
+                                                      BorderRadius.circular(
+                                                          10.0),
                                                   color: Colors.white,
                                                 ),
                                               ),

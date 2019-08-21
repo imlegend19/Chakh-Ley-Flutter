@@ -77,7 +77,7 @@ Future<GetOrders> fetchOrder(String mobile, [int id]) async {
 
   if (response.statusCode == 200) {
     int count = jsonDecode(response.body)[APIStatic.keyCount];
-    int execute = count ~/ 10 + 1;
+    int execute = count != 0 ? count ~/ 10 + 1 : 0;
 
     GetOrders order = GetOrders.fromJson(jsonDecode(response.body));
     execute--;

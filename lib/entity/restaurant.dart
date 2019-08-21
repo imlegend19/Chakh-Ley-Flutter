@@ -93,33 +93,32 @@ class GetRestaurant {
 }
 
 Future<GetRestaurant> fetchRestaurants(int businessID) async {
-  final response =
-      await http.get(RestaurantStatic.keyRestaurantURL + '$businessID');
+  final response = await http
+      .get(RestaurantStatic.keyRestaurantURL + '$businessID')
+      .catchError((error) {
+    fetchRestaurants(ConstantVariables.businessID);
+  });
 
   if (response.statusCode == 200) {
     int count = jsonDecode(response.body)[APIStatic.keyCount];
     int execute = count ~/ 10 + 1;
 
-    try {
-      GetRestaurant restaurant =
-          GetRestaurant.fromJson(jsonDecode(response.body));
+    GetRestaurant restaurant =
+        GetRestaurant.fromJson(jsonDecode(response.body));
+    execute--;
+
+    while (execute != 0) {
+      GetRestaurant tempRestaurant = GetRestaurant.fromJson(jsonDecode(
+          (await http.get(jsonDecode(response.body)[APIStatic.keyNext])).body));
+      restaurant.restaurants += tempRestaurant.restaurants;
+      restaurant.count += tempRestaurant.count;
+
       execute--;
-
-      while (execute != 0) {
-        GetRestaurant tempRestaurant = GetRestaurant.fromJson(jsonDecode(
-            (await http.get(jsonDecode(response.body)[APIStatic.keyNext]))
-                .body));
-        restaurant.restaurants += tempRestaurant.restaurants;
-        restaurant.count += tempRestaurant.count;
-
-        execute--;
-      }
-
-      return restaurant;
-    } on Exception {
-      return null;
     }
+
+    return restaurant;
   } else {
+    // print(response.statusCode);
     return null;
   }
 }
