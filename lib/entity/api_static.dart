@@ -156,4 +156,6 @@ abstract class OrderStatic {
   static const keyOrderDate = "order_date";
   static const keyStatus = "status";
   static var keyTransactions = "transactions";
+  static const keyHasDeliveryBoy = "has_delivery_boy";
+  static const keyDeliveryBoy = "delivery_boy";
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:chakh_le_flutter/static_variables/static_variables.dart';
 import 'package:http/http.dart' as http;
 
 import 'api_static.dart';
@@ -78,6 +79,13 @@ Future<GetCategory> fetchCategory(int restaurantID) async {
 
     return category;
   } else {
-    throw Exception('Failed to load get');
+    await ConstantVariables.sentryClient.captureException(
+      exception: Exception("Get Category Error"),
+      stackTrace:
+          '[statusCode : ${response.statusCode}, restaurantID: $restaurantID,'
+          'response.body: ${response.body}, response.headers: ${response.headers}]',
+    );
+
+    return null;
   }
 }

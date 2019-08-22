@@ -1,6 +1,5 @@
 import 'dart:convert' as JSON;
 import 'dart:io';
-
 import 'package:chakh_le_flutter/entity/api_static.dart';
 import 'package:chakh_le_flutter/models/user_post.dart';
 import 'package:chakh_le_flutter/models/user_pref.dart';
@@ -10,19 +9,18 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_text_field/pin_code_text_field.dart';
+import 'package:rounded_modal/rounded_modal.dart';
 
-//import 'package:rounded_modal/rounded_modal.dart';
-
-//void showOTPBottomSheet(
-//    BuildContext context, String destination, bool decider) {
-//  showRoundedModalBottomSheet(
-//    context: context,
-//    builder: (BuildContext bc) {
-//      return OTPBottomSheet(destination, decider);
-//    },
-//    dismissOnTap: false,
-//  );
-//}
+void showOTPBottomSheet(
+    BuildContext context, String destination, bool decider) {
+  showRoundedModalBottomSheet(
+    context: context,
+    builder: (BuildContext bc) {
+      return OTPBottomSheet(destination, decider);
+    },
+    dismissOnTap: false,
+  );
+}
 
 class OTPBottomSheet extends StatefulWidget {
   @override
@@ -48,7 +46,6 @@ class _OTPBottomSheetState extends State<OTPBottomSheet> {
       height: MediaQuery.of(context).size.height * 0.3,
       margin: const EdgeInsets.only(top: 5, left: 15, right: 15),
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(15)),
         boxShadow: [
           BoxShadow(blurRadius: 10, color: Colors.grey[300], spreadRadius: 5)

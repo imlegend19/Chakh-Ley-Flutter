@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:chakh_le_flutter/static_variables/static_variables.dart';
 import 'package:http/http.dart' as http;
 
 import 'api_static.dart';
@@ -76,6 +77,13 @@ Future<GetBusiness> fetchBusiness() async {
 
     return business;
   } else {
-    throw Exception('Failed to load get');
+    await ConstantVariables.sentryClient.captureException(
+      exception: Exception("Business Fetch Failure"),
+      stackTrace: '[response.body: ${response.body}, '
+          'response.headers: ${response.headers}, response: $response,'
+          'status code: ${response.statusCode}]',
+    );
+
+    return null;
   }
 }

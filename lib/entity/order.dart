@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:chakh_le_flutter/static_variables/static_variables.dart';
 import 'package:http/http.dart' as http;
 
 import 'api_static.dart';
@@ -14,6 +15,8 @@ class Order {
   final String orderDate;
   final double total;
   final bool paymentDone;
+  final bool hasDeliveryBoy;
+  final Map<String, dynamic> deliveryBoy;
   final List<dynamic> suborderSet;
   final Map<String, dynamic> delivery;
   final List<dynamic> transactions;
@@ -28,6 +31,8 @@ class Order {
     this.orderDate,
     this.total,
     this.paymentDone,
+    this.hasDeliveryBoy,
+    this.deliveryBoy,
     this.suborderSet,
     this.delivery,
     this.transactions,
@@ -58,6 +63,8 @@ class GetOrders {
         orderDate: jsonOrder[OrderStatic.keyOrderDate],
         total: jsonOrder[OrderStatic.keyTotal],
         paymentDone: jsonOrder[OrderStatic.keyPaymentDone],
+        hasDeliveryBoy: jsonOrder[OrderStatic.keyHasDeliveryBoy],
+        deliveryBoy: jsonOrder[OrderStatic.keyDeliveryBoy],
         suborderSet: jsonOrder[OrderStatic.keySuborderSet],
         delivery: jsonOrder[OrderStatic.keyDelivery],
         transactions: jsonOrder[OrderStatic.keyTransactions],
@@ -92,6 +99,13 @@ Future<GetOrders> fetchOrder(String mobile, [int id]) async {
 
     return order;
   } else {
-    throw Exception('Failed to load get');
+    await ConstantVariables.sentryClient.captureException(
+      exception: Exception("Get Order Error"),
+      stackTrace:
+      '[statusCode : ${response.statusCode}, mobile: $mobile, id: $id'
+          'response.body: ${response.body}, response.headers: ${response.headers}]',
+    );
+
+    return null;
   }
 }

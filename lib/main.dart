@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:chakh_le_flutter/entity/restaurant.dart';
 import 'package:chakh_le_flutter/models/user_pref.dart';
 import 'package:chakh_le_flutter/pages/cart_page.dart';
@@ -13,16 +14,18 @@ import 'package:chakh_le_flutter/utils/transparent_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sentry/sentry.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skeleton_text/skeleton_text.dart';
+
 import 'entity/business.dart';
 import 'models/restaurant_pref.dart';
-import 'package:sentry/sentry.dart';
 
 void main() async {
   ConstantVariables.sentryClient =
@@ -78,6 +81,8 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   AnimationController expandController;
   Animation<double> animation;
+
+  int setupLocationTry = 0;
 
   var currentLocation;
   loc.Location location = loc.Location();
@@ -163,14 +168,23 @@ class _HomePageState extends State<HomePage>
       } else if ((result == ConnectivityResult.mobile) ||
           (result == ConnectivityResult.wifi)) {
         fetchBusiness().then((value) {
-          for (final i in value.business) {
-            position.add([i.latitude, i.longitude]);
-            businessId.add(i.id);
+          if (value != null) {
+            for (final i in value.business) {
+              position.add([i.latitude, i.longitude]);
+              businessId.add(i.id);
+            }
+            setState(() {
+              businessFetched = true;
+              selectedTab(0);
+            });
+          } else {
+            Fluttertoast.showToast(
+              msg: "Some error occurred!",
+              toastLength: Toast.LENGTH_SHORT,
+              timeInSecForIos: 1,
+              fontSize: 13.0,
+            );
           }
-          setState(() {
-            businessFetched = true;
-            selectedTab(0);
-          });
         });
 
         if (!locationSetUpCompleted) {
@@ -256,6 +270,16 @@ class _HomePageState extends State<HomePage>
             body = _buildLocationPermission("Enable Location Service");
           });
         }
+      }).catchError((error) async {
+        if (setupLocationTry < 2) {
+          setupLocationTry += 1;
+          _setupLocation();
+        } else {
+          await ConstantVariables.sentryClient.captureException(
+            exception: Exception("Setup Location Error"),
+            stackTrace: error.toString(),
+          );
+        }
       });
     });
   }
@@ -280,8 +304,11 @@ class _HomePageState extends State<HomePage>
   Future<List<Address>> _getLocationDetails(Coordinates coordinates) async {
     List<Address> address = await Geocoder.local
         .findAddressesFromCoordinates(coordinates)
-        .catchError((error) {
-      print(error.toString());
+        .catchError((error) async {
+      await ConstantVariables.sentryClient.captureException(
+        exception: Exception("Get Location Details Error"),
+        stackTrace: error.toString(),
+      );
       _getLocationDetails(coordinates);
     });
 
@@ -294,6 +321,10 @@ class _HomePageState extends State<HomePage>
       currentLocation = await geoLocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best);
     } catch (e) {
+      await ConstantVariables.sentryClient.captureException(
+        exception: Exception("Get Location Error"),
+        stackTrace: e.toString(),
+      );
       currentLocation = null;
     }
 
@@ -337,7 +368,8 @@ class _HomePageState extends State<HomePage>
           body = CartPage(
               restaurant: HomePage.spRestaurantID == null
                   ? null
-                  : fetchRestaurantData(HomePage.spRestaurantID));
+                  : fetchRestaurantData(HomePage.spRestaurantID,
+              ), );
         } else {
           body = _buildNoInternet();
         }
@@ -407,118 +439,127 @@ class _HomePageState extends State<HomePage>
           appBar: AppBar(
               elevation: 0,
               backgroundColor: Colors.white,
-              title: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    child: Shimmer.fromColors(
-                      baseColor: Colors.black,
-                      highlightColor: Colors.red,
-                      direction: ShimmerDirection.ltr,
-                      period: Duration(milliseconds: 2000),
-                      child: Text(
-                        'NOW',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
-                          color: Colors.black,
-                          fontFamily: 'Avenir-Black',
-                          letterSpacing: 1.0,
+              title: Container(
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.black,
+                        highlightColor: Colors.red,
+                        direction: ShimmerDirection.ltr,
+                        period: Duration(milliseconds: 2000),
+                        child: Text(
+                          'NOW',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                            color: Colors.black,
+                            fontFamily: 'Avenir-Black',
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.black54,
+                            style: BorderStyle.solid,
+                            width: 2.0,
+                          ),
                         ),
                       ),
                     ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: Colors.black54,
-                          style: BorderStyle.solid,
-                          width: 2.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 3.0),
-                  Icon(Icons.arrow_forward, color: Colors.black87, size: 15.0),
-                  SizedBox(width: 3.0),
-                  Container(
-                    child: ConstantVariables.address != null
-                        ? Text(
-                            ConstantVariables.userAddress,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
-                              color: Colors.black54,
-                              letterSpacing: 1.0,
-                              fontFamily: 'Neutraface',
-                            ),
-                          )
-                        : !permissionDenied
-                            ? _connectionStatus == ConnectivityResult.none
-                                ? Text(
-                                    'No Internet...',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20.0,
-                                      color: Colors.black54,
-                                      letterSpacing: 1.0,
-                                      fontFamily: 'Neutraface',
-                                    ),
-                                  )
-                                : serviceDenied
-                                    ? Text(
-                                        'Location Service Denied...',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20.0,
-                                          color: Colors.black54,
-                                          letterSpacing: 1.0,
-                                          fontFamily: 'Neutraface',
-                                        ),
-                                      )
-                                    : locationError
-                                        ? Text(
-                                            'Some Error Occurred!',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20.0,
-                                              color: Colors.black54,
-                                              letterSpacing: 1.0,
-                                              fontFamily: 'Neutraface',
-                                            ),
-                                          )
-                                        : SkeletonAnimation(
-                                            child: Container(
-                                              width: 100.0,
-                                              height: 20.0,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                color: Colors.grey[300],
-                                              ),
-                                            ),
-                                          )
-                            : Text(
-                                'Permission Denied...',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20.0,
-                                  color: Colors.black54,
-                                  letterSpacing: 1.0,
-                                  fontFamily: 'Neutraface',
-                                ),
+                    SizedBox(width: 3.0),
+                    Icon(Icons.arrow_forward, color: Colors.black87, size: 15.0),
+                    SizedBox(width: 3.0),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.65,
+                      child: ConstantVariables.address != null
+                          ? Text(
+                              ConstantVariables.userAddress,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.0,
+                                color: Colors.black54,
+                                letterSpacing: 1.0,
+                                fontFamily: 'Neutraface',
                               ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          style: BorderStyle.none,
-                          width: 3.0,
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          : !permissionDenied
+                              ? _connectionStatus == ConnectivityResult.none
+                                  ? Text(
+                                      'No Internet...',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20.0,
+                                        color: Colors.black54,
+                                        letterSpacing: 1.0,
+                                        fontFamily: 'Neutraface',
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    )
+                                  : serviceDenied
+                                      ? Text(
+                                          'Location Service Denied...',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20.0,
+                                            color: Colors.black54,
+                                            letterSpacing: 1.0,
+                                            fontFamily: 'Neutraface',
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        )
+                                      : locationError
+                                          ? Text(
+                                              'Some Error Occurred!',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20.0,
+                                                color: Colors.black54,
+                                                letterSpacing: 1.0,
+                                                fontFamily: 'Neutraface',
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            )
+                                          : SkeletonAnimation(
+                                              child: Container(
+                                                width: 100.0,
+                                                height: 20.0,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10.0),
+                                                  color: Colors.grey[300],
+                                                ),
+                                              ),
+                                            )
+                              : Text(
+                                  'Permission Denied...',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20.0,
+                                    color: Colors.black54,
+                                    letterSpacing: 1.0,
+                                    fontFamily: 'Neutraface',
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            style: BorderStyle.none,
+                            width: 3.0,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               )),
           body: body,
           floatingActionButton: FloatingActionButton(
@@ -648,7 +689,7 @@ class _HomePageState extends State<HomePage>
                           padding: const EdgeInsets.only(
                               top: 20.0, left: 8.0, right: 8.0),
                           child: Text(
-                            '- Chakh Le',
+                            '- Chakh Ley',
                             style: TextStyle(
                                 fontFamily: 'Avenir-Black',
                                 color: Colors.black54,

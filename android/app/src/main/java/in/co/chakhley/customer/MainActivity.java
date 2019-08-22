@@ -1,4 +1,4 @@
-package in.chakhle.chakhleflutter;
+package in.co.chakhley.customer;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

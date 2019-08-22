@@ -35,7 +35,7 @@ Widget getErrorWidget(BuildContext context) {
               margin: EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 "Sorry, something went wrong! A team of highly trained monkeys "
-                    "has been dispatched to deal with this situation.",
+                "has been dispatched to deal with this situation.",
                 style: TextStyle(
                   fontSize: 13.0,
                   color: Colors.grey.shade500,

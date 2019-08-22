@@ -378,13 +378,15 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   }
 
   _insertItemToCart(
-      String name,
-      double price,
-      int productID,
-      DatabaseHelper databaseHelper,
-      int count,
-      Restaurant restaurant,
-      bool isVeg) {
+    String name,
+    double price,
+    int productID,
+    DatabaseHelper databaseHelper,
+    int count,
+    Restaurant restaurant,
+    bool isVeg,
+  ) {
+
     int restoId = getCartRestaurant();
 
     if (restoId == restaurant.id) {

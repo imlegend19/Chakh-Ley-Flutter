@@ -1,9 +1,11 @@
 import 'dart:async';
+
 import 'package:chakh_le_flutter/static_variables/static_variables.dart';
 import 'package:flutter/material.dart';
 
-import 'animated_dot.dart';
+import '../content_card.dart';
 import 'animated_bike_icon.dart';
+import 'animated_dot.dart';
 import 'bike_stop.dart';
 import 'bike_stop_card.dart';
 
@@ -11,10 +13,15 @@ class PriceTab extends StatefulWidget {
   final double height;
   final VoidCallback onBikeBikeStart;
   final String status;
+  final Function callback;
 
-  const PriceTab(
-      {Key key, this.height, this.onBikeBikeStart, @required this.status})
-      : super(key: key);
+  const PriceTab({
+    Key key,
+    this.height,
+    this.onBikeBikeStart,
+    @required this.status,
+    this.callback,
+  }) : super(key: key);
 
   @override
   _PriceTabState createState() => _PriceTabState();
@@ -179,7 +186,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
         scale: _fabAnimation,
         child: FloatingActionButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            this.widget.callback(false);
           },
           child: Icon(Icons.check, size: 36.0),
         ),

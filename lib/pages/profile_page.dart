@@ -157,7 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
               children: <Widget>[
                 Icon(Icons.copyright, size: 10.0),
                 Text(
-                  '2019 Chakh Le Inc. App Version ${ConstantVariables.version}',
+                  '2019 Chakh Ley™ Inc. App Version ${ConstantVariables.version}',
                   style: TextStyle(
                     color: Colors.grey.shade700,
                     fontWeight: FontWeight.w200,

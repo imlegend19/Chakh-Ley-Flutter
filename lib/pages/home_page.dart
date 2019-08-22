@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chakh_le_flutter/entity/category.dart';
 import 'package:chakh_le_flutter/entity/restaurant.dart';
@@ -6,13 +7,13 @@ import 'package:chakh_le_flutter/restaurant_screen.dart';
 import 'package:chakh_le_flutter/static_variables/static_variables.dart';
 import 'package:chakh_le_flutter/utils/color_loader.dart';
 import 'package:chakh_le_flutter/utils/ios_search_bar.dart';
+import 'package:floating_ribbon/floating_ribbon.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 import 'package:vertical_tabs/vertical_tabs.dart';
-import 'package:floating_ribbon/floating_ribbon.dart';
 
 class HomeMainPage extends StatefulWidget {
   @override
@@ -127,7 +128,6 @@ class _HomeMainPageState extends State<HomeMainPage>
       }
     }
   }
-
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {

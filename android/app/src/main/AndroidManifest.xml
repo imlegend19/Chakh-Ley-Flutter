@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="in.chakhle.chakhleflutter">
+    package="in.co.chakhley.customer">
 
     <!-- The INTERNET permission is required for development. Specifically,
          flutter needs it to communicate with the running application
@@ -17,7 +17,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="Chakh Le"
+        android:label="Chakh Ley"
         android:icon="@mipmap/logo"
         tools:ignore="GoogleAppIndexingWarning">
 

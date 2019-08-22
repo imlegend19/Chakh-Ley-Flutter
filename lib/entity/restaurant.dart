@@ -95,9 +95,7 @@ class GetRestaurant {
 Future<GetRestaurant> fetchRestaurants(int businessID) async {
   final response = await http
       .get(RestaurantStatic.keyRestaurantURL + '$businessID')
-      .catchError((error) {
-    fetchRestaurants(ConstantVariables.businessID);
-  });
+      .catchError((error) {});
 
   if (response.statusCode == 200) {
     int count = jsonDecode(response.body)[APIStatic.keyCount];
@@ -118,7 +116,13 @@ Future<GetRestaurant> fetchRestaurants(int businessID) async {
 
     return restaurant;
   } else {
-    // print(response.statusCode);
+    await ConstantVariables.sentryClient.captureException(
+      exception: Exception("Get Order Error"),
+      stackTrace:
+          '[statusCode : ${response.statusCode}, businessID: $businessID, '
+          'response.body: ${response.body}, response.headers: ${response.headers}]',
+    );
+
     return null;
   }
 }
@@ -132,6 +136,12 @@ Future<GetRestaurant> fetchRestaurantData(int id) async {
         GetRestaurant.fromJson(jsonDecode(response.body));
     return restaurant;
   } else {
+    await ConstantVariables.sentryClient.captureException(
+      exception: Exception("Get Order Error"),
+      stackTrace: '[statusCode : ${response.statusCode}, id: $id, '
+          'response.body: ${response.body}, response.headers: ${response.headers}]',
+    );
+
     return null;
   }
 }
