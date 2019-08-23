@@ -689,7 +689,7 @@ class _HomePageState extends State<HomePage>
                           padding: const EdgeInsets.only(
                               top: 20.0, left: 8.0, right: 8.0),
                           child: Text(
-                            '- Chakh Ley',
+                            '- Chakh Ley™',
                             style: TextStyle(
                                 fontFamily: 'Avenir-Black',
                                 color: Colors.black54,

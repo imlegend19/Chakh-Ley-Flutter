@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chakh_le_flutter/entity/order.dart';
 import 'package:chakh_le_flutter/static_variables/static_variables.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class PriceTab extends StatefulWidget {
   final VoidCallback onBikeBikeStart;
   final String status;
   final Function callback;
+  final Order order;
 
   const PriceTab({
     Key key,
@@ -21,6 +23,7 @@ class PriceTab extends StatefulWidget {
     this.onBikeBikeStart,
     @required this.status,
     this.callback,
+    this.order,
   }) : super(key: key);
 
   @override
@@ -51,6 +54,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   AnimationController _dotsAnimationController;
   AnimationController _fabAnimationController;
   AnimationController _blinker;
+  AnimationController _bikeBlinker;
   Animation _bikeSizeAnimation;
   Animation _bikeTravelAnimation;
   Animation _fabAnimation;
@@ -82,6 +86,9 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     _blinker = AnimationController(
         vsync: this, duration: Duration(seconds: 1), lowerBound: 0.5);
     _blinker.repeat();
+    _bikeBlinker = AnimationController(
+        vsync: this, duration: Duration(seconds: 1), lowerBound: 0.5);
+    _bikeBlinker.repeat();
   }
 
   @override
@@ -91,6 +98,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     _dotsAnimationController.dispose();
     _fabAnimationController.dispose();
     _blinker.dispose();
+    _bikeBlinker.dispose();
     super.dispose();
   }
 
@@ -163,7 +171,11 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
       animation: _bikeTravelAnimation,
       child: Column(
         children: <Widget>[
-          AnimatedBikeIcon(animation: _bikeSizeAnimation),
+          AnimatedBikeIcon(
+            animation: _bikeSizeAnimation,
+            hasDeliveryBoy: widget.order.hasDeliveryBoy,
+            bikeBlinker: _bikeBlinker,
+          ),
           Container(
             width: 2.0,
             height: _bikeStops.length * BikeStopCard.height * 0.8,

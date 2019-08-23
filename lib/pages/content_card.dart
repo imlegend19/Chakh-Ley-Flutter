@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:skeleton_text/skeleton_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ContentCard extends StatefulWidget {
   final String orderStatus;
@@ -13,7 +14,7 @@ class ContentCard extends StatefulWidget {
 
   ContentCard({@required this.orderStatus, @required this.order});
 
-  static bool showInput = true;
+  static bool showInput;
 
   @override
   _ContentCardState createState() => _ContentCardState();
@@ -21,6 +22,21 @@ class ContentCard extends StatefulWidget {
 
 class _ContentCardState extends State<ContentCard> {
   bool showInputTabOptions = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.orderStatus == "Delivered" ||
+        widget.orderStatus == "Cancelled") {
+      setState(() {
+        ContentCard.showInput = false;
+      });
+    } else {
+      setState(() {
+        ContentCard.showInput = true;
+      });
+    }
+  }
 
   void callback(bool showInput) {
     setState(() {
@@ -78,6 +94,7 @@ class _ContentCardState extends State<ContentCard> {
                         setState(() => showInputTabOptions = false),
                     status: widget.orderStatus,
                     callback: this.callback,
+                    order: widget.order,
                   )
                 : _buildTimeline(),
           ),
@@ -146,186 +163,242 @@ class _ContentCardState extends State<ContentCard> {
   }
 
   Widget _billDetails(Order order) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 15.0, right: 15.0, top: 5, bottom: 3),
-            child: Container(
-              color: Colors.grey,
-              width: MediaQuery.of(context).size.width,
-              height: 3,
-            ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 15.0, right: 15.0, top: 5, bottom: 3),
+          child: Container(
+            color: Colors.grey,
+            width: MediaQuery.of(context).size.width,
+            height: 3,
           ),
-          CupertinoScrollbar(
-            child: Container(
-              height: MediaQuery.of(context).size.height *
-                          0.06 *
-                          order.suborderSet.length >
-                      MediaQuery.of(context).size.height * 0.3
-                  ? MediaQuery.of(context).size.height * 0.3
-                  : MediaQuery.of(context).size.height *
-                      0.06 *
-                      order.suborderSet.length,
-              child: ListView.builder(
-                itemCount: order.suborderSet.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        RichText(
-                          text: TextSpan(
-                            style: TextStyle(
-                              color: Colors.black87,
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: order.suborderSet[index]
-                                        [SuborderSetStatic.keyProduct]
-                                    [APIStatic.keyName],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Avenir-Black',
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                              TextSpan(text: ' x '),
-                              TextSpan(
-                                text: order.suborderSet[index]
-                                        [SuborderSetStatic.keyQuantity]
-                                    .toString(),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Avenir-Black',
-                                  fontSize: 16.0,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Text(
-                          order.suborderSet[index]
-                                  [SuborderSetStatic.keySubTotal]
-                              .toString(),
+        ),
+        CupertinoScrollbar(
+          child: Container(
+            height: MediaQuery.of(context).size.height *
+                        0.06 *
+                        order.suborderSet.length >
+                    MediaQuery.of(context).size.height * 0.3
+                ? MediaQuery.of(context).size.height * 0.3
+                : MediaQuery.of(context).size.height *
+                    0.06 *
+                    order.suborderSet.length,
+            child: ListView.builder(
+              itemCount: order.suborderSet.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      RichText(
+                        text: TextSpan(
                           style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15.0,
-                            fontFamily: 'Avenir',
                             color: Colors.black87,
                           ),
-                        )
-                      ],
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: order.suborderSet[index]
+                                      [SuborderSetStatic.keyProduct]
+                                  [APIStatic.keyName],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Avenir-Black',
+                                fontSize: 16.0,
+                              ),
+                            ),
+                            TextSpan(text: ' x '),
+                            TextSpan(
+                              text: order.suborderSet[index]
+                                      [SuborderSetStatic.keyQuantity]
+                                  .toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Avenir-Black',
+                                fontSize: 16.0,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Text(
+                        order.suborderSet[index][SuborderSetStatic.keySubTotal]
+                            .toString(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15.0,
+                          fontFamily: 'Avenir',
+                          color: Colors.black87,
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+          child: Container(
+            color: Colors.grey,
+            width: MediaQuery.of(context).size.width,
+            height: 3,
+          ),
+        ),
+        invoiceDetails(order),
+      ],
+    );
+  }
+
+  Widget _buildTimeline() {
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          _buildBillDetails(widget.order),
+          widget.orderStatus == 'Delivered'
+              ? Stack(
+                  children: <Widget>[
+                    Positioned(
+                      top: 30,
+                      left: 65,
+                      child: Container(
+                        color: Colors.white,
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: Text(
+                          'Your order has been delivered.\nChakh Ley! India',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'AvenirBold',
+                            color: Colors.black54,
+                            fontSize: 15.0,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
-                  );
-                },
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-            child: Container(
-              color: Colors.grey,
-              width: MediaQuery.of(context).size.width,
-              height: 3,
-            ),
-          ),
-          invoiceDetails(order),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        child: FlareActor(
+                          "assets/success_check.flr",
+                          animation: "Untitled",
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : widget.orderStatus == 'Cancelled'
+                  ? Stack(
+                      children: <Widget>[
+                        Positioned(
+                          top: 30,
+                          left: 65,
+                          child: Container(
+                            color: Colors.white,
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            child: Text(
+                              'Your order has been cancelled.\nChakh Ke Dekh Ley! India',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'AvenirBold',
+                                color: Colors.black54,
+                                fontSize: 15.0,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            child: FlareActor(
+                              "assets/error.flr",
+                              animation: "Error",
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : widget.orderStatus == "Delivery"
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: FloatingActionButton(
+                            onPressed: () => setState(() {
+                              ContentCard.showInput = true;
+                            }),
+                            child: Icon(Icons.timeline, size: 36.0),
+                          ),
+                        )
+                      : widget.order.hasDeliveryBoy
+                          ? Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20.0, top: 10.0),
+                                  child: FloatingActionButton(
+                                    onPressed: () => setState(() {
+                                      ContentCard.showInput = true;
+                                    }),
+                                    child: Icon(Icons.timeline, size: 36.0),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, right: 10.0),
+                                  child: InkWell(
+                                    onTap: () {
+                                      print(widget.order.deliveryBoy['user']
+                                          ['mobile']);
+                                      _launchCaller(widget
+                                          .order.deliveryBoy['user']['mobile']);
+                                    },
+                                    child: Container(
+                                      width: 100,
+                                      height: 100,
+                                      child: FlareActor(
+                                        "assets/phone.flr",
+                                        animation: "record",
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: FloatingActionButton(
+                                onPressed: () => setState(() {
+                                  ContentCard.showInput = true;
+                                }),
+                                child: Icon(Icons.timeline, size: 36.0),
+                              ),
+                            ),
         ],
       ),
     );
   }
 
-  Widget _buildTimeline() {
-    return Column(
-      children: <Widget>[
-        _buildBillDetails(widget.order),
-        widget.orderStatus == 'Delivered'
-            ? Stack(
-                children: <Widget>[
-                  Positioned(
-                    top: 30,
-                    left: 65,
-                    child: Container(
-                      color: Colors.white,
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: Text(
-                        'Your order has been delivered.\nChakh Ley! India',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'AvenirBold',
-                          color: Colors.black54,
-                          fontSize: 15.0,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      child: FlareActor(
-                        "assets/success_check.flr",
-                        animation: "Untitled",
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            : widget.orderStatus == 'Cancelled'
-                ? Stack(
-                    children: <Widget>[
-                      Positioned(
-                        top: 30,
-                        left: 65,
-                        child: Container(
-                          color: Colors.white,
-                          width: MediaQuery.of(context).size.width * 0.8,
-                          child: Text(
-                            'Your order has been cancelled.\nChakh Ke Dekh Ley! India',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'AvenirBold',
-                              color: Colors.black54,
-                              fontSize: 15.0,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          width: 100,
-                          height: 100,
-                          child: FlareActor(
-                            "assets/error.flr",
-                            animation: "Error",
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: FloatingActionButton(
-                      onPressed: () => setState(() {
-                        ContentCard.showInput = true;
-                      }),
-                      child: Icon(Icons.timeline, size: 36.0),
-                    ),
-                  ),
-      ],
-    );
+  _launchCaller(String phn) async {
+    var url = "tel:+91 $phn";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   Widget _buildInvoiceRow(String title, double value) {
@@ -406,7 +479,6 @@ class _ContentCardState extends State<ContentCard> {
         ),
         Container(
           color: Colors.white,
-          height: MediaQuery.of(context).size.height * 0.48,
           child: _billDetails(order),
         ),
       ],

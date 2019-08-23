@@ -68,7 +68,7 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
         showOTPBottomSheet(context, loginPhoneController.text, true);
         // showOTPBottomSheet(context, loginPhoneController.text, true);
         Fluttertoast.showToast(
-          msg: "OTP has been sent to your registered email.",
+          msg: "OTP has been sent to your registered mobile.",
           fontSize: 13.0,
           toastLength: Toast.LENGTH_LONG,
           timeInSecForIos: 2,

@@ -289,6 +289,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           toastLength: Toast.LENGTH_LONG,
           timeInSecForIos: 2,
         );
+
         Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
       } else if (response.statusCode == 400) {
         // print(response.body);

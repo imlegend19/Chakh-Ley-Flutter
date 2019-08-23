@@ -221,7 +221,7 @@ class _ProfilePageState extends State<ProfilePage> {
             padding:
                 const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 20.0),
             child: Text(
-              'To order amazing food on Chakh Le, create a  account or '
+              'To order amazing food on Chakh Le™, create a  account or '
               'login with existing account.',
               style: TextStyle(
                 fontSize: 13.0,
