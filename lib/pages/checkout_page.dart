@@ -196,25 +196,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             Center(
-              child: ConstantVariables.business.isActive
-                  ? _buildCheckoutButton()
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        _buildCheckoutButton(),
-                        Text(
-                          "Temporarily Unserviceable!",
-                          style: TextStyle(
-                            fontSize: 13.0,
-                            fontFamily: 'Avenir-Black',
-                            fontWeight: FontWeight.w400,
-                            color: Colors.grey.shade300,
-                          ),
-                        )
-                      ],
-                    ),
+              child: _buildCheckoutButton()
             ),
           ],
         ),

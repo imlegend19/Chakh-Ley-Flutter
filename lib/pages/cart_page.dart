@@ -14,7 +14,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 
-import 'cart_skeletons.dart';
+import 'package:chakh_ley_flutter/utils/cart_skeletons.dart';
 
 class CartPage extends StatefulWidget {
   final Future<GetRestaurant> restaurant;
@@ -99,9 +99,12 @@ class _CartPageState extends State<CartPage>
                 children: <Widget>[
                   buildSkeletonRestaurant(context),
                   Center(
-                      child: cartProducts.length == 0
-                          ? Container()
-                          : ColorLoader()),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height - 150,
+                        child: cartProducts.length == 0
+                            ? Container()
+                            : ColorLoader(),
+                      )),
                 ],
               );
             }
@@ -178,7 +181,9 @@ class _CartPageState extends State<CartPage>
           ],
         ),
         Positioned(
-          top: MediaQuery.of(context).size.height * 0.52,
+          top: ConstantVariables.business.isActive
+              ? MediaQuery.of(context).size.height * 0.55
+              : MediaQuery.of(context).size.height * 0.54,
           child: userLoggedIn
               ? _buildCheckOut(restaurant.deliveryTime)
               : _buildAskLogin(),
@@ -656,23 +661,25 @@ class _CartPageState extends State<CartPage>
   }
 
   Widget _buildCheckOut(int deliveryTime) {
-    return Stack(
-      children: <Widget>[
-        Center(
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(13.0),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(10.0),
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(13.0),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.185,
-              width: MediaQuery.of(context).size.width * 0.9,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     Row(
@@ -701,74 +708,58 @@ class _CartPageState extends State<CartPage>
                         )
                       ],
                     ),
-                    SizedBox(height: 5.0),
-                    Center(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        height: 45.0,
-                        child: RaisedButton(
-                          disabledColor: Colors.red.shade200,
-                          color: Colors.redAccent,
-                          disabledElevation: 0.0,
-                          elevation: 3.0,
-                          splashColor: Colors.red.shade200,
-                          child: Text(
-                            'Checkout',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15.0,
-                              fontFamily: 'Avenir-Bold',
-                            ),
+                    Container(
+                      width: 100,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5.0)),
+                      child: Center(
+                        child: Text(
+                          totalCost != null
+                              ? "Rs. ${totalCost + deliveryFee}"
+                              : "-",
+                          style: TextStyle(
+                            fontFamily: 'Avenir-Bold',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15.0,
+                            color: Colors.grey.shade700,
                           ),
-                          onPressed: ConstantVariables.hasLocationPermission
-                              ? disableCheckout
-                                  ? null
-                                  : ConstantVariables.cartRestaurant.openStatus
-                                      ? () => {
-                                            Navigator.push(
-                                              context,
-                                              SizeRoute(
-                                                page: CheckoutPage(
-                                                    cartProducts: cartProducts,
-                                                    total: totalCost,
-                                                    deliveryFee: deliveryFee),
-                                              ),
-                                            )
-                                          }
-                                      : null
-                              : null,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
+                SizedBox(height: 8.0),
+                Center(
+                  child: ConstantVariables.business.isActive
+                      ? _buildCheckoutButton()
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: Text(
+                                "⚠ Temporarily out of service!",
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontFamily: 'Avenir',
+                                ),
+                                maxLines: 3,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            _buildCheckoutButton(),
+                          ],
+                        ),
+                ),
+              ],
             ),
           ),
         ),
-        Positioned(
-          left: MediaQuery.of(context).size.width * 0.65,
-          bottom: MediaQuery.of(context).size.height * 0.108,
-          child: Container(
-            width: 100,
-            height: 40,
-            margin: EdgeInsets.symmetric(vertical: 16.0),
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(5.0)),
-            child: Center(
-              child: Text(
-                totalCost != null ? "Rs. ${totalCost + deliveryFee}" : "-",
-                style: TextStyle(
-                  fontFamily: 'Avenir-Bold',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15.0,
-                  color: Colors.grey.shade700,
-                ),
-              ),
-            ),
-          ),
-        )
-      ],
+      ),
     );
   }
 
@@ -894,6 +885,47 @@ class _CartPageState extends State<CartPage>
     restaurantCharges = charge;
 
     return charge;
+  }
+
+  Widget _buildCheckoutButton() {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: 45.0,
+      child: RaisedButton(
+        disabledColor: Colors.red.shade200,
+        color: Colors.redAccent,
+        disabledElevation: 0.0,
+        elevation: 3.0,
+        splashColor: Colors.red.shade200,
+        child: Text(
+          'Checkout',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 15.0,
+            fontFamily: 'Avenir-Bold',
+          ),
+        ),
+        onPressed: ConstantVariables.hasLocationPermission
+            ? disableCheckout
+                ? null
+                : ConstantVariables.business.isActive
+                    ? ConstantVariables.cartRestaurant.openStatus
+                        ? () => {
+                              Navigator.push(
+                                context,
+                                SizeRoute(
+                                  page: CheckoutPage(
+                                      cartProducts: cartProducts,
+                                      total: totalCost,
+                                      deliveryFee: deliveryFee),
+                                ),
+                              )
+                            }
+                        : null
+                    : null
+            : null,
+      ),
+    );
   }
 }
 
