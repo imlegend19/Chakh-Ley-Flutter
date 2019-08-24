@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:chakh_ley_flutter/entity/restaurant.dart';
 import 'package:chakh_ley_flutter/models/user_pref.dart';
 import 'package:chakh_ley_flutter/pages/cart_page.dart';
@@ -24,6 +25,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:sentry/sentry.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skeleton_text/skeleton_text.dart';
+
 import 'entity/business.dart';
 import 'models/restaurant_pref.dart';
 
@@ -654,32 +656,36 @@ class _HomePageState extends State<HomePage>
                         IconButton(
                           icon: Icon(
                             Icons.local_dining,
-                            color:
-                            selectedIndex == 0 ? Colors.redAccent : Colors.grey,
+                            color: selectedIndex == 0
+                                ? Colors.redAccent
+                                : Colors.grey,
                           ),
                           onPressed: () => selectedTab(0),
                         ),
                         IconButton(
                           icon: Icon(
                             Icons.local_offer,
-                            color:
-                            selectedIndex == 1 ? Colors.redAccent : Colors.grey,
+                            color: selectedIndex == 1
+                                ? Colors.redAccent
+                                : Colors.grey,
                           ),
                           onPressed: () => selectedTab(1),
                         ),
                         IconButton(
                           icon: Icon(
                             Icons.shopping_cart,
-                            color:
-                            selectedIndex == 2 ? Colors.redAccent : Colors.grey,
+                            color: selectedIndex == 2
+                                ? Colors.redAccent
+                                : Colors.grey,
                           ),
                           onPressed: () => selectedTab(2),
                         ),
                         IconButton(
                           icon: Icon(
                             Icons.person,
-                            color:
-                            selectedIndex == 3 ? Colors.redAccent : Colors.grey,
+                            color: selectedIndex == 3
+                                ? Colors.redAccent
+                                : Colors.grey,
                           ),
                           onPressed: () => selectedTab(3),
                         ),
