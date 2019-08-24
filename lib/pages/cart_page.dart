@@ -991,11 +991,7 @@ Widget _buildInvoiceRow(String title, double value, Restaurant restaurant,
                       message: getMessage(restaurant),
                       preferBelow: false,
                       padding: EdgeInsets.only(
-                        left: 10.0,
-                        right: 10.0,
-                        top: 5.0,
-                        bottom: 5.0
-                      ),
+                          left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
                       decoration: BoxDecoration(
                         color: Colors.black54,
                         borderRadius: BorderRadius.circular(30.0),

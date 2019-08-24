@@ -133,7 +133,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                 toastLength: Toast.LENGTH_SHORT,
                                 timeInSecForIos: 1,
                                 fontSize: 14.0,
-                                backgroundColor: Colors.black54,
                                 textColor: Colors.white,
                               ),
                           'Offers',

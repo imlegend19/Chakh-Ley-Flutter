@@ -175,7 +175,6 @@ class _OTPBuilderState extends State<OTPBuilder> {
 
   void verifyRegisterOTP(String pin, String name, String phone,
       [String email]) {
-
     if (email != null || email != "") {
       UserEmailOTPPost post = UserEmailOTPPost(
           name: name, email: email, mobile: phone, verifyOTP: pin);
@@ -184,8 +183,7 @@ class _OTPBuilderState extends State<OTPBuilder> {
         validate(response);
       });
     } else {
-      UserOTPPost post =
-      UserOTPPost(name: name, mobile: phone, verifyOTP: pin);
+      UserOTPPost post = UserOTPPost(name: name, mobile: phone, verifyOTP: pin);
 
       createRegisterOTPPost(post).then((response) {
         validate(response);

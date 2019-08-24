@@ -151,7 +151,8 @@ class _HomeMainPageState extends State<HomeMainPage>
           stream: _restaurantController.stream,
           builder: (context, response) {
             if (response.hasData) {
-              if (ConstantVariables.categoryList.length != response.data.count) {
+              if (ConstantVariables.categoryList.length !=
+                  response.data.count) {
                 for (int i = 0; i < response.data.count; i++) {
                   ConstantVariables.categoryList.add(null);
                 }
@@ -166,8 +167,8 @@ class _HomeMainPageState extends State<HomeMainPage>
 
               _displayList = ConstantVariables.restaurantList;
 
-              return _buildRestaurants(
-                  response.data.restaurants, response.data.openRestaurantsCount);
+              return _buildRestaurants(response.data.restaurants,
+                  response.data.openRestaurantsCount);
             } else {
               return LoadingListPage();
             }
