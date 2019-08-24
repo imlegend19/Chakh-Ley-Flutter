@@ -394,7 +394,7 @@ class _HomeMainPageState extends State<HomeMainPage>
                 itemBuilder: (BuildContext context, int index) {
                   if (index == restaurants.length) {
                     return SizedBox(
-                      height: 50.0,
+                      height: MediaQuery.of(context).size.height * 0.2,
                     );
                   } else {
                     Restaurant restaurant = restaurants[index];

@@ -39,6 +39,7 @@ dependencies:
   url_launcher:
   device_info:
   get_ip:
+  fancy_bottom_navigation:
 
 dev_dependencies:
   flutter_test:

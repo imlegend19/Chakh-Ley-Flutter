@@ -632,66 +632,63 @@ class _HomePageState extends State<HomePage>
                   ],
                 ),
               )),
-          body: body,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.redAccent,
-            child: Icon(Icons.group),
-            onPressed: () {},
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          bottomNavigationBar: BottomAppBar(
-            notchMargin: 6.0,
-            shape: CircularNotchedRectangle(),
-            child: SizedBox(
-              height: 60.0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.local_dining,
-                        color:
+          body: Stack(
+            children: <Widget>[
+              body,
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: 65.0,
+                  child: Card(
+                    color: Colors.white,
+                    elevation: 5.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(40.0),
+                        topRight: const Radius.circular(40.0),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(
+                            Icons.local_dining,
+                            color:
                             selectedIndex == 0 ? Colors.redAccent : Colors.grey,
-                      ),
-                      onPressed: () => selectedTab(0),
-                    ),
-                  ),
-                  Expanded(
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.local_offer,
-                        color:
+                          ),
+                          onPressed: () => selectedTab(0),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.local_offer,
+                            color:
                             selectedIndex == 1 ? Colors.redAccent : Colors.grey,
-                      ),
-                      onPressed: () => selectedTab(1),
-                    ),
-                  ),
-                  Expanded(child: Text('')),
-                  Expanded(
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.shopping_cart,
-                        color:
+                          ),
+                          onPressed: () => selectedTab(1),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.shopping_cart,
+                            color:
                             selectedIndex == 2 ? Colors.redAccent : Colors.grey,
-                      ),
-                      onPressed: () => selectedTab(2),
-                    ),
-                  ),
-                  Expanded(
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.person,
-                        color:
+                          ),
+                          onPressed: () => selectedTab(2),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.person,
+                            color:
                             selectedIndex == 3 ? Colors.redAccent : Colors.grey,
-                      ),
-                      onPressed: () => selectedTab(3),
+                          ),
+                          onPressed: () => selectedTab(3),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         );
       } else {
