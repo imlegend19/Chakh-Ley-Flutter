@@ -58,19 +58,23 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                child: Icon(Icons.fiber_manual_record, size: 5.0),
-              ),
-              Text(
-                ConstantVariables.user['email'],
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Avenir-Black',
-                  fontSize: 13.0,
-                ),
-              ),
+              ConstantVariables.user['email'] != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                      child: Icon(Icons.fiber_manual_record, size: 5.0),
+                    )
+                  : Container(),
+              ConstantVariables.user['email'] != null
+                  ? Text(
+                      ConstantVariables.user['email'],
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Avenir-Black',
+                        fontSize: 13.0,
+                      ),
+                    )
+                  : Container(),
             ],
           ),
           Padding(
@@ -222,7 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
             padding:
                 const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 20.0),
             child: Text(
-              'To order amazing food on Chakh Le™, create a  account or '
+              'To order amazing food on Chakh Ley™, create a  account or '
               'login with existing account.',
               style: TextStyle(
                 fontSize: 13.0,

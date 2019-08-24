@@ -743,9 +743,13 @@ class _HomePageState extends State<HomePage>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
-                        FadeInImage(
-                          image: AssetImage('assets/quote.png'),
-                          placeholder: MemoryImage(kTransparentImage),
+                        Container(
+                          width: 50,
+                          height: 50,
+                          child: FadeInImage(
+                            image: AssetImage('assets/quote.png'),
+                            placeholder: MemoryImage(kTransparentImage),
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(

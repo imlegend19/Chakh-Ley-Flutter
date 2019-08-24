@@ -144,31 +144,35 @@ class _HomeMainPageState extends State<HomeMainPage>
   @override
   Widget build(BuildContext context) {
     if (ConstantVariables.restaurantList.length == 0 && !error) {
-      return StreamBuilder(
-        stream: _restaurantController.stream,
-        builder: (context, response) {
-          if (response.hasData) {
-            if (ConstantVariables.categoryList.length != response.data.count) {
-              for (int i = 0; i < response.data.count; i++) {
-                ConstantVariables.categoryList.add(null);
+      return Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: StreamBuilder(
+          stream: _restaurantController.stream,
+          builder: (context, response) {
+            if (response.hasData) {
+              if (ConstantVariables.categoryList.length != response.data.count) {
+                for (int i = 0; i < response.data.count; i++) {
+                  ConstantVariables.categoryList.add(null);
+                }
               }
+
+              if (ConstantVariables.restaurantList.length == 0) {
+                ConstantVariables.restaurantList = response.data.restaurants;
+              }
+
+              ConstantVariables.openRestaurantsCount =
+                  response.data.openRestaurantsCount;
+
+              _displayList = ConstantVariables.restaurantList;
+
+              return _buildRestaurants(
+                  response.data.restaurants, response.data.openRestaurantsCount);
+            } else {
+              return LoadingListPage();
             }
-
-            if (ConstantVariables.restaurantList.length == 0) {
-              ConstantVariables.restaurantList = response.data.restaurants;
-            }
-
-            ConstantVariables.openRestaurantsCount =
-                response.data.openRestaurantsCount;
-
-            _displayList = ConstantVariables.restaurantList;
-
-            return _buildRestaurants(
-                response.data.restaurants, response.data.openRestaurantsCount);
-          } else {
-            return LoadingListPage();
-          }
-        },
+          },
+        ),
       );
     } else if (_displayList.length == 0 && !error) {
       return _buildNotFoundPage();

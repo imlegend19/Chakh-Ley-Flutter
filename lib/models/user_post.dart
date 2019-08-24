@@ -49,16 +49,36 @@ String postVerifyLoginOTPToJson(VerifyLoginOTPPost data) {
 
 class UserPost {
   String name;
-  String email;
   String mobile;
 
   UserPost({
+    this.name,
+    this.mobile,
+  });
+
+  factory UserPost.fromJson(Map<String, dynamic> json) => UserPost(
+        name: json["name"],
+        mobile: json["mobile"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "mobile": mobile,
+      };
+}
+
+class UserEmailPost {
+  String name;
+  String email;
+  String mobile;
+
+  UserEmailPost({
     this.name,
     this.email,
     this.mobile,
   });
 
-  factory UserPost.fromJson(Map<String, dynamic> json) => UserPost(
+  factory UserEmailPost.fromJson(Map<String, dynamic> json) => UserEmailPost(
         name: json["name"],
         email: json["email"],
         mobile: json["mobile"],
@@ -71,30 +91,58 @@ class UserPost {
       };
 }
 
-String postUserToJson(UserPost data) {
+String postUserToJson(var data) {
+  final dyn = data.toJson();
+  return json.encode(dyn);
+}
+
+String postUserEmailToJson(var data) {
   final dyn = data.toJson();
   return json.encode(dyn);
 }
 
 class UserOTPPost {
   String name;
+  String mobile;
+  String verifyOTP;
+
+  UserOTPPost({this.name, this.mobile, this.verifyOTP});
+
+  factory UserOTPPost.fromJson(Map<String, dynamic> json) => UserOTPPost(
+      name: json["name"],
+      mobile: json["mobile"],
+      verifyOTP: json["verify_otp"]);
+
+  Map<String, dynamic> toJson() =>
+      {"name": name, "mobile": mobile, "verify_otp": verifyOTP};
+}
+
+class UserEmailOTPPost {
+  String name;
   String email;
   String mobile;
   String verifyOTP;
 
-  UserOTPPost({this.name, this.email, this.mobile, this.verifyOTP});
+  UserEmailOTPPost({this.name, this.email, this.mobile, this.verifyOTP});
 
-  factory UserOTPPost.fromJson(Map<String, dynamic> json) => UserOTPPost(
-      name: json["name"],
-      email: json["email"],
-      mobile: json["mobile"],
-      verifyOTP: json["verify_otp"]);
+  factory UserEmailOTPPost.fromJson(Map<String, dynamic> json) =>
+      UserEmailOTPPost(
+        name: json["name"],
+        email: json["email"],
+        mobile: json["mobile"],
+        verifyOTP: json["verify_otp"],
+      );
 
   Map<String, dynamic> toJson() =>
       {"name": name, "email": email, "mobile": mobile, "verify_otp": verifyOTP};
 }
 
-String postUserOTPToJson(UserOTPPost data) {
+String postUserOTPToJson(var data) {
+  final dyn = data.toJson();
+  return json.encode(dyn);
+}
+
+String postUserEmailOTPToJson(var data) {
   final dyn = data.toJson();
   return json.encode(dyn);
 }

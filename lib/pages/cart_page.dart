@@ -77,38 +77,46 @@ class _CartPageState extends State<CartPage>
           fetchDistance();
           fetchedDistance = true;
         }
-        return _buildCartView(ConstantVariables.cartRestaurant);
+        return SingleChildScrollView(
+            child: _buildCartView(ConstantVariables.cartRestaurant));
       } else {
-        return FutureBuilder<GetRestaurant>(
-          future: widget.restaurant,
-          builder: (context, response) {
-            if (response.hasData) {
-              ConstantVariables.cartRestaurant = response.data.restaurants[0];
-              if (!fetchedDistance) {
-                fetchDistance();
-                fetchedDistance = true;
-              }
-              return _buildCartView(response.data.restaurants[0]);
-            } else if (response.hasError) {
-              throw Exception;
-            } else {
-              return Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  buildSkeletonRestaurant(context),
-                  Center(
-                      child: Container(
+        return SingleChildScrollView(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: FutureBuilder<GetRestaurant>(
+              future: widget.restaurant,
+              builder: (context, response) {
+                if (response.hasData) {
+                  ConstantVariables.cartRestaurant =
+                      response.data.restaurants[0];
+                  if (!fetchedDistance) {
+                    fetchDistance();
+                    fetchedDistance = true;
+                  }
+                  return _buildCartView(response.data.restaurants[0]);
+                } else if (response.hasError) {
+                  throw Exception;
+                } else {
+                  return Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      buildSkeletonRestaurant(context),
+                      Center(
+                          child: Container(
                         height: MediaQuery.of(context).size.height - 150,
                         child: cartProducts.length == 0
                             ? Container()
                             : ColorLoader(),
                       )),
-                ],
-              );
-            }
-          },
+                    ],
+                  );
+                }
+              },
+            ),
+          ),
         );
       }
     } else if (ConstantVariables.cartProductsCount == 0) {
@@ -167,28 +175,32 @@ class _CartPageState extends State<CartPage>
   }
 
   Widget _buildCartView(Restaurant restaurant) {
-    return Stack(
-      children: <Widget>[
-        Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildRestaurant(restaurant),
-            cartProducts.length == 0
-                ? Container()
-                : _buildCartItems(restaurant),
-          ],
-        ),
-        Positioned(
-          top: ConstantVariables.business.isActive
-              ? MediaQuery.of(context).size.height * 0.55
-              : MediaQuery.of(context).size.height * 0.54,
-          child: userLoggedIn
-              ? _buildCheckOut(restaurant.deliveryTime)
-              : _buildAskLogin(),
-        ),
-      ],
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Stack(
+        children: <Widget>[
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _buildRestaurant(restaurant),
+              cartProducts.length == 0
+                  ? Container()
+                  : _buildCartItems(restaurant),
+            ],
+          ),
+          Positioned(
+            top: ConstantVariables.business.isActive
+                ? MediaQuery.of(context).size.height * 0.55
+                : MediaQuery.of(context).size.height * 0.54,
+            child: userLoggedIn
+                ? _buildCheckOut(restaurant.deliveryTime)
+                : _buildAskLogin(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -978,6 +990,12 @@ Widget _buildInvoiceRow(String title, double value, Restaurant restaurant,
                       key: key,
                       message: getMessage(restaurant),
                       preferBelow: false,
+                      padding: EdgeInsets.only(
+                        left: 10.0,
+                        right: 10.0,
+                        top: 5.0,
+                        bottom: 5.0
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.black54,
                         borderRadius: BorderRadius.circular(30.0),

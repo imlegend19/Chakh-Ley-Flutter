@@ -39,7 +39,6 @@ dependencies:
   url_launcher:
   device_info:
   get_ip:
-  fancy_bottom_navigation:
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +70,7 @@ flutter:
     - assets/success_check.flr
     - assets/error.flr
     - assets/error.png
+    - assets/otp.png
 
   fonts:
     - family: Avenir

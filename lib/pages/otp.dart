@@ -10,113 +10,145 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_text_field/pin_code_text_field.dart';
-import 'package:rounded_modal/rounded_modal.dart';
 
-void showOTPBottomSheet(
-    BuildContext context, String destination, bool decider) {
-  showRoundedModalBottomSheet(
+void showOTPDialog(BuildContext context, String destination, bool decider) {
+  showDialog(
     context: context,
     builder: (BuildContext bc) {
-      return OTPBottomSheet(destination, decider);
+      return Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Icon(
+            Icons.arrow_back,
+            color: Colors.black87,
+          ),
+          backgroundColor: Colors.white,
+          elevation: 5.0,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Color(0xffF2F8F4),
+        ),
+        body: OTPBuilder(destination, decider),
+        backgroundColor: Color(0xffF2F8F4),
+      );
     },
-    dismissOnTap: false,
   );
 }
 
-class OTPBottomSheet extends StatefulWidget {
+class OTPBuilder extends StatefulWidget {
   @override
-  _OTPBottomSheetState createState() => _OTPBottomSheetState();
+  _OTPBuilderState createState() => _OTPBuilderState();
 
   final String destination;
   final bool decider;
 
   static String name, email, phone;
 
-  OTPBottomSheet(this.destination, this.decider);
+  OTPBuilder(this.destination, this.decider);
 }
 
-class _OTPBottomSheetState extends State<OTPBottomSheet> {
+class _OTPBuilderState extends State<OTPBuilder> {
   @override
   Widget build(BuildContext context) {
-    return otpBottomSheet();
+    return otpSheet();
   }
 
-  Widget otpBottomSheet() {
-    return Container(
-      alignment: Alignment.topLeft,
-      height: MediaQuery.of(context).size.height * 0.3,
-      margin: const EdgeInsets.only(top: 5, left: 15, right: 15),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        boxShadow: [
-          BoxShadow(blurRadius: 10, color: Colors.grey[300], spreadRadius: 5)
-        ],
-      ),
-      child: Wrap(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 5.0, right: 5.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding:
-                      const EdgeInsets.only(top: 8.0, bottom: 5.0, left: 15.0),
-                  child: Text(
-                    'Verify OTP',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15.0,
-                      fontFamily: 'Avenir-Black',
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: Text(
-                    'OTP has been sent to your mobile.',
-                    style: TextStyle(
-                      fontFamily: 'Avenir-Bold',
-                      fontSize: 13.0,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black54,
-                    ),
-                    maxLines: 3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: PinCodeTextField(
-                autofocus: false,
-                maxLength: 5,
-                onDone: (pin) {
-                  widget.decider
-                      ? verifyOTP(pin)
-                      : verifyRegisterOTP(pin, OTPBottomSheet.name,
-                          OTPBottomSheet.email, OTPBottomSheet.phone);
-                },
-                pinBoxHeight: 50.0,
-                pinBoxWidth: 50.0,
-                defaultBorderColor: Colors.grey.shade800,
-                pinTextStyle: TextStyle(
-                    fontFamily: 'Avenir-Black',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14.0,
-                    color: Colors.black87),
-                pinTextAnimatedSwitcherTransition:
-                    ProvidedPinBoxTextAnimation.scalingTransition,
-                pinTextAnimatedSwitcherDuration: Duration(milliseconds: 150),
+  Widget otpSheet() {
+    return SingleChildScrollView(
+      child: Container(
+        color: Color(0xffF2F8F4),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0, bottom: 30.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.width * 0.5,
+                child: Image.asset("assets/otp.png"),
               ),
             ),
-          )
-        ],
+            Container(
+              alignment: Alignment.topLeft,
+              height: MediaQuery.of(context).size.height * 0.3,
+              margin: const EdgeInsets.only(top: 5, left: 15, right: 15),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+              ),
+              child: Wrap(
+                children: <Widget>[
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(top: 8.0, bottom: 5.0),
+                            child: Text(
+                              'Verify OTP',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15.0,
+                                fontFamily: 'Avenir-Black',
+                              ),
+                            ),
+                          ),
+                          Text(
+                            'OTP has been sent to your mobile.',
+                            style: TextStyle(
+                              fontFamily: 'Avenir-Bold',
+                              fontSize: 13.0,
+                              fontWeight: FontWeight.w300,
+                              color: Colors.black54,
+                            ),
+                            maxLines: 3,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: PinCodeTextField(
+                        autofocus: false,
+                        maxLength: 5,
+                        onDone: (pin) {
+                          widget.decider
+                              ? verifyOTP(pin)
+                              : verifyRegisterOTP(pin, OTPBuilder.name,
+                                  OTPBuilder.email, OTPBuilder.phone);
+                        },
+                        pinBoxHeight: 50.0,
+                        pinBoxWidth: 50.0,
+                        defaultBorderColor: Colors.grey.shade800,
+                        pinTextStyle: TextStyle(
+                            fontFamily: 'Avenir-Black',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14.0,
+                            color: Colors.black87),
+                        pinTextAnimatedSwitcherTransition:
+                            ProvidedPinBoxTextAnimation.scalingTransition,
+                        pinTextAnimatedSwitcherDuration:
+                            Duration(milliseconds: 150),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -131,21 +163,34 @@ class _OTPBottomSheetState extends State<OTPBottomSheet> {
     return response;
   }
 
-  Future<http.Response> createRegisterOTPPost(UserOTPPost post) async {
+  Future<http.Response> createRegisterOTPPost(var post) async {
     final response = await http.post(UserStatic.keyOTPRegURL,
         headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-        body: postUserOTPToJson(post));
+        body: post is UserOTPPost
+            ? postUserOTPToJson(post)
+            : postUserEmailOTPToJson(post));
 
     return response;
   }
 
-  void verifyRegisterOTP(String pin, String name, String email, String phone) {
-    UserOTPPost post =
-        UserOTPPost(name: name, email: email, mobile: phone, verifyOTP: pin);
+  void verifyRegisterOTP(String pin, String name, String phone,
+      [String email]) {
 
-    createRegisterOTPPost(post).then((response) {
-      validate(response);
-    });
+    if (email != null || email != "") {
+      UserEmailOTPPost post = UserEmailOTPPost(
+          name: name, email: email, mobile: phone, verifyOTP: pin);
+
+      createRegisterOTPPost(post).then((response) {
+        validate(response);
+      });
+    } else {
+      UserOTPPost post =
+      UserOTPPost(name: name, mobile: phone, verifyOTP: pin);
+
+      createRegisterOTPPost(post).then((response) {
+        validate(response);
+      });
+    }
   }
 
   void verifyOTP(String pin) {

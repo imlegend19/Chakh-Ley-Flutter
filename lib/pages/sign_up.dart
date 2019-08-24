@@ -171,7 +171,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           });
                           registerUser();
                         }
-                      : registerUser(),
+                      : null,
                 ),
               ),
             ),
@@ -181,22 +181,43 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Future<http.Response> createPost(UserPost post) async {
-    final response = await http.post(UserStatic.keyOTPRegURL,
-        headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-        body: postUserToJson(post));
+  Future<http.Response> createPost(var post) async {
+    final response = await http
+        .post(UserStatic.keyOTPRegURL,
+            headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+            body: post is UserEmailPost
+                ? postUserEmailToJson(post)
+                : postUserToJson(post))
+        .catchError((error) {
+      Fluttertoast.showToast(
+        msg: "Some error occurred, please try again later!",
+        fontSize: 13.0,
+        toastLength: Toast.LENGTH_LONG,
+        timeInSecForIos: 2,
+      );
+    });
 
     return response;
   }
 
   registerUser() {
-    UserPost post = UserPost(
-      name: _nameController.text,
-      email: _emailController.text,
-      mobile: _phoneController.text,
-    );
+    UserPost post;
+    UserEmailPost emailPost;
 
-    createPost(post).then((response) {
+    if (_emailController.text.trim() == "") {
+      post = UserPost(
+        name: _nameController.text,
+        mobile: _phoneController.text,
+      );
+    } else {
+      emailPost = UserEmailPost(
+        name: _nameController.text.trim(),
+        mobile: _phoneController.text.trim(),
+        email: _emailController.text.trim(),
+      );
+    }
+
+    createPost(_emailController.text == "" ? post : emailPost).then((response) {
       if (response.statusCode == 201) {
         Fluttertoast.showToast(
           msg: "OTP has been sent to your registered mobile number.",
@@ -204,20 +225,12 @@ class _SignUpPageState extends State<SignUpPage> {
           toastLength: Toast.LENGTH_LONG,
           timeInSecForIos: 2,
         );
-        OTPBottomSheet.name = _nameController.text;
-        OTPBottomSheet.email = _emailController.text;
-        OTPBottomSheet.phone = _phoneController.text;
-        showBottomSheet(
-          context: context,
-          builder: (context) => Container(
-            height: MediaQuery.of(context).size.height * 0.3,
-            color: Colors.transparent,
-            child: OTPBottomSheet(
-              _phoneController.text,
-              false,
-            ),
-          ),
-        );
+
+        OTPBuilder.name = _nameController.text;
+        OTPBuilder.email = _emailController.text;
+        OTPBuilder.phone = _phoneController.text;
+
+        showOTPDialog(context, _phoneController.text, true);
       } else if (response.statusCode == 400) {
         Fluttertoast.showToast(
           msg: "Error! Please verify you credentials.",
@@ -233,18 +246,6 @@ class _SignUpPageState extends State<SignUpPage> {
           timeInSecForIos: 2,
         );
       }
-
-      showBottomSheet(
-        context: context,
-        builder: (context) => Container(
-          height: MediaQuery.of(context).size.height * 0.3,
-          color: Colors.transparent,
-          child: OTPBottomSheet(
-            _phoneController.text,
-            false,
-          ),
-        ),
-      );
     });
   }
 }

@@ -1,6 +1,5 @@
 import 'dart:convert' as JSON;
 import 'dart:io';
-
 import 'package:chakh_ley_flutter/entity/api_static.dart';
 import 'package:chakh_ley_flutter/models/user_post.dart';
 import 'package:chakh_ley_flutter/pages/otp.dart';
@@ -65,7 +64,7 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
       if (response.statusCode == 201) {
         // print(response.body);
         Navigator.of(context).pop();
-        showOTPBottomSheet(context, loginPhoneController.text, true);
+        showOTPDialog(context, loginPhoneController.text, true);
         // showOTPBottomSheet(context, loginPhoneController.text, true);
         Fluttertoast.showToast(
           msg: "OTP has been sent to your registered mobile.",
