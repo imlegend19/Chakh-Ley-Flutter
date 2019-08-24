@@ -1,7 +1,6 @@
 import 'package:chakh_ley_flutter/entity/business.dart';
 import 'package:chakh_ley_flutter/entity/restaurant.dart';
 import 'package:geocoder/geocoder.dart';
-import 'package:sentry/sentry.dart';
 
 class ConstantVariables {
   static var restaurantList = List<Restaurant>();

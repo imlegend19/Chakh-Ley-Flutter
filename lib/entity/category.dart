@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:http/http.dart' as http;
 
 import 'api_static.dart';

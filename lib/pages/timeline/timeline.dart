@@ -4,7 +4,6 @@ import 'package:chakh_ley_flutter/entity/order.dart';
 import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:flutter/material.dart';
 
-import '../content_card.dart';
 import 'animated_bike_icon.dart';
 import 'animated_dot.dart';
 import 'bike_stop.dart';

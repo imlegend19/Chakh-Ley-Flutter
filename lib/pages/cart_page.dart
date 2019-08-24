@@ -8,11 +8,12 @@ import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:chakh_ley_flutter/utils/color_loader.dart';
 import 'package:chakh_ley_flutter/utils/database_helper.dart';
 import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
+import 'package:chakh_ley_flutter/utils/transparent_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:skeleton_text/skeleton_text.dart';
-import 'package:chakh_ley_flutter/utils/transparent_image.dart';
+
 import 'cart_skeletons.dart';
 
 class CartPage extends StatefulWidget {

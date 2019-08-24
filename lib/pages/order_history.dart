@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:chakh_ley_flutter/entity/order.dart';
 import 'package:chakh_ley_flutter/pages/order_page.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:chakh_ley_flutter/utils/color_loader.dart';
 import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
 import 'package:flutter/material.dart';
