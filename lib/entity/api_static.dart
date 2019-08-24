@@ -1,5 +1,5 @@
 abstract class APIStatic {
-  static const baseURL = "http://adminbeta.chakhley.co.in/api/";
+  static const baseURL = "http://admin.chakhley.co.in/api/";
 
   static const keyID = "id";
   static const keyName = "name";
@@ -24,6 +24,7 @@ abstract class BusinessStatic {
 
   static const keyType = "type";
   static const keyCity = "city";
+  static const keyIsActive = "is_active";
 }
 
 abstract class LocationStatic {

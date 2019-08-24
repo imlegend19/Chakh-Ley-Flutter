@@ -1,43 +1,72 @@
 import 'dart:async';
-
-import 'package:chakh_le_flutter/entity/restaurant.dart';
-import 'package:chakh_le_flutter/models/user_pref.dart';
-import 'package:chakh_le_flutter/pages/cart_page.dart';
-import 'package:chakh_le_flutter/pages/home_page.dart';
-import 'package:chakh_le_flutter/pages/offers_page.dart';
-import 'package:chakh_le_flutter/pages/profile_page.dart';
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
-import 'package:chakh_le_flutter/utils/color_loader.dart';
-import 'package:chakh_le_flutter/utils/database_helper.dart';
-import 'package:chakh_le_flutter/utils/error_widget.dart';
-import 'package:chakh_le_flutter/utils/transparent_image.dart';
+import 'package:chakh_ley_flutter/entity/restaurant.dart';
+import 'package:chakh_ley_flutter/models/user_pref.dart';
+import 'package:chakh_ley_flutter/pages/cart_page.dart';
+import 'package:chakh_ley_flutter/pages/home_page.dart';
+import 'package:chakh_ley_flutter/pages/offers_page.dart';
+import 'package:chakh_ley_flutter/pages/profile_page.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/utils/color_loader.dart';
+import 'package:chakh_ley_flutter/utils/database_helper.dart';
+import 'package:chakh_ley_flutter/utils/error_widget.dart';
+import 'package:chakh_ley_flutter/utils/transparent_image.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get_ip/get_ip.dart';
 import 'package:location/location.dart' as loc;
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sentry/sentry.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skeleton_text/skeleton_text.dart';
-
 import 'entity/business.dart';
 import 'models/restaurant_pref.dart';
 
+final SentryClient _sentry = SentryClient(dsn: ConstantVariables.sentryDSN);
+
+bool get isInDebugMode {
+  bool inDebugMode = false;
+  assert(inDebugMode = true);
+  return inDebugMode;
+}
+
+Future<Null> _reportError(dynamic error, dynamic stackTrace) async {
+  // print('Caught error: $error');
+
+  // Errors thrown in development mode are unlikely to be interesting. You can
+  // check if you are running in dev mode using an assertion and omit sending
+  // the report.
+  if (isInDebugMode) {
+    print(stackTrace);
+    print('In dev mode. Not sending report to Sentry.io.');
+    return;
+  }
+
+  // print('Reporting to Sentry.io...');
+  await _sentry.captureException(
+    exception: error,
+    stackTrace: stackTrace,
+  );
+}
+
 void main() async {
-  ConstantVariables.sentryClient =
-      SentryClient(dsn: ConstantVariables.sentryDSN);
+  FlutterError.onError = (FlutterErrorDetails details) async {
+    if (isInDebugMode) {
+      FlutterError.dumpErrorToConsole(details);
+    } else {
+      Zone.current.handleUncaughtError(details.exception, details.stack);
+    }
+  };
 
   runZoned(() async {
     runApp(MyApp());
   }, onError: (error, stackTrace) async {
-    await ConstantVariables.sentryClient.captureException(
-      exception: error,
-      stackTrace: stackTrace,
-    );
+    await _reportError(error, stackTrace);
   });
 }
 
@@ -50,7 +79,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowMaterialGrid: false,
-      title: 'Chakh Le',
+      title: 'Chakh Ley',
       theme: ThemeData(
         primarySwatch: Colors.red,
         fontFamily: 'Avenir',
@@ -89,7 +118,7 @@ class _HomePageState extends State<HomePage>
   Geolocator geoLocator = Geolocator();
   Position userLocation;
   var position = [];
-  List<int> businessId = [];
+  List<Business> business = [];
 
   bool permissionDenied = false;
   bool serviceDenied = false;
@@ -112,14 +141,35 @@ class _HomePageState extends State<HomePage>
 
   var _connectionStatus;
   Connectivity connectivity;
-
   static bool getStartedClicked;
-
   StreamSubscription<ConnectivityResult> subscription;
+
+  String getAddress() {
+    String address = ConstantVariables.address.featureName;
+
+    if (ConstantVariables.address.locality != null) {
+      address += ", " + ConstantVariables.address.locality;
+    }
+
+    if (ConstantVariables.address.subAdminArea != null) {
+      address += ", " + ConstantVariables.address.subAdminArea;
+    }
+
+    if (ConstantVariables.address.adminArea != null) {
+      address += ", " + ConstantVariables.address.adminArea;
+    }
+
+    if (ConstantVariables.address.postalCode != null) {
+      address += ", " + ConstantVariables.address.postalCode;
+    }
+
+    return address;
+  }
 
   @override
   void initState() {
     super.initState();
+
     getInitialPageStatus().then((val) {
       setState(() {
         if (val == null) {
@@ -133,7 +183,7 @@ class _HomePageState extends State<HomePage>
     PermissionHandler()
         .checkPermissionStatus(PermissionGroup.location)
         .then((value) {
-      print('Value: $value');
+      // print('Value: $value');
       if (value == PermissionStatus.disabled) {
         loc.Location().requestService().then((value) {
           if (value == true) {
@@ -171,13 +221,16 @@ class _HomePageState extends State<HomePage>
           if (value != null) {
             for (final i in value.business) {
               position.add([i.latitude, i.longitude]);
-              businessId.add(i.id);
+              business.add(i);
             }
             setState(() {
               businessFetched = true;
               selectedTab(0);
             });
           } else {
+            setState(() {
+              body = getErrorWidget(context);
+            });
             Fluttertoast.showToast(
               msg: "Some error occurred!",
               toastLength: Toast.LENGTH_SHORT,
@@ -219,6 +272,25 @@ class _HomePageState extends State<HomePage>
       ConstantVariables.buildNumber = packageInfo.buildNumber;
     });
 
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    deviceInfo.androidInfo.then((deviceInfo) {
+      ConstantVariables.deviceInfo = {
+        "product": deviceInfo.product,
+        "model": deviceInfo.model,
+        "host": deviceInfo.host,
+        "androidID": deviceInfo.androidId,
+      };
+      GetIp.ipAddress.then((ip) {
+        _sentry.userContext = User(
+          id: ConstantVariables.user['id'],
+          email: ConstantVariables.user['email'],
+          ipAddress: ip,
+          extras: ConstantVariables.deviceInfo,
+          username: ConstantVariables.user['mobile'],
+        );
+      });
+    });
+
     _getUserCredentials();
   }
 
@@ -245,13 +317,12 @@ class _HomePageState extends State<HomePage>
               try {
                 ConstantVariables.userLatitude = position.latitude;
                 ConstantVariables.userLongitude = position.longitude;
-                ConstantVariables.address = value;
-                ConstantVariables.userAddress =
-                    ConstantVariables.address.elementAt(0).featureName +
-                        ", " +
-                        ConstantVariables.address.elementAt(0).locality;
+                ConstantVariables.address = value[0];
+
+                ConstantVariables.userAddress = getAddress();
+
                 ConstantVariables.userCity =
-                    ConstantVariables.address.elementAt(0).locality;
+                    ConstantVariables.address.subAdminArea;
 
                 locationSetUpCompleted = true;
               } catch (e) {
@@ -274,11 +345,6 @@ class _HomePageState extends State<HomePage>
         if (setupLocationTry < 2) {
           setupLocationTry += 1;
           _setupLocation();
-        } else {
-          await ConstantVariables.sentryClient.captureException(
-            exception: Exception("Setup Location Error"),
-            stackTrace: error.toString(),
-          );
         }
       });
     });
@@ -305,10 +371,6 @@ class _HomePageState extends State<HomePage>
     List<Address> address = await Geocoder.local
         .findAddressesFromCoordinates(coordinates)
         .catchError((error) async {
-      await ConstantVariables.sentryClient.captureException(
-        exception: Exception("Get Location Details Error"),
-        stackTrace: error.toString(),
-      );
       _getLocationDetails(coordinates);
     });
 
@@ -321,10 +383,6 @@ class _HomePageState extends State<HomePage>
       currentLocation = await geoLocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best);
     } catch (e) {
-      await ConstantVariables.sentryClient.captureException(
-        exception: Exception("Get Location Error"),
-        stackTrace: e.toString(),
-      );
       currentLocation = null;
     }
 
@@ -348,6 +406,9 @@ class _HomePageState extends State<HomePage>
               body = HomeMainPage();
             } else if (ConstantVariables.businessPresent == false) {
               body = _buildLocationUnavailable();
+            } else {
+              fetchBusiness();
+              body = _buildLoadingScreen();
             }
           } else {
             body = _buildLocationPermission("Enable Location Service");
@@ -355,6 +416,7 @@ class _HomePageState extends State<HomePage>
         } else {
           body = _buildNoInternet();
         }
+
         selectedIndex = 0;
       });
     } else if (index == 1) {
@@ -366,13 +428,16 @@ class _HomePageState extends State<HomePage>
       setState(() {
         if (_connectionStatus != ConnectivityResult.none) {
           body = CartPage(
-              restaurant: HomePage.spRestaurantID == null
-                  ? null
-                  : fetchRestaurantData(HomePage.spRestaurantID,
-              ), );
+            restaurant: HomePage.spRestaurantID == null
+                ? null
+                : fetchRestaurantData(
+                    HomePage.spRestaurantID,
+                  ),
+          );
         } else {
           body = _buildNoInternet();
         }
+
         selectedIndex = 2;
       });
     } else if (index == 3) {
@@ -398,10 +463,13 @@ class _HomePageState extends State<HomePage>
         if (businessFetched) {
           if (ConstantVariables.userLongitude != null &&
               ConstantVariables.userLatitude != null) {
-            for (final i in position) {
+            for (int i = 0; i < position.length; i++) {
               double km;
-              calculateDistance(ConstantVariables.userLatitude,
-                      ConstantVariables.userLongitude, i[0], i[1])
+              calculateDistance(
+                      ConstantVariables.userLatitude,
+                      ConstantVariables.userLongitude,
+                      position[i][0],
+                      position[i][1])
                   .then((value) {
                 km = value * 0.001;
 
@@ -410,7 +478,7 @@ class _HomePageState extends State<HomePage>
                 if (km < 15) {
                   setState(() {
                     ConstantVariables.businessPresent = true;
-                    ConstantVariables.businessID = 1;
+                    ConstantVariables.business = business[i];
                   });
                 } else {
                   setState(() {
@@ -425,6 +493,7 @@ class _HomePageState extends State<HomePage>
                 break;
               }
             }
+
             fetchedBusinessID = true;
           }
         }
@@ -474,7 +543,8 @@ class _HomePageState extends State<HomePage>
                       ),
                     ),
                     SizedBox(width: 3.0),
-                    Icon(Icons.arrow_forward, color: Colors.black87, size: 15.0),
+                    Icon(Icons.arrow_forward,
+                        color: Colors.black87, size: 15.0),
                     SizedBox(width: 3.0),
                     Container(
                       width: MediaQuery.of(context).size.width * 0.65,
@@ -533,7 +603,8 @@ class _HomePageState extends State<HomePage>
                                                 height: 20.0,
                                                 decoration: BoxDecoration(
                                                   borderRadius:
-                                                      BorderRadius.circular(10.0),
+                                                      BorderRadius.circular(
+                                                          10.0),
                                                   color: Colors.grey[300],
                                                 ),
                                               ),

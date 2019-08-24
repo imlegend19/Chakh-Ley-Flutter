@@ -1,6 +1,10 @@
-import 'package:chakh_le_flutter/entity/order.dart';
-import 'package:chakh_le_flutter/pages/order_page.dart';
-import 'package:chakh_le_flutter/utils/color_loader.dart';
+import 'dart:async';
+
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/entity/order.dart';
+import 'package:chakh_ley_flutter/pages/order_page.dart';
+import 'package:chakh_ley_flutter/utils/color_loader.dart';
+import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
 import 'package:flutter/material.dart';
 
 class OrderHistoryPage extends StatefulWidget {
@@ -13,6 +17,38 @@ class OrderHistoryPage extends StatefulWidget {
 }
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
+  StreamController _controller;
+
+  loadOrders() async {
+    Future.sync(() {
+      fetchOrder(ConstantVariables.user['mobile']).then((val) async {
+        if (val != null) {
+          _controller.add(val);
+        }
+      }).catchError((error) {
+        _controller = StreamController();
+        loadOrders();
+      });
+    }).catchError((error) {
+      _controller = StreamController();
+      loadOrders();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = StreamController();
+
+    Timer.periodic(Duration(seconds: 3), (_) => loadOrders());
+  }
+
+  @override
+  void dispose() {
+    _controller.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,8 +79,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
           ],
         ),
       ),
-      body: FutureBuilder<GetOrders>(
-        future: widget.order,
+      body: StreamBuilder(
+        stream: _controller.stream,
         builder: (context, response) {
           if (response.hasData) {
             if (response.data.count == 0) {
@@ -221,8 +257,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                     ),
                     onPressed: () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => OrderPage(
+                      SizeRoute(
+                        page: OrderPage(
                           order: orders[index],
                           orderId: orders[index].id,
                         ),

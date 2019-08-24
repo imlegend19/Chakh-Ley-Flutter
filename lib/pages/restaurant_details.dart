@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chakh_le_flutter/entity/api_static.dart';
-import 'package:chakh_le_flutter/utils/color_loader.dart';
+import 'package:chakh_ley_flutter/entity/api_static.dart';
+import 'package:chakh_ley_flutter/utils/color_loader.dart';
 import 'package:flutter/material.dart';
 
 class RestaurantDetails extends StatelessWidget {

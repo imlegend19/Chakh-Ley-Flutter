@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:chakh_le_flutter/entity/restaurant.dart';
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/entity/restaurant.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> saveRestaurant(Restaurant restaurant) async {

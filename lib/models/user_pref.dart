@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> saveUser(int id, String name, String email, String mobile) async {

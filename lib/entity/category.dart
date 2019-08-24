@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:http/http.dart' as http;
 
 import 'api_static.dart';
@@ -64,10 +64,10 @@ Future<GetCategory> fetchCategory(int restaurantID) async {
 
   if (response.statusCode == 200) {
     int count = jsonDecode(response.body)[APIStatic.keyCount];
-    int execute = count ~/ 10 + 1;
+    int execute = count != 0 ? count ~/ 10 + 1 : 0;
 
     GetCategory category = GetCategory.fromJson(jsonDecode(response.body));
-    execute--;
+    if (execute != 0) execute--;
 
     while (execute != 0) {
       GetCategory tempCategory = GetCategory.fromJson(jsonDecode(
@@ -79,13 +79,6 @@ Future<GetCategory> fetchCategory(int restaurantID) async {
 
     return category;
   } else {
-    await ConstantVariables.sentryClient.captureException(
-      exception: Exception("Get Category Error"),
-      stackTrace:
-          '[statusCode : ${response.statusCode}, restaurantID: $restaurantID,'
-          'response.body: ${response.body}, response.headers: ${response.headers}]',
-    );
-
     return null;
   }
 }

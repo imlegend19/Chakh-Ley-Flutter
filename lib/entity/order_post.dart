@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:chakh_le_flutter/entity/api_static.dart';
+import 'package:chakh_ley_flutter/entity/api_static.dart';
 
 class PostOrder {
   final String name;

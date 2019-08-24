@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:core';
 import 'dart:io';
 
-import 'package:chakh_le_flutter/models/cart.dart';
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/models/cart.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -1,10 +1,10 @@
 import 'dart:convert' as JSON;
 import 'dart:io';
-import 'package:chakh_le_flutter/entity/api_static.dart';
-import 'package:chakh_le_flutter/models/user_post.dart';
-import 'package:chakh_le_flutter/models/user_pref.dart';
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
-import 'package:chakh_le_flutter/utils/parse_jwt.dart';
+import 'package:chakh_ley_flutter/entity/api_static.dart';
+import 'package:chakh_ley_flutter/models/user_post.dart';
+import 'package:chakh_ley_flutter/models/user_pref.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/utils/parse_jwt.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -76,7 +76,7 @@ class _OTPBottomSheetState extends State<OTPBottomSheet> {
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0),
                   child: Text(
-                    'OTP has been sent to your email.',
+                    'OTP has been sent to your mobile.',
                     style: TextStyle(
                       fontFamily: 'Avenir-Bold',
                       fontSize: 13.0,

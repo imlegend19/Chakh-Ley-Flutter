@@ -1,4 +1,4 @@
-import 'package:chakh_le_flutter/models/cart.dart';
+import 'package:chakh_ley_flutter/models/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 

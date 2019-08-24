@@ -1,17 +1,18 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chakh_le_flutter/entity/restaurant.dart';
-import 'package:chakh_le_flutter/models/cart.dart';
-import 'package:chakh_le_flutter/pages/checkout_page.dart';
-import 'package:chakh_le_flutter/pages/login.dart';
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
-import 'package:chakh_le_flutter/utils/color_loader.dart';
-import 'package:chakh_le_flutter/utils/database_helper.dart';
+import 'package:chakh_ley_flutter/entity/restaurant.dart';
+import 'package:chakh_ley_flutter/models/cart.dart';
+import 'package:chakh_ley_flutter/pages/checkout_page.dart';
+import 'package:chakh_ley_flutter/pages/login.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/utils/color_loader.dart';
+import 'package:chakh_ley_flutter/utils/database_helper.dart';
+import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:skeleton_text/skeleton_text.dart';
-import 'package:chakh_le_flutter/utils/transparent_image.dart';
+import 'package:chakh_ley_flutter/utils/transparent_image.dart';
 import 'cart_skeletons.dart';
 
 class CartPage extends StatefulWidget {
@@ -725,14 +726,11 @@ class _CartPageState extends State<CartPage>
                                       ? () => {
                                             Navigator.push(
                                               context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    CheckoutPage(
-                                                        cartProducts:
-                                                            cartProducts,
-                                                        total: totalCost,
-                                                        deliveryFee:
-                                                            deliveryFee),
+                                              SizeRoute(
+                                                page: CheckoutPage(
+                                                    cartProducts: cartProducts,
+                                                    total: totalCost,
+                                                    deliveryFee: deliveryFee),
                                               ),
                                             )
                                           }

@@ -1,6 +1,6 @@
-import 'package:chakh_le_flutter/entity/api_static.dart';
-import 'package:chakh_le_flutter/entity/order.dart';
-import 'package:chakh_le_flutter/pages/timeline/timeline.dart';
+import 'package:chakh_ley_flutter/entity/api_static.dart';
+import 'package:chakh_ley_flutter/entity/order.dart';
+import 'package:chakh_ley_flutter/pages/timeline/timeline.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -348,7 +348,7 @@ class _ContentCardState extends State<ContentCard> {
                               children: <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      left: 20.0, top: 10.0),
+                                      left: 20.0, top: 20.0),
                                   child: FloatingActionButton(
                                     onPressed: () => setState(() {
                                       ContentCard.showInput = true;
@@ -358,22 +358,15 @@ class _ContentCardState extends State<ContentCard> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 10.0, right: 10.0),
-                                  child: InkWell(
-                                    onTap: () {
-                                      print(widget.order.deliveryBoy['user']
-                                          ['mobile']);
+                                      right: 20.0, top: 20.0),
+                                  child: FloatingActionButton(
+                                    backgroundColor: Colors.green,
+                                    onPressed: () => setState(() {
                                       _launchCaller(widget
                                           .order.deliveryBoy['user']['mobile']);
-                                    },
-                                    child: Container(
-                                      width: 100,
-                                      height: 100,
-                                      child: FlareActor(
-                                        "assets/phone.flr",
-                                        animation: "record",
-                                      ),
-                                    ),
+                                    }),
+                                    child: Icon(Icons.call,
+                                        color: Colors.white, size: 36.0),
                                   ),
                                 ),
                               ],

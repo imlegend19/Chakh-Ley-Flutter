@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:chakh_le_flutter/entity/order.dart';
-import 'package:chakh_le_flutter/utils/error_widget.dart';
+import 'package:chakh_ley_flutter/entity/order.dart';
+import 'package:chakh_ley_flutter/utils/error_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'content_card.dart';
@@ -21,7 +21,7 @@ class _OrderPageState extends State<OrderPage> with TickerProviderStateMixin {
 
   loadOrders() async {
     Future.sync(() {
-      fetchOrder(null, widget.orderId).then((val) async {
+      retrieveOrder(widget.orderId).then((val) async {
         if (val != null) {
           _orderController.add(val);
         }

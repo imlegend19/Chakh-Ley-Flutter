@@ -1,9 +1,10 @@
-import 'package:chakh_le_flutter/entity/order.dart';
-import 'package:chakh_le_flutter/main.dart';
-import 'package:chakh_le_flutter/models/user_pref.dart';
-import 'package:chakh_le_flutter/pages/login.dart';
-import 'package:chakh_le_flutter/pages/order_history.dart';
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/entity/order.dart';
+import 'package:chakh_ley_flutter/main.dart';
+import 'package:chakh_ley_flutter/models/user_pref.dart';
+import 'package:chakh_ley_flutter/pages/login.dart';
+import 'package:chakh_ley_flutter/pages/order_history.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -136,8 +137,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       _buildAccountTile(
                           () => Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) => OrderHistoryPage(
+                                SizeRoute(
+                                  page: OrderHistoryPage(
                                     order: fetchOrder(
                                         ConstantVariables.user['mobile']),
                                   ),

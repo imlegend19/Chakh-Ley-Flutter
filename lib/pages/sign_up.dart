@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:chakh_le_flutter/entity/api_static.dart';
-import 'package:chakh_le_flutter/models/user_post.dart';
-import 'package:chakh_le_flutter/pages/otp.dart';
-import 'package:chakh_le_flutter/pages/text_field.dart';
+import 'package:chakh_ley_flutter/entity/api_static.dart';
+import 'package:chakh_ley_flutter/models/user_post.dart';
+import 'package:chakh_ley_flutter/pages/otp.dart';
+import 'package:chakh_ley_flutter/pages/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -199,7 +199,7 @@ class _SignUpPageState extends State<SignUpPage> {
     createPost(post).then((response) {
       if (response.statusCode == 201) {
         Fluttertoast.showToast(
-          msg: "OTP has been sent to your registered email.",
+          msg: "OTP has been sent to your registered mobile number.",
           fontSize: 13.0,
           toastLength: Toast.LENGTH_LONG,
           timeInSecForIos: 2,

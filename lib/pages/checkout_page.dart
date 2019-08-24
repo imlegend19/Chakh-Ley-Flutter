@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:chakh_le_flutter/entity/api_static.dart';
-import 'package:chakh_le_flutter/entity/order_post.dart';
-import 'package:chakh_le_flutter/models/cart.dart';
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
-import 'package:chakh_le_flutter/utils/database_helper.dart';
+import 'package:chakh_ley_flutter/entity/api_static.dart';
+import 'package:chakh_ley_flutter/entity/order_post.dart';
+import 'package:chakh_ley_flutter/models/cart.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -196,31 +196,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 50.0,
-                child: RaisedButton(
-                  disabledColor: Colors.red.shade200,
-                  color: Colors.redAccent,
-                  disabledElevation: 0.0,
-                  elevation: 3.0,
-                  splashColor: Colors.red.shade200,
-                  child: Text(
-                    buttonText,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 13.0,
-                      color: Colors.white,
-                      fontFamily: 'Avenir-Bold',
+              child: ConstantVariables.business.isActive
+                  ? _buildCheckoutButton()
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        _buildCheckoutButton(),
+                        Text(
+                          "Temporarily Unserviceable!",
+                          style: TextStyle(
+                            fontSize: 13.0,
+                            fontFamily: 'Avenir-Black',
+                            fontWeight: FontWeight.w400,
+                            color: Colors.grey.shade300,
+                          ),
+                        )
+                      ],
                     ),
-                  ),
-                  onPressed: enableProceed
-                      ? () {
-                          checkoutOrder();
-                        }
-                      : null,
-                ),
-              ),
             ),
           ],
         ),
@@ -323,5 +317,35 @@ class _CheckoutPageState extends State<CheckoutPage> {
     delivery["longitude"] = ConstantVariables.userLongitude;
 
     return delivery;
+  }
+
+  Widget _buildCheckoutButton() {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: 50.0,
+      child: RaisedButton(
+        disabledColor: Colors.red.shade200,
+        color: Colors.redAccent,
+        disabledElevation: 0.0,
+        elevation: 3.0,
+        splashColor: Colors.red.shade200,
+        child: Text(
+          buttonText,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 13.0,
+            color: Colors.white,
+            fontFamily: 'Avenir-Bold',
+          ),
+        ),
+        onPressed: enableProceed
+            ? ConstantVariables.business.isActive
+                ? null
+                : () {
+                    checkoutOrder();
+                  }
+            : null,
+      ),
+    );
   }
 }

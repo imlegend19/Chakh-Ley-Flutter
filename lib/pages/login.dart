@@ -1,12 +1,12 @@
 import 'dart:convert' as JSON;
 import 'dart:io';
 
-import 'package:chakh_le_flutter/entity/api_static.dart';
-import 'package:chakh_le_flutter/models/user_post.dart';
-import 'package:chakh_le_flutter/pages/otp.dart';
-import 'package:chakh_le_flutter/pages/sign_up.dart';
-import 'package:chakh_le_flutter/pages/text_field.dart';
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/entity/api_static.dart';
+import 'package:chakh_ley_flutter/models/user_post.dart';
+import 'package:chakh_ley_flutter/pages/otp.dart';
+import 'package:chakh_ley_flutter/pages/sign_up.dart';
+import 'package:chakh_ley_flutter/pages/text_field.dart';
+import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -78,9 +78,7 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
         SignUpPage.mobile = loginPhoneController.text;
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => SignUpPage(),
-          ),
+          SizeRoute(page: SignUpPage()),
         );
 
         return null;
@@ -98,22 +96,8 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
 
         return null;
       } else if (response.statusCode == 400) {
-        await ConstantVariables.sentryClient.captureException(
-          exception: Exception("Login User Failure"),
-          stackTrace:
-          '[statusCode : ${response.statusCode}, post: $post '
-              'response.body: ${response.body}, response.headers: ${response.headers}]',
-        );
-
         return null;
       } else if (response.statusCode >= 500) {
-        await ConstantVariables.sentryClient.captureException(
-          exception: Exception("Login User Failure"),
-          stackTrace:
-          '[statusCode : ${response.statusCode}, post: $post '
-              'response.body: ${response.body}, response.headers: ${response.headers}]',
-        );
-        
         Fluttertoast.showToast(
           msg: "Sorry, something went wrong!",
           fontSize: 13.0,
@@ -123,13 +107,6 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
 
         return null;
       } else {
-        await ConstantVariables.sentryClient.captureException(
-          exception: Exception("Login User Failure"),
-          stackTrace:
-          '[statusCode : ${response.statusCode}, post: $post '
-              'response.body: ${response.body}, response.headers: ${response.headers}]',
-        );
-        
         var json = JSON.jsonDecode(response.body);
         assert(json is Map);
         Fluttertoast.showToast(
@@ -138,16 +115,10 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
           toastLength: Toast.LENGTH_LONG,
           timeInSecForIos: 2,
         );
-        
+
         return null;
       }
     }).catchError((error) async {
-      await ConstantVariables.sentryClient.captureException(
-        exception: Exception("Login User Failure"),
-        stackTrace:
-        'error: ${error.toString()}',
-      );
-      
       return null;
     });
   }

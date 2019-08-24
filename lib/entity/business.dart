@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:http/http.dart' as http;
 
 import 'api_static.dart';
@@ -12,6 +12,7 @@ class Business {
   final Map<String, dynamic> city;
   final double latitude;
   final double longitude;
+  final bool isActive;
 
   Business({
     this.id,
@@ -20,6 +21,7 @@ class Business {
     this.city,
     this.latitude,
     this.longitude,
+    this.isActive,
   });
 }
 
@@ -44,6 +46,7 @@ class GetBusiness {
         city: jsonBusiness[BusinessStatic.keyCity],
         latitude: double.parse(jsonBusiness[RestaurantStatic.keyLatitude]),
         longitude: double.parse(jsonBusiness[RestaurantStatic.keyLongitude]),
+        isActive: jsonBusiness[BusinessStatic.keyIsActive],
       ));
     }
 
@@ -61,10 +64,10 @@ Future<GetBusiness> fetchBusiness() async {
 
   if (response.statusCode == 200) {
     int count = jsonDecode(response.body)[APIStatic.keyCount];
-    int execute = count ~/ 10 + 1;
+    int execute = count != 0 ? count ~/ 10 + 1 : 0;
 
     GetBusiness business = GetBusiness.fromJson(jsonDecode(response.body));
-    execute--;
+    if (execute != 0) execute--;
 
     while (execute != 0) {
       GetBusiness tempBusiness = GetBusiness.fromJson(jsonDecode(
@@ -77,13 +80,6 @@ Future<GetBusiness> fetchBusiness() async {
 
     return business;
   } else {
-    await ConstantVariables.sentryClient.captureException(
-      exception: Exception("Business Fetch Failure"),
-      stackTrace: '[response.body: ${response.body}, '
-          'response.headers: ${response.headers}, response: $response,'
-          'status code: ${response.statusCode}]',
-    );
-
     return null;
   }
 }

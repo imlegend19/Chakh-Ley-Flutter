@@ -1,10 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chakh_le_flutter/entity/category.dart';
-import 'package:chakh_le_flutter/entity/restaurant.dart';
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
-import 'package:chakh_le_flutter/utils/color_loader.dart';
-import 'package:chakh_le_flutter/utils/database_helper.dart';
+import 'package:chakh_ley_flutter/entity/category.dart';
+import 'package:chakh_ley_flutter/entity/restaurant.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/utils/color_loader.dart';
+import 'package:chakh_ley_flutter/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:skeleton_text/skeleton_text.dart';
@@ -68,33 +68,37 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Container(
-                color: Colors.grey.shade300,
-                height: MediaQuery.of(context).size.height * 0.3,
-                child: widget.restaurant.images.length == 0
-                    ? Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 10.0),
-                          child: Image(
-                            image: AssetImage('assets/logo.png'),
-                          ),
-                        ),
-                      )
-                    : CachedNetworkImage(
-                        imageUrl: widget.restaurant.images[0],
-                        imageBuilder: (context, imageProvider) => Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: imageProvider,
-                              fit: BoxFit.cover,
+              Hero(
+                tag: "restaurant_${widget.restaurant.id}_hero",
+                child: Container(
+                  color: Colors.grey.shade300,
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  child: widget.restaurant.images.length == 0
+                      ? Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: Image(
+                              image: AssetImage('assets/logo.png'),
                             ),
                           ),
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: widget.restaurant.images[0],
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          placeholder: (context, url) =>
+                              Center(child: ColorLoader()),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
                         ),
-                        placeholder: (context, url) =>
-                            Center(child: ColorLoader()),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                      ),
+                ),
               ),
               Container(
                 height: MediaQuery.of(context).size.height * 0.7,
@@ -386,7 +390,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     Restaurant restaurant,
     bool isVeg,
   ) {
-
     int restoId = getCartRestaurant();
 
     if (restoId == restaurant.id) {

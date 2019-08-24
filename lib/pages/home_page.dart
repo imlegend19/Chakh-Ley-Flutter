@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chakh_le_flutter/entity/category.dart';
-import 'package:chakh_le_flutter/entity/restaurant.dart';
-import 'package:chakh_le_flutter/restaurant_screen.dart';
-import 'package:chakh_le_flutter/static_variables/static_variables.dart';
-import 'package:chakh_le_flutter/utils/color_loader.dart';
-import 'package:chakh_le_flutter/utils/ios_search_bar.dart';
+import 'package:chakh_ley_flutter/entity/category.dart';
+import 'package:chakh_ley_flutter/entity/restaurant.dart';
+import 'package:chakh_ley_flutter/restaurant_screen.dart';
+import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
+import 'package:chakh_ley_flutter/utils/color_loader.dart';
+import 'package:chakh_ley_flutter/utils/ios_search_bar.dart';
+import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
 import 'package:floating_ribbon/floating_ribbon.dart';
 import 'package:flutter/material.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skeleton_text/skeleton_text.dart';
@@ -50,7 +50,7 @@ class _HomeMainPageState extends State<HomeMainPage>
 
   loadRestaurants() async {
     Future.sync(() {
-      fetchRestaurants(ConstantVariables.businessID).then((val) {
+      fetchRestaurants(ConstantVariables.business.id).then((val) {
         if (val != null) {
           _restaurantController.add(val);
         }
@@ -67,13 +67,6 @@ class _HomeMainPageState extends State<HomeMainPage>
   @override
   void initState() {
     super.initState();
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (bool visible) {
-        if (!visible) {
-          _cancelSearch();
-        }
-      },
-    );
 
     _restaurantController = StreamController();
 
@@ -409,8 +402,8 @@ class _HomeMainPageState extends State<HomeMainPage>
                       restaurant,
                       () => Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => RestaurantScreen(
+                        SlideTopRoute(
+                          page: RestaurantScreen(
                             restaurant: restaurant,
                             category: fetchCategory(restaurant.id),
                           ),
@@ -539,40 +532,43 @@ class _HomeMainPageState extends State<HomeMainPage>
   }
 
   Widget _buildRestaurantImage(Restaurant restaurant) {
-    return Container(
-      width: 75.0,
-      height: 75.0,
-      child: restaurant.images.length == 0
-          ? Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image(
-                  image: AssetImage('assets/logo.png'),
-                ),
-              ),
-            )
-          : ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child: CachedNetworkImage(
-                imageUrl: restaurant.images[0],
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                    ),
+    return Hero(
+      tag: "restaurant_${restaurant.id}_hero",
+      child: Container(
+        width: 75.0,
+        height: 75.0,
+        child: restaurant.images.length == 0
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image(
+                    image: AssetImage('assets/logo.png'),
                   ),
                 ),
-                placeholder: (context, url) => Center(child: ColorLoader()),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+              )
+            : ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: CachedNetworkImage(
+                  imageUrl: restaurant.images[0],
+                  imageBuilder: (context, imageProvider) => Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  placeholder: (context, url) => Center(child: ColorLoader()),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
               ),
-            ),
-      decoration: BoxDecoration(
-        color: restaurant.images.length == 0
-            ? Colors.grey.shade300
-            : Colors.grey[200],
-        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        decoration: BoxDecoration(
+          color: restaurant.images.length == 0
+              ? Colors.grey.shade300
+              : Colors.grey[200],
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        ),
       ),
     );
   }

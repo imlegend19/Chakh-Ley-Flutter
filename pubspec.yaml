@@ -1,5 +1,5 @@
-name: chakh_le_flutter
-description: Official Chakh Le Customer App.
+name: chakh_ley_flutter
+description: Official Chakh Ley Customer App.
 
 version: 1.0.0+1
 
@@ -12,8 +12,6 @@ dependencies:
   cupertino_icons: ^0.1.2
   shimmer: ^1.0.0
   fluttertoast: ^3.0.1
-  flutter_launcher_icons: ^0.7.0
-  diamond_fab: ^0.1.0
   http: ^0.12.0+1
   auto_size_text: ^1.1.2
   sqflite:
@@ -36,10 +34,11 @@ dependencies:
   connectivity:
   flare_flutter:
   animator:
-  keyboard_visibility:
   sentry:
   floating_ribbon:
   url_launcher:
+  device_info:
+  get_ip:
 
 dev_dependencies:
   flutter_test:
@@ -65,15 +64,12 @@ flutter:
     - assets/location_unavailable.png
     - assets/location_permission.png
     - assets/no_internet_connection.gif
-    - assets/motorbike.png
     - assets/delivery_scooter.flr
     - assets/del_background.png
     - assets/quote.png
     - assets/success_check.flr
     - assets/error.flr
-    - assets/pulsing.flr
     - assets/error.png
-    - assets/phone.flr
 
   fonts:
     - family: Avenir
