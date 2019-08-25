@@ -12,13 +12,11 @@ import 'package:chakh_ley_flutter/utils/database_helper.dart';
 import 'package:chakh_ley_flutter/utils/error_widget.dart';
 import 'package:chakh_ley_flutter/utils/transparent_image.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:device_info/device_info.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:get_ip/get_ip.dart';
 import 'package:location/location.dart' as loc;
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -272,25 +270,6 @@ class _HomePageState extends State<HomePage>
       ConstantVariables.packageName = packageInfo.packageName;
       ConstantVariables.version = packageInfo.version;
       ConstantVariables.buildNumber = packageInfo.buildNumber;
-    });
-
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    deviceInfo.androidInfo.then((deviceInfo) {
-      ConstantVariables.deviceInfo = {
-        "product": deviceInfo.product,
-        "model": deviceInfo.model,
-        "host": deviceInfo.host,
-        "androidID": deviceInfo.androidId,
-      };
-      GetIp.ipAddress.then((ip) {
-        _sentry.userContext = User(
-          id: ConstantVariables.user['id'],
-          email: ConstantVariables.user['email'],
-          ipAddress: ip,
-          extras: ConstantVariables.deviceInfo,
-          username: ConstantVariables.user['mobile'],
-        );
-      });
     });
 
     _getUserCredentials();

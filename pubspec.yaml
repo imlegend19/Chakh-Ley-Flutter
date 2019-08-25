@@ -1,7 +1,7 @@
 name: chakh_ley_flutter
 description: Official Chakh Ley Customer App.
 
-version: 1.0.2+3
+version: 1.0.3+4
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -37,8 +37,6 @@ dependencies:
   sentry:
   floating_ribbon:
   url_launcher:
-  device_info:
-  get_ip:
 
 dev_dependencies:
   flutter_test:
