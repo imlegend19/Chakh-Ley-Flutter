@@ -194,7 +194,7 @@ class _CartPageState extends State<CartPage>
             top: ConstantVariables.business.isActive
                 ? MediaQuery.of(context).size.height * 0.55
                 : MediaQuery.of(context).size.height * 0.54,
-            child: !userLoggedIn
+            child: userLoggedIn
                 ? _buildCheckOut(restaurant.deliveryTime)
                 : _buildAskLogin(),
           ),
