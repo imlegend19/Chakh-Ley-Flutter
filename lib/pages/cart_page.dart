@@ -194,7 +194,7 @@ class _CartPageState extends State<CartPage>
             top: ConstantVariables.business.isActive
                 ? MediaQuery.of(context).size.height * 0.55
                 : MediaQuery.of(context).size.height * 0.54,
-            child: userLoggedIn
+            child: !userLoggedIn
                 ? _buildCheckOut(restaurant.deliveryTime)
                 : _buildAskLogin(),
           ),
@@ -706,15 +706,21 @@ class _CartPageState extends State<CartPage>
                           ),
                         ),
                         SizedBox(width: 10.0),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 3.0),
-                          child: Text(
-                            'Delivery in $deliveryTime mins',
-                            style: TextStyle(
+                        Container(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 3.0),
+                            child: Text(
+                              'Delivery in $deliveryTime mins',
+                              style: TextStyle(
                                 color: Colors.grey.shade800,
                                 fontFamily: 'Avenir-Black',
                                 fontSize: 14.0,
-                                fontWeight: FontWeight.w600),
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 3,
+                              textAlign: TextAlign.start,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         )
                       ],
@@ -725,16 +731,22 @@ class _CartPageState extends State<CartPage>
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(5.0)),
-                      child: Center(
-                        child: Text(
-                          totalCost != null
-                              ? "Rs. ${totalCost + deliveryFee}"
-                              : "-",
-                          style: TextStyle(
-                            fontFamily: 'Avenir-Bold',
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15.0,
-                            color: Colors.grey.shade700,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 3.0, right: 3.0),
+                            child: Text(
+                              totalCost != null
+                                  ? "Rs. ${(totalCost + deliveryFee + restaurantCharges)}"
+                                  : "-",
+                              style: TextStyle(
+                                fontFamily: 'Avenir-Bold',
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15.0,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -803,45 +815,6 @@ class _CartPageState extends State<CartPage>
                     : null),
         _buildInvoiceRow(
             'Delivery Fee', getDeliveryFee(km, totalCost), restaurant),
-        Padding(
-          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-          child: Divider(color: Colors.grey.shade600),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0, top: 5.0, bottom: 5.0),
-              child: Text(
-                'To Pay',
-                style: TextStyle(
-                  fontFamily: 'Avelir-Bold',
-                  fontSize: 14.0,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(right: 15.0, top: 5.0, bottom: 5.0),
-              child: Text(
-                totalCost != null
-                    ? "₹" +
-                        (totalCost + restaurantCharges + deliveryFee).toString()
-                    : "NA",
-                style: TextStyle(
-                  fontFamily: 'Avelir-Bold',
-                  fontSize: 14.0,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
@@ -895,7 +868,7 @@ class _CartPageState extends State<CartPage>
 
     restaurantCharges = charge;
 
-    return charge;
+    return double.parse(charge.toStringAsFixed(2));
   }
 
   Widget _buildCheckoutButton() {
@@ -1046,7 +1019,7 @@ String getMessage(Restaurant restaurant) {
     msg += "CGST - 2.5%, SGST - 2.5%";
   }
 
-  if (double.parse(restaurant.packagingCharge) == 0) {
+  if (double.parse(restaurant.packagingCharge) != 0) {
     if (msg.length != 0) {
       msg += " and Packaging Charge";
     } else {
