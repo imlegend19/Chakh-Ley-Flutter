@@ -149,11 +149,9 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 3.0),
                               child: Text(
-                                widget.restaurant.openStatus
-                                    ? 'Open'
-                                    : 'Closed',
+                                widget.restaurant.open ? 'Open' : 'Closed',
                                 style: TextStyle(
-                                  color: widget.restaurant.openStatus
+                                  color: widget.restaurant.open
                                       ? Colors.green
                                       : Colors.black54,
                                   fontFamily: 'Avenir-Black',
@@ -249,20 +247,12 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   }
 
   Widget productExpandedList(Category category, DatabaseHelper dh, int count) {
-    if (isVegSwitched) {
-      return Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: _buildExpandableContent(dh, count, category.vegProducts));
-    } else {
-      return Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: _buildExpandableContent(dh, count, category.products),
-      );
-    }
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: _buildExpandableContent(dh, count, category.products),
+    );
   }
 
   List<Widget> _buildExpandableContent(

@@ -8,38 +8,36 @@ import 'api_static.dart';
 class Restaurant {
   final int id;
   final String name;
-  final int deliveryTime;
-  final String fullAddress;
-  final bool openStatus;
+  final bool isActive;
+  final int businessId;
   final String costForTwo;
-  final int categoryCount;
-  final double latitude;
-  final double longitude;
-  final int commission;
-  final bool isVeg;
-  final List<dynamic> images;
+  final int deliveryTime;
   final List<dynamic> cuisines;
+  final bool isVeg;
+  final bool open;
+  final int categoryCount;
+  final List<dynamic> images;
   final String packagingCharge;
   final bool gst;
   final String ribbon;
+  final String fullAddress;
 
   Restaurant({
     this.id,
     this.name,
-    this.deliveryTime,
-    this.fullAddress,
-    this.openStatus,
+    this.isActive,
+    this.businessId,
     this.costForTwo,
-    this.categoryCount,
-    this.latitude,
-    this.longitude,
-    this.commission,
-    this.isVeg,
-    this.images,
+    this.deliveryTime,
     this.cuisines,
+    this.isVeg,
+    this.open,
+    this.categoryCount,
+    this.images,
     this.packagingCharge,
     this.gst,
     this.ribbon,
+    this.fullAddress,
   });
 }
 
@@ -62,21 +60,19 @@ class GetRestaurant {
         Restaurant(
           id: jsonRestaurant[APIStatic.keyID],
           name: jsonRestaurant[APIStatic.keyName],
+          isActive: jsonRestaurant[RestaurantStatic.keyIsActive],
+          businessId: jsonRestaurant[RestaurantStatic.keyBusinessId],
           deliveryTime: jsonRestaurant[RestaurantStatic.keyDeliveryTime],
-          fullAddress: jsonRestaurant[RestaurantStatic.keyFullAddress],
-          openStatus: jsonRestaurant[RestaurantStatic.keyOpen],
           costForTwo: jsonRestaurant[RestaurantStatic.keyCostForTwo],
           categoryCount: jsonRestaurant[RestaurantStatic.keyCategoryCount],
-          latitude: double.parse(jsonRestaurant[RestaurantStatic.keyLatitude]),
-          longitude:
-              double.parse(jsonRestaurant[RestaurantStatic.keyLongitude]),
-          commission: jsonRestaurant[RestaurantStatic.keyCommission],
           isVeg: jsonRestaurant[RestaurantStatic.keyIsVeg],
+          open: jsonRestaurant[RestaurantStatic.keyOpen],
           images: jsonRestaurant[RestaurantStatic.keyImages],
           cuisines: jsonRestaurant[RestaurantStatic.keyCuisine],
           packagingCharge: jsonRestaurant[RestaurantStatic.keyPackagingCharge],
           gst: jsonRestaurant[RestaurantStatic.keyGST],
           ribbon: jsonRestaurant[RestaurantStatic.keyRibbon],
+          fullAddress: jsonRestaurant[RestaurantStatic.keyFullAddress],
         ),
       );
     }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chakh_ley_flutter/entity/order.dart';
+import 'package:chakh_ley_flutter/entity/restaurant.dart';
 import 'package:chakh_ley_flutter/utils/error_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -158,8 +159,10 @@ class _OrderPageState extends State<OrderPage> with TickerProviderStateMixin {
       body: Stack(
         children: <Widget>[
           RestaurantDetails(
-              height: MediaQuery.of(context).size.height,
-              restaurant: order.restaurant),
+            height: MediaQuery.of(context).size.height,
+            restaurant: fetchRestaurantData(order.restaurantId),
+            restaurantName: order.restaurantName,
+          ),
           Positioned.fill(
             child: Padding(
               padding:

@@ -32,29 +32,8 @@ class _CartPageState extends State<CartPage>
   double restaurantCharges = 0;
   bool disableCheckout = true;
   double deliveryFee = 0;
-
-  bool fetchedDistance = false;
-
   bool userLoggedIn = ConstantVariables.userLoggedIn;
   double km;
-
-  void fetchDistance() {
-    calculateDeliveryCharge(
-      ConstantVariables.cartRestaurant.latitude,
-      ConstantVariables.cartRestaurant.longitude,
-      ConstantVariables.userLatitude,
-      ConstantVariables.userLongitude,
-    ).then((value) {
-      setState(() {
-        km = value * 0.001;
-        if (km > 15) {
-          disableCheckout = true;
-        } else {
-          disableCheckout = false;
-        }
-      });
-    });
-  }
 
   @override
   void initState() {
@@ -72,10 +51,6 @@ class _CartPageState extends State<CartPage>
   Widget build(BuildContext context) {
     if (ConstantVariables.cartProductsCount != 0) {
       if (ConstantVariables.cartRestaurant != null) {
-        if (!fetchedDistance) {
-          fetchDistance();
-          fetchedDistance = true;
-        }
         return SingleChildScrollView(
             child: _buildCartView(ConstantVariables.cartRestaurant));
       } else {
@@ -89,10 +64,7 @@ class _CartPageState extends State<CartPage>
                 if (response.hasData) {
                   ConstantVariables.cartRestaurant =
                       response.data.restaurants[0];
-                  if (!fetchedDistance) {
-                    fetchDistance();
-                    fetchedDistance = true;
-                  }
+
                   return _buildCartView(response.data.restaurants[0]);
                 } else if (response.hasError) {
                   throw Exception;
@@ -548,10 +520,9 @@ class _CartPageState extends State<CartPage>
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.3,
                   child: AutoSizeText(
-                    restaurant.openStatus ? "Open" : "Closed",
+                    restaurant.open ? "Open" : "Closed",
                     style: TextStyle(
-                        color:
-                            restaurant.openStatus ? Colors.green : Colors.red,
+                        color: restaurant.open ? Colors.green : Colors.red,
                         fontFamily: 'Avenir-Black',
                         fontWeight: FontWeight.w700,
                         fontSize: 12.0),
@@ -735,7 +706,8 @@ class _CartPageState extends State<CartPage>
                         scrollDirection: Axis.horizontal,
                         child: Center(
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 3.0, right: 3.0),
+                            padding:
+                                const EdgeInsets.only(left: 3.0, right: 3.0),
                             child: Text(
                               totalCost != null
                                   ? "Rs. ${(totalCost + deliveryFee + restaurantCharges)}"
@@ -893,7 +865,7 @@ class _CartPageState extends State<CartPage>
             ? disableCheckout
                 ? null
                 : ConstantVariables.business.isActive
-                    ? ConstantVariables.cartRestaurant.openStatus
+                    ? ConstantVariables.cartRestaurant.open
                         ? () => {
                               Navigator.push(
                                 context,
