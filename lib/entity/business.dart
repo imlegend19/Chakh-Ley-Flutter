@@ -43,8 +43,8 @@ class GetBusiness {
         name: jsonBusiness[APIStatic.keyName],
         type: jsonBusiness[BusinessStatic.keyType],
         city: jsonBusiness[BusinessStatic.keyCity],
-        latitude: double.parse(jsonBusiness[RestaurantStatic.keyLatitude]),
-        longitude: double.parse(jsonBusiness[RestaurantStatic.keyLongitude]),
+        latitude: double.parse(jsonBusiness[BusinessStatic.keyLatitude]),
+        longitude: double.parse(jsonBusiness[BusinessStatic.keyLongitude]),
         isActive: jsonBusiness[BusinessStatic.keyIsActive],
       ));
     }

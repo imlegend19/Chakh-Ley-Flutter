@@ -8,33 +8,37 @@ class Order {
   final int id;
   final String mobile;
   final String email;
-  final Map<String, dynamic> restaurant;
+  final int business;
+  final int restaurantId;
+  final String restaurantName;
   final String preparationTime;
   final String status;
   final String orderDate;
   final double total;
+  final double packagingCharge;
   final bool paymentDone;
   final bool hasDeliveryBoy;
   final Map<String, dynamic> deliveryBoy;
   final List<dynamic> suborderSet;
   final Map<String, dynamic> delivery;
-  final List<dynamic> transactions;
 
   Order({
     this.id,
     this.mobile,
     this.email,
-    this.restaurant,
+    this.business,
+    this.restaurantId,
+    this.restaurantName,
     this.preparationTime,
     this.status,
     this.orderDate,
     this.total,
     this.paymentDone,
+    this.packagingCharge,
     this.hasDeliveryBoy,
     this.deliveryBoy,
     this.suborderSet,
     this.delivery,
-    this.transactions,
   });
 }
 
@@ -54,19 +58,21 @@ class GetOrders {
       Map<String, dynamic> jsonOrder = results[i];
       orders.add(Order(
         id: jsonOrder[APIStatic.keyID],
-        mobile: jsonOrder[RestaurantStatic.keyMobile],
-        email: jsonOrder[RestaurantStatic.keyEmail],
-        restaurant: jsonOrder[RestaurantStatic.keyRestaurant],
+        mobile: jsonOrder[APIStatic.keyMobile],
+        email: jsonOrder[APIStatic.keyEmail],
+        business: jsonOrder[BusinessStatic.keyBusiness],
+        restaurantId: jsonOrder[OrderStatic.keyRestaurantId],
+        restaurantName: jsonOrder[OrderStatic.keyRestaurantName],
         preparationTime: jsonOrder[OrderStatic.keyPreparationTime],
         status: jsonOrder[OrderStatic.keyStatus],
         orderDate: jsonOrder[OrderStatic.keyOrderDate],
         total: jsonOrder[OrderStatic.keyTotal],
+        packagingCharge: jsonOrder[OrderStatic.keyPackagingCharge],
         paymentDone: jsonOrder[OrderStatic.keyPaymentDone],
         hasDeliveryBoy: jsonOrder[OrderStatic.keyHasDeliveryBoy],
         deliveryBoy: jsonOrder[OrderStatic.keyDeliveryBoy],
-        suborderSet: jsonOrder[OrderStatic.keySuborderSet],
+        suborderSet: jsonOrder[OrderStatic.keySubOrderSet],
         delivery: jsonOrder[OrderStatic.keyDelivery],
-        transactions: jsonOrder[OrderStatic.keyTransactions],
       ));
     }
 

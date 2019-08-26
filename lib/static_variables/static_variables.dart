@@ -59,6 +59,4 @@ class ConstantVariables {
   static bool ongoingOrder = false;
 
   static Business business;
-
-  static Map<String, String> deviceInfo;
 }

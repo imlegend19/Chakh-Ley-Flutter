@@ -10,7 +10,6 @@ class Category {
   final bool active;
   final int productCount;
   final List<dynamic> products;
-  final List<dynamic> vegProducts;
   final List<dynamic> combos;
 
   Category({
@@ -19,7 +18,6 @@ class Category {
     this.active,
     this.productCount,
     this.products,
-    this.vegProducts,
     this.combos,
   });
 }
@@ -46,7 +44,6 @@ class GetCategory {
         active: jsonCategory[ProductStatic.keyActive],
         productCount: jsonCategory[CategoryStatic.keyProductCount],
         products: jsonCategory[CategoryStatic.keyProducts],
-        vegProducts: jsonCategory[CategoryStatic.keyVegProducts],
         combos: jsonCategory[CategoryStatic.keyCombos],
       ));
     }

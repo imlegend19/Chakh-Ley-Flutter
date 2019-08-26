@@ -282,9 +282,9 @@ class _HomeMainPageState extends State<HomeMainPage>
                         Padding(
                           padding: const EdgeInsets.only(top: 3.5),
                           child: Text(
-                            restaurant.openStatus ? 'Open' : 'Closed',
+                            restaurant.open ? 'Open' : 'Closed',
                             style: TextStyle(
-                                color: restaurant.openStatus
+                                color: restaurant.open
                                     ? Colors.green
                                     : Colors.black54,
                                 fontFamily: 'Avenir-Black',
