@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:chakh_ley_flutter/entity/restaurant.dart';
 import 'package:chakh_ley_flutter/models/user_pref.dart';
 import 'package:chakh_ley_flutter/pages/cart_page.dart';
@@ -20,6 +21,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:sentry/sentry.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skeleton_text/skeleton_text.dart';
+
 import 'entity/business.dart';
 
 final SentryClient _sentry = SentryClient(dsn: ConstantVariables.sentryDSN);
@@ -30,6 +32,8 @@ StreamSubscription<ConnectivityResult> subscription;
 
 Future<Null> _reportError(dynamic error, dynamic stackTrace) async {
   // print('Reporting to Sentry.io...');
+  print(error);
+  print(stackTrace);
   await _sentry.captureException(
     exception: error,
     stackTrace: stackTrace,
@@ -89,7 +93,7 @@ class _MyAppState extends State<MyApp> {
               ConstantVariables.openRestaurantsCount = val.openRestaurantsCount;
               ConstantVariables.restaurantCount = val.count;
 
-              for (int i=0; i<ConstantVariables.restaurantCount; i++) {
+              for (int i = 0; i < ConstantVariables.restaurantCount; i++) {
                 ConstantVariables.categoryList.add(null);
               }
 
@@ -400,6 +404,7 @@ class _HomePageState extends State<HomePage>
     } else if (index == 3) {
       setState(() {
         body = ProfilePage();
+        ProfilePage.callback = this.callback;
         selectedIndex = 3;
       });
     }
@@ -899,5 +904,11 @@ class _HomePageState extends State<HomePage>
         ],
       ),
     );
+  }
+
+  void callback(int index) {
+    setState(() {
+      selectedTab(index);
+    });
   }
 }

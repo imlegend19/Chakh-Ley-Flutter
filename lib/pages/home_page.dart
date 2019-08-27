@@ -58,7 +58,7 @@ class _HomeMainPageState extends State<HomeMainPage>
           }
 
           if (ConstantVariables.categoryList.length == 0) {
-            for (int i=0; i<ConstantVariables.restaurantCount; i++) {
+            for (int i = 0; i < ConstantVariables.restaurantCount; i++) {
               ConstantVariables.categoryList.add(null);
             }
           }
@@ -646,62 +646,99 @@ class LoadingListPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
-                  children: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-                      .map((_) => Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 8.0, left: 10.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 75.0,
-                                  height: 75.0,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
+                  children: [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15
+                  ]
+                      .map(
+                        (_) => Padding(
+                          padding:
+                              const EdgeInsets.only(bottom: 8.0, left: 10.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 75.0,
+                                height: 75.0,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 15.0, bottom: 5.0),
-                                      child: Container(
-                                        height: 15,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.6,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                            color: Colors.white),
-                                      ),
+                              ),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 15.0, bottom: 5.0),
+                                    child: Container(
+                                      height: 15,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.6,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          color: Colors.white),
                                     ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 15.0),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 5.0),
-                                            child: Container(
-                                              width: 20,
-                                              height: 20,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                color: Colors.white,
-                                              ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 15.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 5.0),
+                                          child: Container(
+                                            width: 20,
+                                            height: 20,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              color: Colors.white,
                                             ),
                                           ),
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 2.5),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 2.5),
+                                          child: Container(
+                                            width: 50.0,
+                                            height: 13,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 5.0, right: 5.0, top: 3.0),
+                                          child: Icon(Icons.fiber_manual_record,
+                                              color: Colors.grey[400],
+                                              size: 8.0),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 3.5),
+                                          child: SkeletonAnimation(
                                             child: Container(
                                               width: 50.0,
                                               height: 13,
@@ -712,66 +749,38 @@ class LoadingListPage extends StatelessWidget {
                                               ),
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 5.0,
-                                                right: 5.0,
-                                                top: 3.0),
-                                            child: Icon(
-                                                Icons.fiber_manual_record,
-                                                color: Colors.grey[400],
-                                                size: 8.0),
-                                          ),
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 3.5),
-                                            child: SkeletonAnimation(
-                                              child: Container(
-                                                width: 50.0,
-                                                height: 13,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  color: Colors.white,
-                                                ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 5.0, right: 5.0, top: 3.0),
+                                          child: Icon(Icons.fiber_manual_record,
+                                              color: Colors.grey[400],
+                                              size: 8.0),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 3.0),
+                                          child: SkeletonAnimation(
+                                            child: Container(
+                                              width: 50.0,
+                                              height: 13,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                color: Colors.white,
                                               ),
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 5.0,
-                                                right: 5.0,
-                                                top: 3.0),
-                                            child: Icon(
-                                                Icons.fiber_manual_record,
-                                                color: Colors.grey[400],
-                                                size: 8.0),
-                                          ),
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 3.0),
-                                            child: SkeletonAnimation(
-                                              child: Container(
-                                                width: 50.0,
-                                                height: 13,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
+                                        )
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ))
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
                       .toList(),
                 ),
               ),
@@ -813,6 +822,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       switch (_radioValue) {
         case 0:
           _result = 'R';
+          selectedFilter = 'R';
           bool trueSeen = false;
           for (final i in cuisinesVal) {
             if (i == true) {
@@ -831,12 +841,14 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           }
           break;
         case 1:
+          selectedFilter = 'CT';
           _result = 'CT';
           setState(() {
             disableApply = false;
           });
           break;
         case 2:
+          selectedFilter = 'DT';
           _result = 'DT';
           setState(() {
             disableApply = false;

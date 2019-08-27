@@ -4,16 +4,13 @@ import 'dart:io';
 import 'package:chakh_ley_flutter/entity/api_static.dart';
 import 'package:chakh_ley_flutter/models/user_post.dart';
 import 'package:chakh_ley_flutter/models/user_pref.dart';
-import 'package:chakh_ley_flutter/pages/home_page.dart';
+import 'package:chakh_ley_flutter/pages/profile_page.dart';
 import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:chakh_ley_flutter/utils/parse_jwt.dart';
-import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_text_field/pin_code_text_field.dart';
-
-import '../main.dart';
 
 void showOTPDialog(BuildContext context, String destination, bool decider) {
   showDialog(
@@ -244,6 +241,7 @@ class _OTPBuilderState extends State<OTPBuilder> {
       saveUserCredentials(decodedObject['user_id'], decodedObject['email'],
           decodedObject['mobile'], decodedObject['name']);
       Navigator.of(context).pop();
+      ProfilePage.callback(0);
     } else {
       var json = JSON.jsonDecode(response.body);
       assert(json is Map);

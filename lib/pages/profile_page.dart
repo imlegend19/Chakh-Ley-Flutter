@@ -9,6 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ProfilePage extends StatefulWidget {
+//  final Function callback;
+//  ProfilePage({this.callback});
+
+  static var callback;
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -276,14 +281,3 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 }
-
-//    _buildAccountTile(
-//      () => Fluttertoast.showToast(
-//            msg:
-//                "We are still working on this feature, thanks for your patience.",
-//            toastLength: Toast.LENGTH_LONG,
-//            timeInSecForIos: 2,
-//          ),
-//      'Manage Address',
-//      Icons.home,
-//    )
