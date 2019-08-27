@@ -1,52 +1,34 @@
 import 'dart:async';
-
 import 'package:chakh_ley_flutter/entity/restaurant.dart';
 import 'package:chakh_ley_flutter/models/user_pref.dart';
 import 'package:chakh_ley_flutter/pages/cart_page.dart';
 import 'package:chakh_ley_flutter/pages/home_page.dart';
 import 'package:chakh_ley_flutter/pages/offers_page.dart';
 import 'package:chakh_ley_flutter/pages/profile_page.dart';
+import 'package:chakh_ley_flutter/pages/splash_screen.dart';
 import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:chakh_ley_flutter/utils/color_loader.dart';
-import 'package:chakh_ley_flutter/utils/database_helper.dart';
 import 'package:chakh_ley_flutter/utils/error_widget.dart';
-import 'package:chakh_ley_flutter/utils/transparent_image.dart';
+import 'package:chakh_ley_flutter/utils/geo_location.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
-import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sentry/sentry.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skeleton_text/skeleton_text.dart';
-
 import 'entity/business.dart';
-import 'models/restaurant_pref.dart';
 
 final SentryClient _sentry = SentryClient(dsn: ConstantVariables.sentryDSN);
 
-bool get isInDebugMode {
-  bool inDebugMode = false;
-  assert(inDebugMode = true);
-  return inDebugMode;
-}
+var _connectionStatus;
+Connectivity connectivity = Connectivity();
+StreamSubscription<ConnectivityResult> subscription;
 
 Future<Null> _reportError(dynamic error, dynamic stackTrace) async {
-  // print('Caught error: $error');
-
-  // Errors thrown in development mode are unlikely to be interesting. You can
-  // check if you are running in dev mode using an assertion and omit sending
-  // the report.
-  if (isInDebugMode) {
-    print(stackTrace);
-    print('In dev mode. Not sending report to Sentry.io.');
-    return;
-  }
-
   // print('Reporting to Sentry.io...');
   await _sentry.captureException(
     exception: error,
@@ -56,11 +38,7 @@ Future<Null> _reportError(dynamic error, dynamic stackTrace) async {
 
 void main() async {
   FlutterError.onError = (FlutterErrorDetails details) async {
-    if (isInDebugMode) {
-      FlutterError.dumpErrorToConsole(details);
-    } else {
-      Zone.current.handleUncaughtError(details.exception, details.stack);
-    }
+    _reportError(details.exception, details.stack);
   };
 
   runZoned(() async {
@@ -70,7 +48,76 @@ void main() async {
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    getInitialPageStatus().then((val) {
+      setState(() {
+        SplashScreen.switchToHomePage = val == null ? false : true;
+        // print("Initial status fetched");
+      });
+    });
+
+    getBusiness().then((val) {
+      setState(() {
+        if (val == 0) {
+          ConstantVariables.businessFetched = false;
+        } else {
+          ConstantVariables.businessFetched = true;
+          ConstantVariables.businessID = val;
+          ConstantVariables.businessPresent = true;
+        }
+
+        // print("business Fetched: $val");
+      });
+    });
+
+    connectivity.checkConnectivity().then((result) {
+      if ((result == ConnectivityResult.mobile) ||
+          (result == ConnectivityResult.wifi)) {
+        if (ConstantVariables.businessFetched) {
+          fetchRestaurants(ConstantVariables.businessID).then((val) {
+            setState(() {
+              ConstantVariables.restaurantList = val.restaurants;
+              ConstantVariables.openRestaurantsCount = val.openRestaurantsCount;
+              ConstantVariables.restaurantCount = val.count;
+
+              for (int i=0; i<ConstantVariables.restaurantCount; i++) {
+                ConstantVariables.categoryList.add(null);
+              }
+
+              // print("restaurant fetched!");
+            });
+          });
+
+          fetchBusiness().then((val) {
+            ConstantVariables.business = val.business[0];
+          });
+        } else {
+          fetchBusiness().then((val) {
+            setState(() {
+              for (final i in val.business) {
+                ConstantVariables.position.add([i.latitude, i.longitude]);
+                ConstantVariables.businessList.add(i);
+              }
+
+              ConstantVariables.businessFetched = true;
+            });
+
+            // print("business fetched");
+          });
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
@@ -84,7 +131,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         fontFamily: 'Avenir',
       ),
-      home: HomePage(),
+      home: SplashScreen(),
       builder: (BuildContext context, Widget widget) {
         ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
           return getErrorWidget(context);
@@ -101,6 +148,8 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatefulWidget {
   static bool isVisible = true;
   static int spRestaurantID;
+  static PermissionStatus permissionStatus;
+  static GetRestaurant restaurant;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -117,75 +166,19 @@ class _HomePageState extends State<HomePage>
   loc.Location location = loc.Location();
   Geolocator geoLocator = Geolocator();
   Position userLocation;
-  var position = [];
-  List<Business> business = [];
 
   bool permissionDenied = false;
   bool serviceDenied = false;
-  bool businessFetched = false;
-  bool fetchedBusinessID = false;
   bool locationError = false;
   bool locationSetUpCompleted = false;
-
-  Future<double> calculateDistance(double originLat, double originLong,
-      double destLat, double destLong) async {
-    if (ConstantVariables.hasLocationPermission) {
-      Geolocator geoLocator = Geolocator();
-      var metres = await geoLocator.distanceBetween(
-          originLat, originLong, destLat, destLong);
-      return metres;
-    } else {
-      return 0;
-    }
-  }
-
-  var _connectionStatus;
-  Connectivity connectivity;
-  static bool getStartedClicked;
-  StreamSubscription<ConnectivityResult> subscription;
-
-  String getAddress() {
-    String address = ConstantVariables.address.featureName;
-
-    if (ConstantVariables.address.locality != null) {
-      address += ", " + ConstantVariables.address.locality;
-    }
-
-    if (ConstantVariables.address.subAdminArea != null) {
-      address += ", " + ConstantVariables.address.subAdminArea;
-    }
-
-    if (ConstantVariables.address.adminArea != null) {
-      address += ", " + ConstantVariables.address.adminArea;
-    }
-
-    if (ConstantVariables.address.postalCode != null) {
-      address += ", " + ConstantVariables.address.postalCode;
-    }
-
-    return address;
-  }
 
   @override
   void initState() {
     super.initState();
 
-    getInitialPageStatus().then((val) {
-      setState(() {
-        if (val == null) {
-          getStartedClicked = false;
-        } else {
-          getStartedClicked = val;
-        }
-      });
-    });
-
-    PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.location)
-        .then((value) {
-      // print('Value: $value');
-      if (value == PermissionStatus.disabled) {
-        loc.Location().requestService().then((value) {
+    if (HomePage.permissionStatus == PermissionStatus.disabled)
+      loc.Location().requestService().then(
+        (value) {
           if (value == true) {
             setState(() {
               body = _buildLoadingScreen();
@@ -200,14 +193,60 @@ class _HomePageState extends State<HomePage>
               body = _buildLocationPermission("Enable Location Service");
             });
           }
+        },
+      );
+
+    connectivity.checkConnectivity().then((val) {
+      // print(val);
+
+      selectedTab(0);
+
+      if (val == ConnectivityResult.none) {
+        setState(() {
+          if ((selectedIndex == 0) || (selectedIndex == 2)) {
+            body = _buildNoInternet();
+          }
         });
+      } else if ((val == ConnectivityResult.mobile) ||
+          (val == ConnectivityResult.wifi)) {
+        if (!ConstantVariables.businessFetched) {
+          fetchBusiness().then((value) {
+            if (value != null) {
+              for (final i in value.business) {
+                ConstantVariables.position.add([i.latitude, i.longitude]);
+                ConstantVariables.businessList.add(i);
+              }
+              setState(() {
+                ConstantVariables.businessFetched = true;
+                selectedTab(0);
+              });
+            } else {
+              setState(() {
+                body = getErrorWidget(context);
+              });
+              Fluttertoast.showToast(
+                msg: "Some error occurred!",
+                toastLength: Toast.LENGTH_SHORT,
+                timeInSecForIos: 1,
+                fontSize: 13.0,
+              );
+            }
+          });
+        }
+
+        if (!locationSetUpCompleted) {
+          // print(locationSetUpCompleted);
+          _setupLocation();
+        }
       }
     });
 
-    connectivity = Connectivity();
     subscription =
         connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
       _connectionStatus = result;
+      ConstantVariables.connectionStatus = result;
+
+      selectedTab(0);
 
       if (result == ConnectivityResult.none) {
         setState(() {
@@ -215,30 +254,33 @@ class _HomePageState extends State<HomePage>
             body = _buildNoInternet();
           }
         });
-      } else if ((result == ConnectivityResult.mobile) ||
-          (result == ConnectivityResult.wifi)) {
-        fetchBusiness().then((value) {
-          if (value != null) {
-            for (final i in value.business) {
-              position.add([i.latitude, i.longitude]);
-              business.add(i);
+      } else {
+        if (!ConstantVariables.businessFetched) {
+          fetchBusiness().then((value) {
+            if (value != null) {
+              for (final i in value.business) {
+                ConstantVariables.position.add([i.latitude, i.longitude]);
+                ConstantVariables.businessList.add(i);
+              }
+              setState(() {
+                ConstantVariables.businessFetched = true;
+                selectedTab(0);
+              });
+            } else {
+              setState(() {
+                body = getErrorWidget(context);
+              });
+              Fluttertoast.showToast(
+                msg: "Some error occurred!",
+                toastLength: Toast.LENGTH_SHORT,
+                timeInSecForIos: 1,
+                fontSize: 13.0,
+              );
             }
-            setState(() {
-              businessFetched = true;
-              selectedTab(0);
-            });
-          } else {
-            setState(() {
-              body = getErrorWidget(context);
-            });
-            Fluttertoast.showToast(
-              msg: "Some error occurred!",
-              toastLength: Toast.LENGTH_SHORT,
-              timeInSecForIos: 1,
-              fontSize: 13.0,
-            );
-          }
-        });
+          }).catchError((error) {
+            // print(error);
+          });
+        }
 
         if (!locationSetUpCompleted) {
           _setupLocation();
@@ -246,33 +288,7 @@ class _HomePageState extends State<HomePage>
       }
     });
 
-    getRestaurant().then((value) {
-      setState(() {
-        HomePage.spRestaurantID = value;
-      });
-    });
-
-    Future<int> count = getCartProductCount();
-    count.then((value) {
-      if (value == null) {
-        ConstantVariables.cartProductsCount = 0;
-      } else {
-        if (value <= 0) {
-          ConstantVariables.cartProductsCount = 0;
-        } else {
-          ConstantVariables.cartProductsCount = value;
-        }
-      }
-    });
-
-    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-      ConstantVariables.appName = packageInfo.appName;
-      ConstantVariables.packageName = packageInfo.packageName;
-      ConstantVariables.version = packageInfo.version;
-      ConstantVariables.buildNumber = packageInfo.buildNumber;
-    });
-
-    _getUserCredentials();
+    getUserCredentials();
   }
 
   @override
@@ -282,13 +298,12 @@ class _HomePageState extends State<HomePage>
   }
 
   void _setupLocation() {
-    _getLocation().then((position) {
+    getLocation(geoLocator).then((position) {
       location.hasPermission().then((bool) {
         if (bool) {
           permissionDenied = false;
           ConstantVariables.hasLocationPermission = true;
-          _getLocationDetails(
-                  Coordinates(position.latitude, position.longitude))
+          getLocationDetails(Coordinates(position.latitude, position.longitude))
               .catchError((error) {
             locationSetUpCompleted = false;
             locationError = true;
@@ -329,45 +344,6 @@ class _HomePageState extends State<HomePage>
         }
       });
     });
-  }
-
-  void _getUserCredentials() async {
-    Future<bool> loggedIn = isLoggedIn();
-    loggedIn.then((bool) {
-      if (bool) {
-        var details = getDetails();
-        details.then((result) {
-          ConstantVariables.user['email'] = result['email'];
-          ConstantVariables.user['mobile'] = result['mobile'];
-          ConstantVariables.user['name'] = result['name'];
-          ConstantVariables.user['id'] = result['id'];
-        });
-      }
-
-      ConstantVariables.userLoggedIn = bool == null ? false : bool;
-    });
-  }
-
-  Future<List<Address>> _getLocationDetails(Coordinates coordinates) async {
-    List<Address> address = await Geocoder.local
-        .findAddressesFromCoordinates(coordinates)
-        .catchError((error) async {
-      _getLocationDetails(coordinates);
-    });
-
-    return address;
-  }
-
-  Future<Position> _getLocation() async {
-    var currentLocation;
-    try {
-      currentLocation = await geoLocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.best);
-    } catch (e) {
-      currentLocation = null;
-    }
-
-    return currentLocation;
   }
 
   dynamic body = ConstantVariables.businessPresent != null
@@ -439,19 +415,19 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     HomePage.isVisible = true;
 
-    if (!fetchedBusinessID) {
+    if (!ConstantVariables.fetchedBusinessID) {
       if (ConstantVariables.hasLocationPermission == true) {
-        if (businessFetched) {
+        if (ConstantVariables.businessFetched) {
           if (ConstantVariables.userLongitude != null &&
               ConstantVariables.userLatitude != null) {
-            for (int i = 0; i < position.length; i++) {
+            for (int i = 0; i < ConstantVariables.position.length; i++) {
               double km;
               calculateDistance(
-                      ConstantVariables.userLatitude,
-                      ConstantVariables.userLongitude,
-                      position[i][0],
-                      position[i][1])
-                  .then((value) {
+                ConstantVariables.userLatitude,
+                ConstantVariables.userLongitude,
+                ConstantVariables.position[i][0],
+                ConstantVariables.position[i][1],
+              ).then((value) {
                 km = value * 0.001;
 
                 ConstantVariables.totalDistance = km;
@@ -459,7 +435,13 @@ class _HomePageState extends State<HomePage>
                 if (km < 15) {
                   setState(() {
                     ConstantVariables.businessPresent = true;
-                    ConstantVariables.business = business[i];
+                    ConstantVariables.business =
+                        ConstantVariables.businessList[i];
+
+                    setBusiness(ConstantVariables.businessList[i].id);
+                    setBusinessPosition(
+                        ConstantVariables.businessList[i].latitude.toString(),
+                        ConstantVariables.businessList[i].longitude.toString());
                   });
                 } else {
                   setState(() {
@@ -475,76 +457,85 @@ class _HomePageState extends State<HomePage>
               }
             }
 
-            fetchedBusinessID = true;
+            ConstantVariables.fetchedBusinessID = true;
           }
         }
       }
     }
 
-    if (getStartedClicked != null) {
-      if (getStartedClicked) {
-        return Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomPadding: false,
+      appBar: AppBar(
+          elevation: 0,
           backgroundColor: Colors.white,
-          resizeToAvoidBottomPadding: false,
-          appBar: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              title: Container(
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      child: Shimmer.fromColors(
-                        baseColor: Colors.black,
-                        highlightColor: Colors.red,
-                        direction: ShimmerDirection.ltr,
-                        period: Duration(milliseconds: 2000),
-                        child: Text(
-                          'NOW',
+          title: Container(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.black,
+                    highlightColor: Colors.red,
+                    direction: ShimmerDirection.ltr,
+                    period: Duration(milliseconds: 2000),
+                    child: Text(
+                      'NOW',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                        color: Colors.black,
+                        fontFamily: 'Avenir-Black',
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Colors.black54,
+                        style: BorderStyle.solid,
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 3.0),
+                Icon(Icons.arrow_forward, color: Colors.black87, size: 15.0),
+                SizedBox(width: 3.0),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.65,
+                  child: ConstantVariables.address != null
+                      ? Text(
+                          ConstantVariables.userAddress,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20.0,
-                            color: Colors.black,
-                            fontFamily: 'Avenir-Black',
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
                             color: Colors.black54,
-                            style: BorderStyle.solid,
-                            width: 2.0,
+                            letterSpacing: 1.0,
+                            fontFamily: 'Neutraface',
                           ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 3.0),
-                    Icon(Icons.arrow_forward,
-                        color: Colors.black87, size: 15.0),
-                    SizedBox(width: 3.0),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.65,
-                      child: ConstantVariables.address != null
-                          ? Text(
-                              ConstantVariables.userAddress,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20.0,
-                                color: Colors.black54,
-                                letterSpacing: 1.0,
-                                fontFamily: 'Neutraface',
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            )
-                          : !permissionDenied
-                              ? _connectionStatus == ConnectivityResult.none
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      : !permissionDenied
+                          ? _connectionStatus == ConnectivityResult.none
+                              ? Text(
+                                  'No Internet...',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20.0,
+                                    color: Colors.black54,
+                                    letterSpacing: 1.0,
+                                    fontFamily: 'Neutraface',
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                )
+                              : serviceDenied
                                   ? Text(
-                                      'No Internet...',
+                                      'Location Service Denied...',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 20.0,
@@ -554,9 +545,9 @@ class _HomePageState extends State<HomePage>
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     )
-                                  : serviceDenied
+                                  : locationError
                                       ? Text(
-                                          'Location Service Denied...',
+                                          'Some Error Occurred!',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 20.0,
@@ -566,217 +557,99 @@ class _HomePageState extends State<HomePage>
                                           ),
                                           overflow: TextOverflow.ellipsis,
                                         )
-                                      : locationError
-                                          ? Text(
-                                              'Some Error Occurred!',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20.0,
-                                                color: Colors.black54,
-                                                letterSpacing: 1.0,
-                                                fontFamily: 'Neutraface',
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            )
-                                          : SkeletonAnimation(
-                                              child: Container(
-                                                width: 100.0,
-                                                height: 20.0,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  color: Colors.grey[300],
-                                                ),
-                                              ),
-                                            )
-                              : Text(
-                                  'Permission Denied...',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20.0,
-                                    color: Colors.black54,
-                                    letterSpacing: 1.0,
-                                    fontFamily: 'Neutraface',
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            style: BorderStyle.none,
-                            width: 3.0,
-                          ),
-                        ),
+                                      : SkeletonAnimation(
+                                          child: Container(
+                                            width: 100.0,
+                                            height: 20.0,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              color: Colors.grey[300],
+                                            ),
+                                          ),
+                                        )
+                          : Text(
+                              'Permission Denied...',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.0,
+                                color: Colors.black54,
+                                letterSpacing: 1.0,
+                                fontFamily: 'Neutraface',
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        style: BorderStyle.none,
+                        width: 3.0,
                       ),
                     ),
-                  ],
-                ),
-              )),
-          body: Stack(
-            children: <Widget>[
-              body,
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  height: 65.0,
-                  child: Card(
-                    color: Colors.white,
-                    elevation: 5.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(40.0),
-                        topRight: const Radius.circular(40.0),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            Icons.local_dining,
-                            color: selectedIndex == 0
-                                ? Colors.redAccent
-                                : Colors.grey,
-                          ),
-                          onPressed: () => selectedTab(0),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.local_offer,
-                            color: selectedIndex == 1
-                                ? Colors.redAccent
-                                : Colors.grey,
-                          ),
-                          onPressed: () => selectedTab(1),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.shopping_cart,
-                            color: selectedIndex == 2
-                                ? Colors.redAccent
-                                : Colors.grey,
-                          ),
-                          onPressed: () => selectedTab(2),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.person,
-                            color: selectedIndex == 3
-                                ? Colors.redAccent
-                                : Colors.grey,
-                          ),
-                          onPressed: () => selectedTab(3),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      } else {
-        return Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            backgroundColor: Color(0xffdceaea),
-          ),
-          floatingActionButton: Padding(
-            padding: const EdgeInsets.only(right: 15.0),
-            child: FloatingActionButton(
-              child: Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.black54,
-              ),
-              onPressed: () {
-                setState(() {
-                  getStartedClicked = true;
-                  initialPage(true);
-                });
-              },
-              shape: BeveledRectangleBorder(
-                borderRadius: BorderRadius.circular(50.0),
-              ),
-              backgroundColor: Color(0xffdceaea),
-            ),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-          body: Container(
-            color: Color(0xffdceaea),
-            child: Stack(
-              children: <Widget>[
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: FadeInImage(
-                    image: AssetImage('assets/del_background.png'),
-                    placeholder: MemoryImage(kTransparentImage),
-                  ),
-                ),
-                Center(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: MediaQuery.of(context).size.height * 0.5,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        Container(
-                          width: 50,
-                          height: 50,
-                          child: FadeInImage(
-                            image: AssetImage('assets/quote.png'),
-                            placeholder: MemoryImage(kTransparentImage),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 20.0, left: 8.0, right: 8.0),
-                          child: Text(
-                            'Delivering\nHappiness',
-                            style: TextStyle(
-                                fontFamily: 'Avenir-Black',
-                                color: Colors.black54,
-                                fontSize: 22.0),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 20.0, left: 8.0, right: 8.0),
-                          child: Text(
-                            '- Chakh Ley™',
-                            style: TextStyle(
-                                fontFamily: 'Avenir-Black',
-                                color: Colors.black54,
-                                fontSize: 15.0),
-                            textAlign: TextAlign.right,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: FlareActor(
-                    "assets/delivery_scooter.flr",
-                    animation: "Delivering Soon",
                   ),
                 ),
               ],
             ),
+          )),
+      body: Stack(
+        children: <Widget>[
+          body,
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 65.0,
+              child: Card(
+                color: Colors.white,
+                elevation: 5.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(40.0),
+                    topRight: const Radius.circular(40.0),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(
+                        Icons.local_dining,
+                        color:
+                            selectedIndex == 0 ? Colors.redAccent : Colors.grey,
+                      ),
+                      onPressed: () => selectedTab(0),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.local_offer,
+                        color:
+                            selectedIndex == 1 ? Colors.redAccent : Colors.grey,
+                      ),
+                      onPressed: () => selectedTab(1),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.shopping_cart,
+                        color:
+                            selectedIndex == 2 ? Colors.redAccent : Colors.grey,
+                      ),
+                      onPressed: () => selectedTab(2),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.person,
+                        color:
+                            selectedIndex == 3 ? Colors.redAccent : Colors.grey,
+                      ),
+                      onPressed: () => selectedTab(3),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        );
-      }
-    } else {
-      return Scaffold(
-        backgroundColor: Colors.white,
-        body: Container(),
-      );
-    }
+        ],
+      ),
+    );
   }
 
   Widget _buildLocationUnavailable() {

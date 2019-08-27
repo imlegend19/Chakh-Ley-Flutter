@@ -1,11 +1,15 @@
 import 'package:chakh_ley_flutter/entity/business.dart';
 import 'package:chakh_ley_flutter/entity/restaurant.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:geocoder/geocoder.dart';
 
 class ConstantVariables {
   static var restaurantList = List<Restaurant>();
   static int openRestaurantsCount;
+  static int restaurantCount;
+
   static var businessList = List<Business>();
+  static var position = [];
 
   static Restaurant cartRestaurant;
   static int cartRestaurantId;
@@ -56,7 +60,10 @@ class ConstantVariables {
   static String sentryDSN =
       'https://ef4eaa0e0a4f451eaf8f3fb2ddae09f5:567c0b6caf134a82a50846e0a14e7fdf@sentry.io/1531091';
 
-  static bool ongoingOrder = false;
-
   static Business business;
+  static bool businessFetched = false;
+  static bool fetchedBusinessID = false;
+  static int businessID;
+
+  static ConnectivityResult connectionStatus;
 }

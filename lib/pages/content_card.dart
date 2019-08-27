@@ -67,6 +67,7 @@ class _ContentCardState extends State<ContentCard> {
             builder:
                 (BuildContext context, BoxConstraints viewportConstraints) {
               return Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   _buildContentContainer(viewportConstraints),
                 ],

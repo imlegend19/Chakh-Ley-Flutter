@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class SlideTopRoute extends PageRouteBuilder {
   final Widget page;
+
   SlideTopRoute({this.page})
       : super(
           pageBuilder: (
@@ -28,6 +29,7 @@ class SlideTopRoute extends PageRouteBuilder {
 
 class SizeRoute extends PageRouteBuilder {
   final Widget page;
+
   SizeRoute({this.page})
       : super(
           pageBuilder: (
@@ -49,4 +51,30 @@ class SizeRoute extends PageRouteBuilder {
             ),
           ),
         );
+}
+
+class SlideLeftRoute extends PageRouteBuilder {
+  final Widget page;
+  SlideLeftRoute({this.page})
+      : super(
+    pageBuilder: (
+        BuildContext context,
+        Animation<double> animation,
+        Animation<double> secondaryAnimation,
+        ) =>
+    page,
+    transitionsBuilder: (
+        BuildContext context,
+        Animation<double> animation,
+        Animation<double> secondaryAnimation,
+        Widget child,
+        ) =>
+        SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1, 0),
+            end: Offset.zero,
+          ).animate(animation),
+          child: child,
+        ),
+  );
 }

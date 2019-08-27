@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chakh_ley_flutter/entity/api_static.dart';
 import 'package:chakh_ley_flutter/entity/restaurant.dart';
 import 'package:chakh_ley_flutter/utils/color_loader.dart';
 import 'package:flutter/material.dart';
@@ -181,12 +180,14 @@ class RestaurantDetails extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          width: 75.0,
-                          height: 75.0,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
+                        SkeletonAnimation(
+                          child: Container(
+                            width: 75.0,
+                            height: 75.0,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[400],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
                         Column(
@@ -197,12 +198,16 @@ class RestaurantDetails extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(
                                   left: 15.0, bottom: 5.0),
-                              child: Container(
-                                height: 15,
-                                width: MediaQuery.of(context).size.width * 0.6,
-                                decoration: BoxDecoration(
+                              child: SkeletonAnimation(
+                                child: Container(
+                                  height: 15,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.6,
+                                  decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10.0),
-                                    color: Colors.white),
+                                    color: Colors.grey[400],
+                                  ),
+                                ),
                               ),
                             ),
                             Padding(
@@ -211,25 +216,29 @@ class RestaurantDetails extends StatelessWidget {
                                 children: <Widget>[
                                   Padding(
                                     padding: const EdgeInsets.only(right: 5.0),
-                                    child: Container(
-                                      width: 20,
-                                      height: 20,
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        color: Colors.white,
+                                    child: SkeletonAnimation(
+                                      child: Container(
+                                        width: 20,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          color: Colors.grey[400],
+                                        ),
                                       ),
                                     ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 2.5),
-                                    child: Container(
-                                      width: 50.0,
-                                      height: 13,
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        color: Colors.white,
+                                    child: SkeletonAnimation(
+                                      child: Container(
+                                        width: 50.0,
+                                        height: 13,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          color: Colors.grey[400],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -248,7 +257,7 @@ class RestaurantDetails extends StatelessWidget {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10.0),
-                                          color: Colors.white,
+                                          color: Colors.grey[400],
                                         ),
                                       ),
                                     ),
@@ -268,7 +277,7 @@ class RestaurantDetails extends StatelessWidget {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10.0),
-                                          color: Colors.white,
+                                          color: Colors.grey[400],
                                         ),
                                       ),
                                     ),

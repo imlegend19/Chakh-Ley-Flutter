@@ -8,6 +8,7 @@ import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:chakh_ley_flutter/utils/color_loader.dart';
 import 'package:chakh_ley_flutter/utils/ios_search_bar.dart';
 import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:floating_ribbon/floating_ribbon.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -49,19 +50,27 @@ class _HomeMainPageState extends State<HomeMainPage>
   }
 
   loadRestaurants() async {
-    Future.sync(() {
-      fetchRestaurants(ConstantVariables.business.id).then((val) {
-        if (val != null) {
-          _restaurantController.add(val);
-        }
+    if (ConstantVariables.connectionStatus != ConnectivityResult.none) {
+      Future.sync(() {
+        fetchRestaurants(ConstantVariables.business.id).then((val) {
+          if (val != null) {
+            _restaurantController.add(val);
+          }
+
+          if (ConstantVariables.categoryList.length == 0) {
+            for (int i=0; i<ConstantVariables.restaurantCount; i++) {
+              ConstantVariables.categoryList.add(null);
+            }
+          }
+        }).catchError((error) {
+          _restaurantController = StreamController();
+          loadRestaurants();
+        });
       }).catchError((error) {
         _restaurantController = StreamController();
         loadRestaurants();
       });
-    }).catchError((error) {
-      _restaurantController = StreamController();
-      loadRestaurants();
-    });
+    }
   }
 
   @override
@@ -151,13 +160,6 @@ class _HomeMainPageState extends State<HomeMainPage>
           stream: _restaurantController.stream,
           builder: (context, response) {
             if (response.hasData) {
-              if (ConstantVariables.categoryList.length !=
-                  response.data.count) {
-                for (int i = 0; i < response.data.count; i++) {
-                  ConstantVariables.categoryList.add(null);
-                }
-              }
-
               if (ConstantVariables.restaurantList.length == 0) {
                 ConstantVariables.restaurantList = response.data.restaurants;
               }
@@ -175,6 +177,9 @@ class _HomeMainPageState extends State<HomeMainPage>
           },
         ),
       );
+    } else if (_displayList == null) {
+      fetchRestaurants(ConstantVariables.businessID);
+      return LoadingListPage();
     } else if (_displayList.length == 0 && !error) {
       return _buildNotFoundPage();
     } else if (error) {
@@ -284,12 +289,13 @@ class _HomeMainPageState extends State<HomeMainPage>
                           child: Text(
                             restaurant.open ? 'Open' : 'Closed',
                             style: TextStyle(
-                                color: restaurant.open
-                                    ? Colors.green
-                                    : Colors.black54,
-                                fontFamily: 'Avenir-Black',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13),
+                              color: restaurant.open
+                                  ? Colors.green
+                                  : Colors.black54,
+                              fontFamily: 'Avenir-Black',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                         Padding(
@@ -303,9 +309,10 @@ class _HomeMainPageState extends State<HomeMainPage>
                           child: Text(
                             restaurant.costForTwo,
                             style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w900),
+                              color: Colors.black54,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                         )
                       ],

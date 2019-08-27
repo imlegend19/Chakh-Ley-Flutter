@@ -60,6 +60,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   Widget build(BuildContext context) {
     HomePage.isVisible = false;
 
+    // print(ConstantVariables.categoryList);
+
     return Scaffold(
       body: Stack(
         children: <Widget>[

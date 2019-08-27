@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class FABBottomAppBarItem {
   FABBottomAppBarItem({this.iconData, this.text});
+
   IconData iconData;
   String text;
 }
@@ -20,6 +21,7 @@ class FABBottomAppBar extends StatefulWidget {
   }) {
     assert(this.items.length == 2 || this.items.length == 4);
   }
+
   final List<FABBottomAppBarItem> items;
   final String centerItemText;
   final double height;

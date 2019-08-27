@@ -58,7 +58,7 @@ class GetBusiness {
   }
 }
 
-Future<GetBusiness> fetchBusiness() async {
+Future<GetBusiness> fetchBusiness([int id]) async {
   final response = await http.get(BusinessStatic.businessURL);
 
   if (response.statusCode == 200) {

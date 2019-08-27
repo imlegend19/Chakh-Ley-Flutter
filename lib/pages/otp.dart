@@ -4,12 +4,16 @@ import 'dart:io';
 import 'package:chakh_ley_flutter/entity/api_static.dart';
 import 'package:chakh_ley_flutter/models/user_post.dart';
 import 'package:chakh_ley_flutter/models/user_pref.dart';
+import 'package:chakh_ley_flutter/pages/home_page.dart';
 import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:chakh_ley_flutter/utils/parse_jwt.dart';
+import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_text_field/pin_code_text_field.dart';
+
+import '../main.dart';
 
 void showOTPDialog(BuildContext context, String destination, bool decider) {
   showDialog(
@@ -166,29 +170,19 @@ class _OTPBuilderState extends State<OTPBuilder> {
   Future<http.Response> createRegisterOTPPost(var post) async {
     final response = await http.post(UserStatic.keyOTPRegURL,
         headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-        body: post is UserOTPPost
-            ? postUserOTPToJson(post)
-            : postUserEmailOTPToJson(post));
+        body: postUserOTPToJson(post));
 
     return response;
   }
 
   void verifyRegisterOTP(String pin, String name, String phone,
       [String email]) {
-    if (email != null || email != "") {
-      UserEmailOTPPost post = UserEmailOTPPost(
-          name: name, email: email, mobile: phone, verifyOTP: pin);
+    UserOTPPost post =
+        UserOTPPost(name: name, mobile: phone, email: email, verifyOTP: pin);
 
-      createRegisterOTPPost(post).then((response) {
-        validate(response);
-      });
-    } else {
-      UserOTPPost post = UserOTPPost(name: name, mobile: phone, verifyOTP: pin);
-
-      createRegisterOTPPost(post).then((response) {
-        validate(response);
-      });
-    }
+    createRegisterOTPPost(post).then((response) {
+      validate(response);
+    });
   }
 
   void verifyOTP(String pin) {
@@ -249,7 +243,7 @@ class _OTPBuilderState extends State<OTPBuilder> {
       var decodedObject = parseJwt(token);
       saveUserCredentials(decodedObject['user_id'], decodedObject['email'],
           decodedObject['mobile'], decodedObject['name']);
-      Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+      Navigator.of(context).pop();
     } else {
       var json = JSON.jsonDecode(response.body);
       assert(json is Map);

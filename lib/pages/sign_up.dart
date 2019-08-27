@@ -185,9 +185,7 @@ class _SignUpPageState extends State<SignUpPage> {
     final response = await http
         .post(UserStatic.keyOTPRegURL,
             headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-            body: post is UserEmailPost
-                ? postUserEmailToJson(post)
-                : postUserToJson(post))
+            body: postUserToJson(post))
         .catchError((error) {
       Fluttertoast.showToast(
         msg: "Some error occurred, please try again later!",
@@ -202,22 +200,14 @@ class _SignUpPageState extends State<SignUpPage> {
 
   registerUser() {
     UserPost post;
-    UserEmailPost emailPost;
 
-    if (_emailController.text.trim() == "") {
-      post = UserPost(
-        name: _nameController.text,
-        mobile: _phoneController.text,
-      );
-    } else {
-      emailPost = UserEmailPost(
-        name: _nameController.text.trim(),
-        mobile: _phoneController.text.trim(),
-        email: _emailController.text.trim(),
-      );
-    }
+    post = UserPost(
+      name: _nameController.text,
+      mobile: _phoneController.text,
+      email: _emailController.text.trim(),
+    );
 
-    createPost(_emailController.text == "" ? post : emailPost).then((response) {
+    createPost(post).then((response) {
       if (response.statusCode == 201) {
         Fluttertoast.showToast(
           msg: "OTP has been sent to your registered mobile number.",
