@@ -70,7 +70,6 @@ flutter:
     - assets/error.png
     - assets/otp.png
     - assets/banner.png
-    - assets/eating.json
 
   fonts:
     - family: Avenir
