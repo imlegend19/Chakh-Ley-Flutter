@@ -16,28 +16,6 @@ Future<double> calculateDistance(double originLat, double originLong,
   }
 }
 
-String getAddress() {
-  String address = ConstantVariables.address.featureName;
-
-  if (ConstantVariables.address.locality != null) {
-    address += ", " + ConstantVariables.address.locality;
-  }
-
-  if (ConstantVariables.address.subAdminArea != null) {
-    address += ", " + ConstantVariables.address.subAdminArea;
-  }
-
-  if (ConstantVariables.address.adminArea != null) {
-    address += ", " + ConstantVariables.address.adminArea;
-  }
-
-  if (ConstantVariables.address.postalCode != null) {
-    address += ", " + ConstantVariables.address.postalCode;
-  }
-
-  return address;
-}
-
 Future<Position> getLocation(Geolocator geoLocator) async {
   var currentLocation;
   try {

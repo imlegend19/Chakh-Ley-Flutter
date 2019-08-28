@@ -75,3 +75,14 @@ Future<List<String>> getBusinessPosition() async {
   List<String> businessPosition = prefs.getStringList("position");
   return businessPosition == null ? null : businessPosition;
 }
+
+Future<void> saveUserAddress(String address) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setString("address", address);
+}
+
+Future<String> getSavedAddress() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String address = prefs.getString("address");
+  return address;
+}

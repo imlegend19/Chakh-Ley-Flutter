@@ -163,9 +163,6 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   AnimationController expandController;
   Animation<double> animation;
-
-  int setupLocationTry = 0;
-
   var currentLocation;
   loc.Location location = loc.Location();
   Geolocator geoLocator = Geolocator();
@@ -175,6 +172,8 @@ class _HomePageState extends State<HomePage>
   bool serviceDenied = false;
   bool locationError = false;
   bool locationSetUpCompleted = false;
+
+  bool locationErrorToastShown = false;
 
   @override
   void initState() {
@@ -301,6 +300,34 @@ class _HomePageState extends State<HomePage>
     super.dispose();
   }
 
+  String getAddress() {
+    String address = ConstantVariables.address.featureName;
+
+    if (ConstantVariables.address.locality != null) {
+      address += ", " + ConstantVariables.address.locality;
+    }
+
+    if (ConstantVariables.address.subAdminArea != null) {
+      address += ", " + ConstantVariables.address.subAdminArea;
+    }
+
+    if (ConstantVariables.address.adminArea != null) {
+      address += ", " + ConstantVariables.address.adminArea;
+    }
+
+    if (ConstantVariables.address.postalCode != null) {
+      address += ", " + ConstantVariables.address.postalCode;
+    }
+
+    getSavedAddress().then((val) {
+      if (val == null) {
+        saveUserAddress(address);
+      }
+    });
+
+    return address;
+  }
+
   void _setupLocation() {
     getLocation(geoLocator).then((position) {
       location.hasPermission().then((bool) {
@@ -311,7 +338,28 @@ class _HomePageState extends State<HomePage>
               .catchError((error) {
             locationSetUpCompleted = false;
             locationError = true;
-            body = _buildLocationPermission('Reload Content');
+
+            getSavedAddress().then((val) {
+              if (val != null) {
+                setState(() {
+                  ConstantVariables.userAddress = val;
+                });
+
+                if (!locationErrorToastShown) {
+                  locationErrorToastShown = true;
+                  Fluttertoast.showToast(
+                    msg: "Location error occurred! Using previous address!",
+                    toastLength: Toast.LENGTH_SHORT,
+                    timeInSecForIos: 1,
+                    fontSize: 13.0,
+                  );
+                }
+              } else {
+                setState(() {
+                  body = _buildLocationPermission('Reload Content');
+                });
+              }
+            });
           }).then((value) {
             setState(() {
               try {
@@ -326,10 +374,28 @@ class _HomePageState extends State<HomePage>
 
                 locationSetUpCompleted = true;
               } catch (e) {
-                setState(() {
-                  locationSetUpCompleted = false;
-                  locationError = true;
-                  body = _buildLocationPermission('Reload Content');
+                getSavedAddress().then((val) {
+                  if (val != null) {
+                    setState(() {
+                      ConstantVariables.userAddress = val;
+                    });
+
+                    if (!locationErrorToastShown) {
+                      locationErrorToastShown = true;
+                      Fluttertoast.showToast(
+                        msg: "Location error occurred! Using previous address!",
+                        toastLength: Toast.LENGTH_SHORT,
+                        timeInSecForIos: 1,
+                        fontSize: 13.0,
+                      );
+                    }
+                  } else {
+                    setState(() {
+                      locationSetUpCompleted = false;
+                      locationError = true;
+                      body = _buildLocationPermission('Reload Content');
+                    });
+                  }
                 });
               }
             });
@@ -342,10 +408,29 @@ class _HomePageState extends State<HomePage>
           });
         }
       }).catchError((error) async {
-        if (setupLocationTry < 2) {
-          setupLocationTry += 1;
-          _setupLocation();
-        }
+        getSavedAddress().then((val) {
+          if (val != null) {
+            setState(() {
+              ConstantVariables.userAddress = val;
+            });
+
+            if (!locationErrorToastShown) {
+              locationErrorToastShown = true;
+              Fluttertoast.showToast(
+                msg: "Location error occurred! Using previous address!",
+                toastLength: Toast.LENGTH_SHORT,
+                timeInSecForIos: 1,
+                fontSize: 13.0,
+              );
+            }
+          } else {
+            setState(() {
+              locationSetUpCompleted = false;
+              locationError = true;
+              body = _buildLocationPermission('Reload Content');
+            });
+          }
+        });
       });
     });
   }
@@ -513,7 +598,7 @@ class _HomePageState extends State<HomePage>
                 SizedBox(width: 3.0),
                 Container(
                   width: MediaQuery.of(context).size.width * 0.65,
-                  child: ConstantVariables.address != null
+                  child: ConstantVariables.userAddress != null
                       ? Text(
                           ConstantVariables.userAddress,
                           style: TextStyle(

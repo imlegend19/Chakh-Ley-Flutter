@@ -66,4 +66,7 @@ class ConstantVariables {
   static int businessID;
 
   static ConnectivityResult connectionStatus;
+
+  static String selectedFilter = 'R';
+  static int appliedSort = 0;
 }

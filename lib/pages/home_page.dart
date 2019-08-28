@@ -62,6 +62,10 @@ class _HomeMainPageState extends State<HomeMainPage>
               ConstantVariables.categoryList.add(null);
             }
           }
+
+          if (ConstantVariables.restaurantList == null) {
+            ConstantVariables.restaurantList = val.restaurants;
+          }
         }).catchError((error) {
           _restaurantController = StreamController();
           loadRestaurants();
@@ -350,7 +354,7 @@ class _HomeMainPageState extends State<HomeMainPage>
             children: <Widget>[
               Padding(
                 padding:
-                    const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 5.0),
+                    const EdgeInsets.only(left: 15.0, top: 10.0, bottom: 5.0),
                 child: Center(
                   child: Text(
                     '$openRestaurantsCount Open Restaurants',
@@ -364,7 +368,7 @@ class _HomeMainPageState extends State<HomeMainPage>
               ),
               Padding(
                 padding:
-                    const EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0),
+                    const EdgeInsets.only(left: 10.0, right: 8.0, top: 5.0),
                 child: FlatButton.icon(
                   onPressed: () => _filterPressed(),
                   icon: Icon(
@@ -798,8 +802,6 @@ class LoadingListPage extends StatelessWidget {
   }
 }
 
-String selectedFilter = 'R';
-
 class FilterBottomSheet extends StatefulWidget {
   @override
   _FilterBottomSheetState createState() => _FilterBottomSheetState();
@@ -817,9 +819,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   List<String> sort = ['Recommended', 'Cost For Two', 'Delivery Time'];
 
   String _result;
-  int _radioValue;
+  static int _radioValue = 0;
 
-  bool disableApply = true;
+  bool disableApply =
+      _radioValue == ConstantVariables.appliedSort ? true : false;
 
   void _handleSort(int value) {
     setState(() {
@@ -828,15 +831,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       switch (_radioValue) {
         case 0:
           _result = 'R';
-          selectedFilter = 'R';
-          bool trueSeen = false;
-          for (final i in cuisinesVal) {
-            if (i == true) {
-              trueSeen = true;
-              break;
-            }
-          }
-          if (!trueSeen) {
+          ConstantVariables.selectedFilter = 'R';
+          if (_radioValue == ConstantVariables.appliedSort) {
             setState(() {
               disableApply = true;
             });
@@ -845,20 +841,37 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               disableApply = false;
             });
           }
+
           break;
         case 1:
-          selectedFilter = 'CT';
+          ConstantVariables.selectedFilter = 'CT';
           _result = 'CT';
-          setState(() {
-            disableApply = false;
-          });
+
+          if (_radioValue == ConstantVariables.appliedSort) {
+            setState(() {
+              disableApply = true;
+            });
+          } else {
+            setState(() {
+              disableApply = false;
+            });
+          }
+
           break;
         case 2:
-          selectedFilter = 'DT';
+          ConstantVariables.selectedFilter = 'DT';
           _result = 'DT';
-          setState(() {
-            disableApply = false;
-          });
+
+          if (_radioValue == ConstantVariables.appliedSort) {
+            setState(() {
+              disableApply = true;
+            });
+          } else {
+            setState(() {
+              disableApply = false;
+            });
+          }
+
           break;
       }
     });
@@ -868,15 +881,15 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   void initState() {
     super.initState();
 
-    if (selectedFilter == 'R') {
+    if (ConstantVariables.selectedFilter == 'R') {
       setState(() {
         _radioValue = 0;
       });
-    } else if (selectedFilter == 'CT') {
+    } else if (ConstantVariables.selectedFilter == 'CT') {
       setState(() {
         _radioValue = 1;
       });
-    } else if (selectedFilter == 'DT') {
+    } else if (ConstantVariables.selectedFilter == 'DT') {
       setState(() {
         _radioValue = 2;
       });
@@ -925,13 +938,17 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
               onPressed: () {
                 _handleSort(0);
+
                 for (int i = 0; i < cuisinesVal.length; i++) {
                   cuisinesVal[i] = false;
                 }
+
                 setState(() {
                   disableApply = true;
                   filter('R', []);
                 });
+
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -1106,7 +1123,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           String sortText;
 
                           if (_result == 'R') {
-                            sortText = null;
+                            sortText = sort[0];
                           } else if (_result == 'CT') {
                             sortText = sort[1];
                           } else if (_result == 'DT') {
@@ -1122,6 +1139,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           }
 
                           filter(sortText, filteredCuisine);
+
+                          ConstantVariables.appliedSort = _radioValue;
+
+                          Navigator.of(context).pop();
                         },
                 ),
               ),
@@ -1136,6 +1157,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     List<Restaurant> filteredRestaurant = [];
     if (sortText == null) {
       for (int i = 0; i < ConstantVariables.restaurantList.length; i++) {
+        // print(ConstantVariables.restaurantList[i].name);
         for (int j = 0;
             j < ConstantVariables.restaurantList[i].cuisines.length;
             j++) {
