@@ -32,12 +32,12 @@ StreamSubscription<ConnectivityResult> subscription;
 
 Future<Null> _reportError(dynamic error, dynamic stackTrace) async {
   // print('Reporting to Sentry.io...');
-  // print(error);
-  // print(stackTrace);
-  await _sentry.captureException(
-    exception: error,
-    stackTrace: stackTrace,
-  );
+   print(error);
+   print(stackTrace);
+//  await _sentry.captureException(
+//    exception: error,
+//    stackTrace: stackTrace,
+//  );
 }
 
 void main() async {
