@@ -1,6 +1,5 @@
 abstract class APIStatic {
-  static const baseURL = "http://adminbeta.chakhley.co.in/api/";
-
+  static const baseURL = "http://admin.chakhley.co.in/api/";
   static const keyID = "id";
   static const keyName = "name";
   static const keyCount = "count";
@@ -12,19 +11,15 @@ abstract class APIStatic {
   static const keySuccess = "success";
   static const keyMessage = "message";
   static const keyDetail = "detail";
-
   static const keyMobile = "mobile";
   static const keyEmail = "email";
-
   static const keyBusiness = "business";
-
   static const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
   static const onlyDateFormat = "yyyyMMdd";
 }
 
 abstract class BusinessStatic {
   static const businessURL = APIStatic.baseURL + "business/";
-
   static const keyType = "type";
   static const keyCity = "city";
   static const keyIsActive = "is_active";
@@ -35,7 +30,6 @@ abstract class BusinessStatic {
 
 abstract class EmployeeStatic {
   static const keyEmployeeURL = APIStatic.baseURL + "employee/";
-
   static const keUserId = "user_id";
   static const keyUserName = "user_name";
   static const keyUserMobile = "user_mobile";
@@ -62,7 +56,6 @@ abstract class ProductStatic {
   ///
 
   static const keyProductURL = APIStatic.baseURL + "product/product/";
-
   static const keyCategory = "category";
   static const keyIsVeg = "is_veg";
   static const keyPrice = "price";
@@ -100,9 +93,7 @@ abstract class RestaurantStatic {
   static const restaurant_suffix = "restaurant/?business=";
   static const keyRestaurantURL = APIStatic.baseURL + restaurant_suffix;
   static const keyRestaurantDetailURL = APIStatic.baseURL + "restaurant/?id=";
-
   static const keyCreateOrderURL = APIStatic.baseURL + "order/create/";
-
   static const keyIsActive = "is_active";
   static const keyCostForTwo = "cost_for_two";
   static const keyCuisine = "cuisine";
@@ -139,6 +130,8 @@ abstract class DeliveryStatic {
   ///    "latitude": "34.45400000",
   ///    "longitude": "34.32200000"
   /// }
+  ///
+
   static const keyAmount = "amount";
   static const keyLocation = "location";
   static const keyUnitNo = "unit_no";
@@ -150,7 +143,6 @@ abstract class DeliveryStatic {
 
 abstract class CategoryStatic {
   static const keyCategoryURL = APIStatic.baseURL + "product/category/";
-
   static const keyProductCount = "product_count";
   static const keyRestaurant = "restaurant";
   static const keyProducts = "products";
@@ -200,7 +192,6 @@ abstract class OrderStatic {
 
   static const keyOrderListURL = APIStatic.baseURL + "order/list/?mobile=";
   static const keyOrderDetailURL = APIStatic.baseURL + "order/";
-
   static const keyPreparationTime = "preparation_time";
   static const keyRestaurantId = "restaurant_id";
   static const keyRestaurantName = "restaurant_name";

@@ -8,6 +8,7 @@ import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:chakh_ley_flutter/utils/color_loader.dart';
 import 'package:chakh_ley_flutter/utils/ios_search_bar.dart';
 import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:floating_ribbon/floating_ribbon.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -49,19 +50,31 @@ class _HomeMainPageState extends State<HomeMainPage>
   }
 
   loadRestaurants() async {
-    Future.sync(() {
-      fetchRestaurants(ConstantVariables.business.id).then((val) {
-        if (val != null) {
-          _restaurantController.add(val);
-        }
+    if (ConstantVariables.connectionStatus != ConnectivityResult.none) {
+      Future.sync(() {
+        fetchRestaurants(ConstantVariables.business.id).then((val) {
+          if (val != null) {
+            _restaurantController.add(val);
+          }
+
+          if (ConstantVariables.categoryList.length == 0) {
+            for (int i = 0; i < ConstantVariables.restaurantCount; i++) {
+              ConstantVariables.categoryList.add(null);
+            }
+          }
+
+          if (ConstantVariables.restaurantList == null) {
+            ConstantVariables.restaurantList = val.restaurants;
+          }
+        }).catchError((error) {
+          _restaurantController = StreamController();
+          loadRestaurants();
+        });
       }).catchError((error) {
         _restaurantController = StreamController();
         loadRestaurants();
       });
-    }).catchError((error) {
-      _restaurantController = StreamController();
-      loadRestaurants();
-    });
+    }
   }
 
   @override
@@ -151,19 +164,18 @@ class _HomeMainPageState extends State<HomeMainPage>
           stream: _restaurantController.stream,
           builder: (context, response) {
             if (response.hasData) {
-              if (ConstantVariables.categoryList.length !=
-                  response.data.count) {
-                for (int i = 0; i < response.data.count; i++) {
-                  ConstantVariables.categoryList.add(null);
-                }
-              }
-
               if (ConstantVariables.restaurantList.length == 0) {
                 ConstantVariables.restaurantList = response.data.restaurants;
               }
 
               ConstantVariables.openRestaurantsCount =
                   response.data.openRestaurantsCount;
+
+              // print(ConstantVariables.openRestaurantsCount);
+
+              ConstantVariables.restaurantCount = response.data.count;
+
+              // print(ConstantVariables.restaurantCount);
 
               _displayList = ConstantVariables.restaurantList;
 
@@ -175,6 +187,9 @@ class _HomeMainPageState extends State<HomeMainPage>
           },
         ),
       );
+    } else if (_displayList == null) {
+      fetchRestaurants(ConstantVariables.businessID);
+      return LoadingListPage();
     } else if (_displayList.length == 0 && !error) {
       return _buildNotFoundPage();
     } else if (error) {
@@ -284,12 +299,13 @@ class _HomeMainPageState extends State<HomeMainPage>
                           child: Text(
                             restaurant.open ? 'Open' : 'Closed',
                             style: TextStyle(
-                                color: restaurant.open
-                                    ? Colors.green
-                                    : Colors.black54,
-                                fontFamily: 'Avenir-Black',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13),
+                              color: restaurant.open
+                                  ? Colors.green
+                                  : Colors.black54,
+                              fontFamily: 'Avenir-Black',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                         Padding(
@@ -303,9 +319,10 @@ class _HomeMainPageState extends State<HomeMainPage>
                           child: Text(
                             restaurant.costForTwo,
                             style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w900),
+                              color: Colors.black54,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                         )
                       ],
@@ -337,7 +354,7 @@ class _HomeMainPageState extends State<HomeMainPage>
             children: <Widget>[
               Padding(
                 padding:
-                    const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 5.0),
+                    const EdgeInsets.only(left: 15.0, top: 10.0, bottom: 5.0),
                 child: Center(
                   child: Text(
                     '$openRestaurantsCount Open Restaurants',
@@ -351,7 +368,7 @@ class _HomeMainPageState extends State<HomeMainPage>
               ),
               Padding(
                 padding:
-                    const EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0),
+                    const EdgeInsets.only(left: 10.0, right: 8.0, top: 5.0),
                 child: FlatButton.icon(
                   onPressed: () => _filterPressed(),
                   icon: Icon(
@@ -639,62 +656,99 @@ class LoadingListPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
-                  children: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-                      .map((_) => Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 8.0, left: 10.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 75.0,
-                                  height: 75.0,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
+                  children: [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15
+                  ]
+                      .map(
+                        (_) => Padding(
+                          padding:
+                              const EdgeInsets.only(bottom: 8.0, left: 10.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 75.0,
+                                height: 75.0,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 15.0, bottom: 5.0),
-                                      child: Container(
-                                        height: 15,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.6,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                            color: Colors.white),
-                                      ),
+                              ),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 15.0, bottom: 5.0),
+                                    child: Container(
+                                      height: 15,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.6,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          color: Colors.white),
                                     ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 15.0),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 5.0),
-                                            child: Container(
-                                              width: 20,
-                                              height: 20,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                color: Colors.white,
-                                              ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 15.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 5.0),
+                                          child: Container(
+                                            width: 20,
+                                            height: 20,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              color: Colors.white,
                                             ),
                                           ),
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 2.5),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 2.5),
+                                          child: Container(
+                                            width: 50.0,
+                                            height: 13,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 5.0, right: 5.0, top: 3.0),
+                                          child: Icon(Icons.fiber_manual_record,
+                                              color: Colors.grey[400],
+                                              size: 8.0),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 3.5),
+                                          child: SkeletonAnimation(
                                             child: Container(
                                               width: 50.0,
                                               height: 13,
@@ -705,66 +759,38 @@ class LoadingListPage extends StatelessWidget {
                                               ),
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 5.0,
-                                                right: 5.0,
-                                                top: 3.0),
-                                            child: Icon(
-                                                Icons.fiber_manual_record,
-                                                color: Colors.grey[400],
-                                                size: 8.0),
-                                          ),
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 3.5),
-                                            child: SkeletonAnimation(
-                                              child: Container(
-                                                width: 50.0,
-                                                height: 13,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  color: Colors.white,
-                                                ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 5.0, right: 5.0, top: 3.0),
+                                          child: Icon(Icons.fiber_manual_record,
+                                              color: Colors.grey[400],
+                                              size: 8.0),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 3.0),
+                                          child: SkeletonAnimation(
+                                            child: Container(
+                                              width: 50.0,
+                                              height: 13,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                color: Colors.white,
                                               ),
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 5.0,
-                                                right: 5.0,
-                                                top: 3.0),
-                                            child: Icon(
-                                                Icons.fiber_manual_record,
-                                                color: Colors.grey[400],
-                                                size: 8.0),
-                                          ),
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 3.0),
-                                            child: SkeletonAnimation(
-                                              child: Container(
-                                                width: 50.0,
-                                                height: 13,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
+                                        )
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ))
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
                       .toList(),
                 ),
               ),
@@ -775,8 +801,6 @@ class LoadingListPage extends StatelessWidget {
     );
   }
 }
-
-String selectedFilter = 'R';
 
 class FilterBottomSheet extends StatefulWidget {
   @override
@@ -795,9 +819,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   List<String> sort = ['Recommended', 'Cost For Two', 'Delivery Time'];
 
   String _result;
-  int _radioValue;
+  static int _radioValue = 0;
 
-  bool disableApply = true;
+  bool disableApply =
+      _radioValue == ConstantVariables.appliedSort ? true : false;
 
   void _handleSort(int value) {
     setState(() {
@@ -806,14 +831,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       switch (_radioValue) {
         case 0:
           _result = 'R';
-          bool trueSeen = false;
-          for (final i in cuisinesVal) {
-            if (i == true) {
-              trueSeen = true;
-              break;
-            }
-          }
-          if (!trueSeen) {
+          ConstantVariables.selectedFilter = 'R';
+          if (_radioValue == ConstantVariables.appliedSort) {
             setState(() {
               disableApply = true;
             });
@@ -822,18 +841,37 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               disableApply = false;
             });
           }
+
           break;
         case 1:
+          ConstantVariables.selectedFilter = 'CT';
           _result = 'CT';
-          setState(() {
-            disableApply = false;
-          });
+
+          if (_radioValue == ConstantVariables.appliedSort) {
+            setState(() {
+              disableApply = true;
+            });
+          } else {
+            setState(() {
+              disableApply = false;
+            });
+          }
+
           break;
         case 2:
+          ConstantVariables.selectedFilter = 'DT';
           _result = 'DT';
-          setState(() {
-            disableApply = false;
-          });
+
+          if (_radioValue == ConstantVariables.appliedSort) {
+            setState(() {
+              disableApply = true;
+            });
+          } else {
+            setState(() {
+              disableApply = false;
+            });
+          }
+
           break;
       }
     });
@@ -843,15 +881,15 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   void initState() {
     super.initState();
 
-    if (selectedFilter == 'R') {
+    if (ConstantVariables.selectedFilter == 'R') {
       setState(() {
         _radioValue = 0;
       });
-    } else if (selectedFilter == 'CT') {
+    } else if (ConstantVariables.selectedFilter == 'CT') {
       setState(() {
         _radioValue = 1;
       });
-    } else if (selectedFilter == 'DT') {
+    } else if (ConstantVariables.selectedFilter == 'DT') {
       setState(() {
         _radioValue = 2;
       });
@@ -900,13 +938,17 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
               onPressed: () {
                 _handleSort(0);
+
                 for (int i = 0; i < cuisinesVal.length; i++) {
                   cuisinesVal[i] = false;
                 }
+
                 setState(() {
                   disableApply = true;
                   filter('R', []);
                 });
+
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -1081,7 +1123,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           String sortText;
 
                           if (_result == 'R') {
-                            sortText = null;
+                            sortText = sort[0];
                           } else if (_result == 'CT') {
                             sortText = sort[1];
                           } else if (_result == 'DT') {
@@ -1097,6 +1139,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           }
 
                           filter(sortText, filteredCuisine);
+
+                          ConstantVariables.appliedSort = _radioValue;
+
+                          Navigator.of(context).pop();
                         },
                 ),
               ),
@@ -1111,6 +1157,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     List<Restaurant> filteredRestaurant = [];
     if (sortText == null) {
       for (int i = 0; i < ConstantVariables.restaurantList.length; i++) {
+        // print(ConstantVariables.restaurantList[i].name);
         for (int j = 0;
             j < ConstantVariables.restaurantList[i].cuisines.length;
             j++) {

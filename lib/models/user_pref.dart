@@ -53,3 +53,36 @@ Future<bool> isLoggedIn() async {
   bool loggedIn = prefs.getBool("logged_in");
   return loggedIn == null ? false : loggedIn;
 }
+
+Future<int> getBusiness() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  int business = prefs.getInt("business");
+  return business == null ? 0 : business;
+}
+
+Future<void> setBusiness(int id) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setInt("business", id);
+}
+
+Future<void> setBusinessPosition(String latitude, String longitude) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setStringList("position", [latitude, longitude]);
+}
+
+Future<List<String>> getBusinessPosition() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<String> businessPosition = prefs.getStringList("position");
+  return businessPosition == null ? null : businessPosition;
+}
+
+Future<void> saveUserAddress(String address) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setString("address", address);
+}
+
+Future<String> getSavedAddress() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String address = prefs.getString("address");
+  return address;
+}

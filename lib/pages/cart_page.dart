@@ -76,12 +76,13 @@ class _CartPageState extends State<CartPage>
                     children: <Widget>[
                       buildSkeletonRestaurant(context),
                       Center(
-                          child: Container(
-                        height: MediaQuery.of(context).size.height - 150,
-                        child: cartProducts.length == 0
-                            ? Container()
-                            : ColorLoader(),
-                      )),
+                        child: Container(
+                          height: MediaQuery.of(context).size.height - 150,
+                          child: cartProducts.length == 0
+                              ? Container()
+                              : ColorLoader(),
+                        ),
+                      ),
                     ],
                   );
                 }
@@ -106,6 +107,7 @@ class _CartPageState extends State<CartPage>
               child: FadeInImage(
                 image: AssetImage('assets/empty_cart.png'),
                 placeholder: MemoryImage(kTransparentImage),
+                fadeInDuration: Duration(milliseconds: 100),
               ),
             ),
             Padding(
@@ -167,7 +169,7 @@ class _CartPageState extends State<CartPage>
                 ? MediaQuery.of(context).size.height * 0.55
                 : MediaQuery.of(context).size.height * 0.54,
             child: userLoggedIn
-                ? _buildCheckOut(restaurant.deliveryTime)
+                ? _buildCheckOut(restaurant.deliveryTime, restaurant)
                 : _buildAskLogin(),
           ),
         ],
@@ -240,100 +242,102 @@ class _CartPageState extends State<CartPage>
 
   void _showDialog(int index, BuildContext context) {
     showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(35.0),
-                    bottomLeft: Radius.circular(35.0))),
-            title: Text(
-              'Hold On!',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Avenir-Black',
-                  fontSize: 18.0,
-                  color: Colors.black),
-            ),
-            content: RichText(
-              text: TextSpan(
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      fontFamily: 'Avenir-Bold',
-                      color: Colors.grey.shade700),
-                  children: <TextSpan>[
-                    TextSpan(text: "Do you want to remove "),
-                    TextSpan(
-                        text: cartProducts[index].name,
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(35.0),
+                  bottomLeft: Radius.circular(35.0))),
+          title: Text(
+            'Hold On!',
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Avenir-Black',
+                fontSize: 18.0,
+                color: Colors.black),
+          ),
+          content: RichText(
+            text: TextSpan(
+                style: TextStyle(
+                    fontSize: 16.0,
+                    fontFamily: 'Avenir-Bold',
+                    color: Colors.grey.shade700),
+                children: <TextSpan>[
+                  TextSpan(text: "Do you want to remove "),
+                  TextSpan(
+                      text: cartProducts[index].name,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w800, color: Colors.black87)),
+                  TextSpan(text: " from your Cart ?")
+                ]),
+          ),
+          actions: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ButtonTheme(
+                    minWidth: 50.0,
+                    child: RaisedButton(
+                      elevation: 0.0,
+                      color: Colors.grey.shade200,
+                      child: Text(
+                        "NO",
                         style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black87)),
-                    TextSpan(text: " from your Cart ?")
-                  ]),
-            ),
-            actions: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    ButtonTheme(
-                      minWidth: 50.0,
-                      child: RaisedButton(
-                        elevation: 0.0,
-                        color: Colors.grey.shade200,
-                        child: Text(
-                          "NO",
-                          style: TextStyle(
-                              fontFamily: 'Avenir-Bold',
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13.0,
-                              color: Colors.black87),
-                          textAlign: TextAlign.center,
+                          fontFamily: 'Avenir-Bold',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13.0,
+                          color: Colors.black87,
                         ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0)),
-                        onPressed: () => {Navigator.of(context).pop()},
+                        textAlign: TextAlign.center,
                       ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0)),
+                      onPressed: () => {Navigator.of(context).pop()},
                     ),
-                    SizedBox(
-                      width: 20.0,
-                    ),
-                    ButtonTheme(
-                      minWidth: 50.0,
-                      child: RaisedButton(
-                        elevation: 0.0,
-                        color: Colors.redAccent,
-                        child: Text(
-                          "YES",
-                          style: TextStyle(
-                              fontFamily: 'Avenir-Bold',
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13.0,
-                              color: Colors.white),
-                          textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    width: 20.0,
+                  ),
+                  ButtonTheme(
+                    minWidth: 50.0,
+                    child: RaisedButton(
+                      elevation: 0.0,
+                      color: Colors.redAccent,
+                      child: Text(
+                        "YES",
+                        style: TextStyle(
+                          fontFamily: 'Avenir-Bold',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13.0,
+                          color: Colors.white,
                         ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0)),
-                        onPressed: () {
-                          Future<int> cnt = getCartProductCount();
-                          cnt.then((value) {
-                            saveCartProductCount(value - 1);
-                          });
-                          Navigator.of(context).pop();
-                          setState(() {
-                            _delete(context, cartProducts[index]);
-                          });
-                        },
+                        textAlign: TextAlign.center,
                       ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0)),
+                      onPressed: () {
+                        Future<int> cnt = getCartProductCount();
+                        cnt.then((value) {
+                          saveCartProductCount(value - 1);
+                        });
+                        Navigator.of(context).pop();
+                        setState(() {
+                          _delete(context, cartProducts[index]);
+                        });
+                      },
                     ),
-                  ],
-                ),
-              )
-            ],
-          );
-        });
+                  ),
+                ],
+              ),
+            )
+          ],
+        );
+      },
+    );
   }
 
   Widget productListTile(Cart cartProduct, int index, BuildContext context) {
@@ -642,7 +646,7 @@ class _CartPageState extends State<CartPage>
     );
   }
 
-  Widget _buildCheckOut(int deliveryTime) {
+  Widget _buildCheckOut(int deliveryTime, Restaurant restaurant) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(13.0),
@@ -700,8 +704,9 @@ class _CartPageState extends State<CartPage>
                       width: 100,
                       height: 40,
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5.0)),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Center(
@@ -710,7 +715,7 @@ class _CartPageState extends State<CartPage>
                                 const EdgeInsets.only(left: 3.0, right: 3.0),
                             child: Text(
                               totalCost != null
-                                  ? "Rs. ${(totalCost + deliveryFee + restaurantCharges)}"
+                                  ? "Rs. ${(totalCost + deliveryFee + _getRestaurantCharge(restaurant, totalCost))}"
                                   : "-",
                               style: TextStyle(
                                 fontFamily: 'Avenir-Bold',
@@ -718,6 +723,7 @@ class _CartPageState extends State<CartPage>
                                 fontSize: 15.0,
                                 color: Colors.grey.shade700,
                               ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ),
@@ -815,13 +821,19 @@ class _CartPageState extends State<CartPage>
       return -1;
     } else {
       if (subTotal <= 200) {
-        deliveryFee = 30;
+        setState(() {
+          deliveryFee = 30;
+        });
         return 30;
       } else if (subTotal > 200 && subTotal <= 1000) {
-        deliveryFee = 25;
+        setState(() {
+          deliveryFee = 25;
+        });
         return 25;
       } else {
-        deliveryFee = 15;
+        setState(() {
+          deliveryFee = 15;
+        });
         return 15;
       }
     }
@@ -839,7 +851,6 @@ class _CartPageState extends State<CartPage>
     }
 
     restaurantCharges = charge;
-
     return double.parse(charge.toStringAsFixed(2));
   }
 
@@ -960,8 +971,8 @@ Widget _buildInvoiceRow(String title, double value, Restaurant restaurant,
               padding: const EdgeInsets.only(right: 8.0, top: 5.0, bottom: 5.0),
               child: Text(
                 value != 0
-                    ? (value != -1 ? "₹" + value.toString() : "NA")
-                    : "Free",
+                    ? (value != -1 ? "₹" + value.toString() : "-NA-")
+                    : title == "Delivery Fee" ? "-NA-" : "Free",
                 style: TextStyle(
                   fontFamily: 'Avelir-Bold',
                   fontSize: 13.0,

@@ -168,6 +168,7 @@ class _OrderPageState extends State<OrderPage> with TickerProviderStateMixin {
               padding:
                   EdgeInsets.only(top: MediaQuery.of(context).padding.top + 25),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Expanded(
                     child: ContentCard(
