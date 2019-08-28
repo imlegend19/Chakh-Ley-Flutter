@@ -167,6 +167,12 @@ class _HomeMainPageState extends State<HomeMainPage>
               ConstantVariables.openRestaurantsCount =
                   response.data.openRestaurantsCount;
 
+              // print(ConstantVariables.openRestaurantsCount);
+
+              ConstantVariables.restaurantCount = response.data.count;
+
+              // print(ConstantVariables.restaurantCount);
+
               _displayList = ConstantVariables.restaurantList;
 
               return _buildRestaurants(response.data.restaurants,
