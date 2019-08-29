@@ -32,12 +32,12 @@ StreamSubscription<ConnectivityResult> subscription;
 
 Future<Null> _reportError(dynamic error, dynamic stackTrace) async {
   // print('Reporting to Sentry.io...');
-   print(error);
-   print(stackTrace);
-//  await _sentry.captureException(
-//    exception: error,
-//    stackTrace: stackTrace,
-//  );
+  // print(error);
+  // print(stackTrace);
+  await _sentry.captureException(
+    exception: error,
+    stackTrace: stackTrace,
+  );
 }
 
 void main() async {
@@ -319,11 +319,7 @@ class _HomePageState extends State<HomePage>
       address += ", " + ConstantVariables.address.postalCode;
     }
 
-    getSavedAddress().then((val) {
-      if (val == null) {
-        saveUserAddress(address);
-      }
-    });
+    saveUserAddress(address);
 
     return address;
   }
@@ -354,6 +350,11 @@ class _HomePageState extends State<HomePage>
                     fontSize: 13.0,
                   );
                 }
+
+                getUserPosition().then((val) {
+                  ConstantVariables.userLatitude = double.parse(val[0]);
+                  ConstantVariables.userLongitude = double.parse(val[1]);
+                });
               } else {
                 setState(() {
                   body = _buildLocationPermission('Reload Content');
@@ -365,6 +366,10 @@ class _HomePageState extends State<HomePage>
               try {
                 ConstantVariables.userLatitude = position.latitude;
                 ConstantVariables.userLongitude = position.longitude;
+
+                saveUserPosition(position.latitude.toString(),
+                    position.longitude.toString());
+
                 ConstantVariables.address = value[0];
 
                 ConstantVariables.userAddress = getAddress();
@@ -483,7 +488,7 @@ class _HomePageState extends State<HomePage>
         } else {
           body = _buildNoInternet();
         }
-
+        CartPage.callback = this.callback;
         selectedIndex = 2;
       });
     } else if (index == 3) {
@@ -688,6 +693,7 @@ class _HomePageState extends State<HomePage>
             alignment: Alignment.bottomCenter,
             child: Container(
               height: 65.0,
+              width: MediaQuery.of(context).size.width,
               child: Card(
                 color: Colors.white,
                 elevation: 5.0,

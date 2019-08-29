@@ -216,11 +216,13 @@ class _SignUpPageState extends State<SignUpPage> {
           timeInSecForIos: 2,
         );
 
-        OTPBuilder.name = _nameController.text;
+        OTPBuilder.name = titleCase(_nameController.text);
         OTPBuilder.email = _emailController.text;
         OTPBuilder.phone = _phoneController.text;
 
-        showOTPDialog(context, _phoneController.text, true);
+        Navigator.of(context).pop();
+
+        showOTPDialog(context, _phoneController.text, false);
       } else if (response.statusCode == 400) {
         Fluttertoast.showToast(
           msg: "Error! Please verify you credentials.",
@@ -238,4 +240,15 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     });
   }
+}
+
+String titleCase(String text) {
+  if (text.length <= 1) return text.toUpperCase();
+  var words = text.split(' ');
+  var capitalized = words.map((word) {
+    var first = word.substring(0, 1).toUpperCase();
+    var rest = word.substring(1);
+    return '$first$rest';
+  });
+  return capitalized.join(' ');
 }

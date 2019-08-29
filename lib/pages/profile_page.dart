@@ -35,7 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 5.0),
+            padding: const EdgeInsets.only(top: 10.0, left: 15.0, right: 5.0),
             child: Text(
               ConstantVariables.user['name'].toUpperCase(),
               style: TextStyle(
@@ -52,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(top: 8.0, left: 10.0),
+                padding: const EdgeInsets.only(top: 8.0, left: 15.0),
                 child: Text(
                   ConstantVariables.user['mobile'],
                   style: TextStyle(
@@ -63,13 +63,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              ConstantVariables.user['email'] != null
+              ConstantVariables.user['email'] != ""
                   ? Padding(
-                      padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                       child: Icon(Icons.fiber_manual_record, size: 5.0),
                     )
                   : Container(),
-              ConstantVariables.user['email'] != null
+              ConstantVariables.user['email'] != ""
                   ? Text(
                       ConstantVariables.user['email'],
                       style: TextStyle(

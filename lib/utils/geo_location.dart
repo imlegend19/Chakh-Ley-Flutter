@@ -6,14 +6,10 @@ import 'package:geolocator/geolocator.dart';
 
 Future<double> calculateDistance(double originLat, double originLong,
     double destLat, double destLong) async {
-  if (ConstantVariables.hasLocationPermission) {
-    Geolocator geoLocator = Geolocator();
-    var metres = await geoLocator.distanceBetween(
-        originLat, originLong, destLat, destLong);
-    return metres;
-  } else {
-    return 0;
-  }
+  Geolocator geoLocator = Geolocator();
+  var metres = await geoLocator.distanceBetween(
+      originLat, originLong, destLat, destLong);
+  return metres;
 }
 
 Future<Position> getLocation(Geolocator geoLocator) async {

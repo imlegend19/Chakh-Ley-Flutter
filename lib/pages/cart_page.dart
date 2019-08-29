@@ -12,13 +12,14 @@ import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
 import 'package:chakh_ley_flutter/utils/transparent_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 
 class CartPage extends StatefulWidget {
   final Future<GetRestaurant> restaurant;
 
   CartPage({this.restaurant});
+
+  static var callback;
 
   @override
   _CartPageState createState() => _CartPageState();
@@ -30,10 +31,9 @@ class _CartPageState extends State<CartPage>
   List<Cart> cartProducts;
   double totalCost = 0;
   double restaurantCharges = 0;
-  bool disableCheckout = true;
+  bool disableCheckout = false;
   double deliveryFee = 0;
   bool userLoggedIn = ConstantVariables.userLoggedIn;
-  double km;
 
   @override
   void initState() {
@@ -233,8 +233,8 @@ class _CartPageState extends State<CartPage>
         setState(() {
           cartProducts = cartList;
           totalCost = cost;
+          deliveryFee = getDeliveryFee(totalCost);
         });
-
         // debugPrint("items " + count.toString());
       });
     });
@@ -713,17 +713,20 @@ class _CartPageState extends State<CartPage>
                           child: Padding(
                             padding:
                                 const EdgeInsets.only(left: 3.0, right: 3.0),
-                            child: Text(
-                              totalCost != null
-                                  ? "Rs. ${(totalCost + deliveryFee + _getRestaurantCharge(restaurant, totalCost))}"
-                                  : "-",
-                              style: TextStyle(
-                                fontFamily: 'Avenir-Bold',
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15.0,
-                                color: Colors.grey.shade700,
+                            child: Container(
+                              width: 100.0,
+                              child: Text(
+                                totalCost != null
+                                    ? "Rs. ${(totalCost + deliveryFee + _getRestaurantCharge(restaurant, totalCost))}"
+                                    : "-",
+                                style: TextStyle(
+                                  fontFamily: 'Avenir-Bold',
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15.0,
+                                  color: Colors.grey.shade700,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
                             ),
                           ),
                         ),
@@ -791,51 +794,18 @@ class _CartPageState extends State<CartPage>
                 : double.parse(restaurant.packagingCharge) != 0
                     ? Icons.error
                     : null),
-        _buildInvoiceRow(
-            'Delivery Fee', getDeliveryFee(km, totalCost), restaurant),
+        _buildInvoiceRow('Delivery Fee', deliveryFee, restaurant),
       ],
     );
   }
 
-  Future<double> calculateDeliveryCharge(double originLat, double originLong,
-      double destLat, double destLong) async {
-    if (ConstantVariables.hasLocationPermission) {
-      Geolocator geoLocator = Geolocator();
-      var metres = await geoLocator.distanceBetween(
-          originLat, originLong, destLat, destLong);
-      return metres;
+  double getDeliveryFee(double subTotal) {
+    if (subTotal <= 200) {
+      return 30;
+    } else if (subTotal > 200 && subTotal <= 1000) {
+      return 25;
     } else {
-      return 0;
-    }
-  }
-
-  double getDeliveryFee(double km, double subTotal) {
-    double effectiveDistance = km != null ? km + 0.5 : 0;
-
-    // print("Effective distance : $effectiveDistance");
-
-    if (effectiveDistance == 0) {
-      return 0;
-    } else if (effectiveDistance > 10) {
-      totalCost = null;
-      return -1;
-    } else {
-      if (subTotal <= 200) {
-        setState(() {
-          deliveryFee = 30;
-        });
-        return 30;
-      } else if (subTotal > 200 && subTotal <= 1000) {
-        setState(() {
-          deliveryFee = 25;
-        });
-        return 25;
-      } else {
-        setState(() {
-          deliveryFee = 15;
-        });
-        return 15;
-      }
+      return 15;
     }
   }
 
@@ -859,39 +829,36 @@ class _CartPageState extends State<CartPage>
       width: MediaQuery.of(context).size.width * 0.8,
       height: 45.0,
       child: RaisedButton(
-        disabledColor: Colors.red.shade200,
-        color: Colors.redAccent,
-        disabledElevation: 0.0,
-        elevation: 3.0,
-        splashColor: Colors.red.shade200,
-        child: Text(
-          'Checkout',
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 15.0,
-            fontFamily: 'Avenir-Bold',
+          disabledColor: Colors.red.shade200,
+          color: Colors.redAccent,
+          disabledElevation: 0.0,
+          elevation: 3.0,
+          splashColor: Colors.red.shade200,
+          child: Text(
+            'Checkout',
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 15.0,
+              fontFamily: 'Avenir-Bold',
+            ),
           ),
-        ),
-        onPressed: ConstantVariables.hasLocationPermission
-            ? disableCheckout
-                ? null
-                : ConstantVariables.business.isActive
-                    ? ConstantVariables.cartRestaurant.open
-                        ? () => {
-                              Navigator.push(
-                                context,
-                                SizeRoute(
-                                  page: CheckoutPage(
-                                      cartProducts: cartProducts,
-                                      total: totalCost,
-                                      deliveryFee: deliveryFee),
-                                ),
-                              )
-                            }
-                        : null
-                    : null
-            : null,
-      ),
+          onPressed: disableCheckout
+              ? null
+              : ConstantVariables.business.isActive
+                  ? ConstantVariables.cartRestaurant.open
+                      ? () => {
+                            Navigator.push(
+                              context,
+                              SizeRoute(
+                                page: CheckoutPage(
+                                    cartProducts: cartProducts,
+                                    total: totalCost,
+                                    deliveryFee: deliveryFee),
+                              ),
+                            )
+                          }
+                      : null
+                  : null),
     );
   }
 }
@@ -905,67 +872,70 @@ Widget _buildInvoiceRow(String title, double value, Restaurant restaurant,
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.max,
     children: <Widget>[
-      icon == null
-          ? Padding(
-              padding: const EdgeInsets.only(left: 8.0, top: 5.0, bottom: 5.0),
-              child: Text(
-                '$title',
-                style: TextStyle(
-                  fontFamily: 'Avelir-Bold',
-                  fontSize: 13.0,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 8.0, top: 5.0, bottom: 5.0),
-                  child: Text(
-                    '$title',
-                    style: TextStyle(
-                      fontFamily: 'Avelir-Bold',
-                      fontSize: 13.0,
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w500,
-                    ),
+      Flexible(
+        child: icon == null
+            ? Padding(
+                padding:
+                    const EdgeInsets.only(left: 8.0, top: 5.0, bottom: 5.0),
+                child: Text(
+                  '$title',
+                  style: TextStyle(
+                    fontFamily: 'Avelir-Bold',
+                    fontSize: 13.0,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(3.0),
-                  child: Container(
-                    width: 13,
-                    height: 13.0,
-                    child: Tooltip(
-                      key: key,
-                      message: getMessage(restaurant),
-                      preferBelow: false,
-                      padding: EdgeInsets.only(
-                          left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
-                      decoration: BoxDecoration(
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 8.0, top: 5.0, bottom: 5.0),
+                    child: Text(
+                      '$title',
+                      style: TextStyle(
+                        fontFamily: 'Avelir-Bold',
+                        fontSize: 13.0,
                         color: Colors.black54,
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      child: GestureDetector(
-                        child: Icon(
-                          icon,
-                          size: 20,
-                        ),
-                        onTap: () {
-                          final dynamic tooltip = key.currentState;
-                          tooltip.ensureTooltipVisible();
-                        },
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                )
-              ],
-            ),
+                  Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: Container(
+                      width: 13,
+                      height: 13.0,
+                      child: Tooltip(
+                        key: key,
+                        message: getMessage(restaurant),
+                        preferBelow: false,
+                        padding: EdgeInsets.only(
+                            left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        child: GestureDetector(
+                          child: Icon(
+                            icon,
+                            size: 20,
+                          ),
+                          onTap: () {
+                            final dynamic tooltip = key.currentState;
+                            tooltip.ensureTooltipVisible();
+                          },
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+      ),
       value != null
           ? Padding(
               padding: const EdgeInsets.only(right: 8.0, top: 5.0, bottom: 5.0),
