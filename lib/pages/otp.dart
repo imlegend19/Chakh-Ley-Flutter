@@ -12,6 +12,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_text_field/pin_code_text_field.dart';
 
+import 'cart_page.dart';
+
 void showOTPDialog(BuildContext context, String destination, bool decider) {
   showDialog(
     context: context,
@@ -127,8 +129,14 @@ class _OTPBuilderState extends State<OTPBuilder> {
                         onDone: (pin) {
                           widget.decider
                               ? verifyOTP(pin)
-                              : verifyRegisterOTP(pin, OTPBuilder.name,
-                                  OTPBuilder.email, OTPBuilder.phone);
+                              : verifyRegisterOTP(
+                                  pin,
+                                  OTPBuilder.name,
+                                  OTPBuilder.phone == null
+                                      ? widget.destination
+                                      : OTPBuilder.phone,
+                                  OTPBuilder.email,
+                                );
                         },
                         pinBoxHeight: 50.0,
                         pinBoxWidth: 50.0,
@@ -160,6 +168,8 @@ class _OTPBuilderState extends State<OTPBuilder> {
       headers: {HttpHeaders.contentTypeHeader: 'application/json'},
       body: postVerifyLoginOTPToJson(post),
     );
+
+    print(response.statusCode);
 
     return response;
   }
@@ -217,6 +227,7 @@ class _OTPBuilderState extends State<OTPBuilder> {
   ///
 
   void validate(http.Response response) {
+    print("validate : ${response.statusCode}");
     if (response.statusCode == 403) {
       // OTP validation failed
       var json = JSON.jsonDecode(response.body);
@@ -241,12 +252,16 @@ class _OTPBuilderState extends State<OTPBuilder> {
       saveUserCredentials(decodedObject['user_id'], decodedObject['email'],
           decodedObject['mobile'], decodedObject['name']);
       Navigator.of(context).pop();
-      ProfilePage.callback(0);
+      if (ProfilePage.callback == null) {
+        CartPage.callback(0);
+      } else {
+        ProfilePage.callback(0);
+      }
     } else {
       var json = JSON.jsonDecode(response.body);
       assert(json is Map);
       Fluttertoast.showToast(
-        msg: json['detail'],
+        msg: "Some error occurred!",
         fontSize: 13.0,
         toastLength: Toast.LENGTH_LONG,
         timeInSecForIos: 2,

@@ -81,8 +81,19 @@ Future<void> saveUserAddress(String address) async {
   prefs.setString("address", address);
 }
 
+Future<void> saveUserPosition(String latitude, String longitude) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setStringList("position", [latitude, longitude]);
+}
+
 Future<String> getSavedAddress() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String address = prefs.getString("address");
   return address;
+}
+
+Future<List<String>> getUserPosition() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<String> userPosition = prefs.getStringList("position");
+  return userPosition;
 }
