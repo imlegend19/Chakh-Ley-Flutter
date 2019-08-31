@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:chakh_ley_flutter/entity/api_static.dart';
 import 'package:chakh_ley_flutter/entity/order_post.dart';
 import 'package:chakh_ley_flutter/models/cart.dart';
+import 'package:chakh_ley_flutter/models/user_pref.dart';
 import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:chakh_ley_flutter/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+
+import 'cart_page.dart';
 
 class CheckoutPage extends StatefulWidget {
   final List<Cart> cartProducts;
@@ -243,45 +246,53 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   checkoutOrder() {
-    PostOrder post = PostOrder(
-      name: ConstantVariables.user['name'],
-      mobile: ConstantVariables.user['mobile'],
-      email: ConstantVariables.user['email'],
-      business: 1,
-      restaurantId: ConstantVariables.cartRestaurant.id,
-      preparationTime: ConstantVariables.cartRestaurant.deliveryTime,
-      delivery: convertAddressToMap(),
-      subOrderSet: suborderSet,
-    );
+    getDetails().then((val) {
+      PostOrder post = PostOrder(
+        name: val['name'],
+        mobile: val['mobile'],
+        email: val['email'],
+        business: 1,
+        restaurant: ConstantVariables.cartRestaurant.id,
+        preparationTime: ConstantVariables.cartRestaurant.deliveryTime,
+        delivery: convertAddressToMap(),
+        subOrderSet: suborderSet,
+      );
 
-    createPost(post).then((response) {
-      if (response.statusCode == 201) {
-        databaseHelper.clearCart();
+      createPost(post).then((response) {
+        if (response.statusCode == 201) {
+          databaseHelper.clearCart();
+          Fluttertoast.showToast(
+            msg: "Order has been placed successfully!",
+            fontSize: 13.0,
+            toastLength: Toast.LENGTH_LONG,
+            timeInSecForIos: 2,
+          );
+
+          Navigator.of(context).pop();
+          CartPage.callback(0);
+        } else if (response.statusCode == 400) {
+          Fluttertoast.showToast(
+            msg: "Some error occurred!",
+            fontSize: 13.0,
+            toastLength: Toast.LENGTH_LONG,
+            timeInSecForIos: 2,
+          );
+        }
+      }).catchError((Object error) {
         Fluttertoast.showToast(
-          msg: "Order has been placed successfully!",
+          msg: "Please check your internet!",
           fontSize: 13.0,
           toastLength: Toast.LENGTH_LONG,
           timeInSecForIos: 2,
         );
-
-        Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-      } else if (response.statusCode == 400) {
-        // print(response.body);
-      }
-    }).catchError((Object error) {
-      Fluttertoast.showToast(
-        msg: "Please check your internet!",
-        fontSize: 13.0,
-        toastLength: Toast.LENGTH_LONG,
-        timeInSecForIos: 2,
-      );
-    }).catchError((error) {
-      Fluttertoast.showToast(
-        msg: error.toString(),
-        fontSize: 13.0,
-        toastLength: Toast.LENGTH_LONG,
-        timeInSecForIos: 2,
-      );
+      }).catchError((error) {
+        Fluttertoast.showToast(
+          msg: error.toString(),
+          fontSize: 13.0,
+          toastLength: Toast.LENGTH_LONG,
+          timeInSecForIos: 2,
+        );
+      });
     });
   }
 
@@ -319,11 +330,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
         ),
         onPressed: enableProceed
-            ? ConstantVariables.business.isActive
-                ? null
-                : () {
-                    checkoutOrder();
-                  }
+            ? () {
+                setState(() {
+                  enableProceed = false;
+                });
+                checkoutOrder();
+              }
             : null,
       ),
     );

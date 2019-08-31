@@ -4,7 +4,6 @@ import 'package:chakh_ley_flutter/entity/order.dart';
 import 'package:chakh_ley_flutter/pages/order_page.dart';
 import 'package:chakh_ley_flutter/static_variables/static_variables.dart';
 import 'package:chakh_ley_flutter/utils/color_loader.dart';
-import 'package:chakh_ley_flutter/utils/slide_transistion.dart';
 import 'package:flutter/material.dart';
 
 class OrderHistoryPage extends StatefulWidget {
@@ -257,8 +256,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                     ),
                     onPressed: () => Navigator.push(
                       context,
-                      SizeRoute(
-                        page: OrderPage(
+                      MaterialPageRoute(
+                        builder: (context) => OrderPage(
                           order: orders[index],
                           orderId: orders[index].id,
                         ),

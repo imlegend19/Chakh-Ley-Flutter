@@ -829,36 +829,37 @@ class _CartPageState extends State<CartPage>
       width: MediaQuery.of(context).size.width * 0.8,
       height: 45.0,
       child: RaisedButton(
-          disabledColor: Colors.red.shade200,
-          color: Colors.redAccent,
-          disabledElevation: 0.0,
-          elevation: 3.0,
-          splashColor: Colors.red.shade200,
-          child: Text(
-            'Checkout',
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 15.0,
-              fontFamily: 'Avenir-Bold',
-            ),
+        disabledColor: Colors.red.shade200,
+        color: Colors.redAccent,
+        disabledElevation: 0.0,
+        elevation: 3.0,
+        splashColor: Colors.red.shade200,
+        child: Text(
+          'Checkout',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 15.0,
+            fontFamily: 'Avenir-Bold',
           ),
-          onPressed: disableCheckout
-              ? null
-              : ConstantVariables.business.isActive
-                  ? ConstantVariables.cartRestaurant.open
-                      ? () => {
-                            Navigator.push(
-                              context,
-                              SizeRoute(
-                                page: CheckoutPage(
-                                    cartProducts: cartProducts,
-                                    total: totalCost,
-                                    deliveryFee: deliveryFee),
-                              ),
-                            )
-                          }
-                      : null
-                  : null),
+        ),
+        onPressed: disableCheckout
+            ? null
+            : ConstantVariables.business.isActive
+                ? ConstantVariables.cartRestaurant.open
+                    ? () => {
+                          Navigator.push(
+                            context,
+                            SizeRoute(
+                              page: CheckoutPage(
+                                  cartProducts: cartProducts,
+                                  total: totalCost,
+                                  deliveryFee: deliveryFee),
+                            ),
+                          )
+                        }
+                    : null
+                : null,
+      ),
     );
   }
 }

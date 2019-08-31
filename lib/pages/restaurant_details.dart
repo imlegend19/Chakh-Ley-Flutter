@@ -185,7 +185,7 @@ class RestaurantDetails extends StatelessWidget {
                             width: 75.0,
                             height: 75.0,
                             decoration: BoxDecoration(
-                              color: Colors.grey[400],
+                              color: Colors.grey[300],
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
@@ -205,7 +205,7 @@ class RestaurantDetails extends StatelessWidget {
                                       MediaQuery.of(context).size.width * 0.6,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10.0),
-                                    color: Colors.grey[400],
+                                    color: Colors.grey[300],
                                   ),
                                 ),
                               ),
@@ -223,7 +223,7 @@ class RestaurantDetails extends StatelessWidget {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10.0),
-                                          color: Colors.grey[400],
+                                          color: Colors.grey[300],
                                         ),
                                       ),
                                     ),
@@ -237,7 +237,7 @@ class RestaurantDetails extends StatelessWidget {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10.0),
-                                          color: Colors.grey[400],
+                                          color: Colors.grey[300],
                                         ),
                                       ),
                                     ),
@@ -246,7 +246,7 @@ class RestaurantDetails extends StatelessWidget {
                                     padding: const EdgeInsets.only(
                                         left: 5.0, right: 5.0, top: 3.0),
                                     child: Icon(Icons.fiber_manual_record,
-                                        color: Colors.grey[400], size: 8.0),
+                                        color: Colors.grey[300], size: 8.0),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 3.5),
@@ -257,7 +257,7 @@ class RestaurantDetails extends StatelessWidget {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10.0),
-                                          color: Colors.grey[400],
+                                          color: Colors.grey[300],
                                         ),
                                       ),
                                     ),
@@ -266,7 +266,7 @@ class RestaurantDetails extends StatelessWidget {
                                     padding: const EdgeInsets.only(
                                         left: 5.0, right: 5.0, top: 3.0),
                                     child: Icon(Icons.fiber_manual_record,
-                                        color: Colors.grey[400], size: 8.0),
+                                        color: Colors.grey[300], size: 8.0),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 3.0),
@@ -277,12 +277,27 @@ class RestaurantDetails extends StatelessWidget {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10.0),
-                                          color: Colors.grey[400],
+                                          color: Colors.grey[300],
                                         ),
                                       ),
                                     ),
                                   )
                                 ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 15.0, bottom: 5.0, top: 3.0),
+                              child: SkeletonAnimation(
+                                child: Container(
+                                  height: 15,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.6,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    color: Colors.grey[300],
+                                  ),
+                                ),
                               ),
                             ),
                           ],
