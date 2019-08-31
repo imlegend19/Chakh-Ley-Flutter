@@ -85,12 +85,12 @@ class _ContentCardState extends State<ContentCard> {
       child: SingleChildScrollView(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: viewportConstraints.maxHeight - 48.0,
+            minHeight: MediaQuery.of(context).size.height * 0.7,
           ),
           child: IntrinsicHeight(
             child: ContentCard.showInput
                 ? PriceTab(
-                    height: viewportConstraints.maxHeight - 48.0,
+                    height: MediaQuery.of(context).size.height * 0.7 - 48.0,
                     onBikeBikeStart: () =>
                         setState(() => showInputTabOptions = false),
                     status: widget.orderStatus,
@@ -335,6 +335,7 @@ class _ContentCardState extends State<ContentCard> {
                       ? Padding(
                           padding: const EdgeInsets.only(top: 10.0),
                           child: FloatingActionButton(
+                            heroTag: null,
                             onPressed: () => setState(() {
                               ContentCard.showInput = true;
                             }),
@@ -351,6 +352,7 @@ class _ContentCardState extends State<ContentCard> {
                                   padding: const EdgeInsets.only(
                                       left: 20.0, top: 20.0),
                                   child: FloatingActionButton(
+                                    heroTag: null,
                                     onPressed: () => setState(() {
                                       ContentCard.showInput = true;
                                     }),
@@ -361,10 +363,11 @@ class _ContentCardState extends State<ContentCard> {
                                   padding: const EdgeInsets.only(
                                       right: 20.0, top: 20.0),
                                   child: FloatingActionButton(
+                                    heroTag: null,
                                     backgroundColor: Colors.green,
                                     onPressed: () => setState(() {
                                       _launchCaller(widget
-                                          .order.deliveryBoy['user']['mobile']);
+                                          .order.deliveryBoy['user_mobile']);
                                     }),
                                     child: Icon(Icons.call,
                                         color: Colors.white, size: 36.0),
@@ -375,6 +378,7 @@ class _ContentCardState extends State<ContentCard> {
                           : Padding(
                               padding: const EdgeInsets.only(top: 10.0),
                               child: FloatingActionButton(
+                                heroTag: null,
                                 onPressed: () => setState(() {
                                   ContentCard.showInput = true;
                                 }),

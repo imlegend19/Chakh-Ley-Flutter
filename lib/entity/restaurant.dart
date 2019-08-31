@@ -95,7 +95,7 @@ Future<GetRestaurant> fetchRestaurants(int businessID) async {
 
   if (response.statusCode == 200) {
     int count = jsonDecode(response.body)[APIStatic.keyCount];
-    int execute = count != 0 ? count ~/ 10 + 1 : 0;
+    int execute = count != null ? count != 0 ? count ~/ 10 + 1 : 0 : 0;
 
     GetRestaurant restaurant =
         GetRestaurant.fromJson(jsonDecode(response.body));
