@@ -1,4 +1,4 @@
-# chakh_ley_flutter
+# Chakh Ley - Flutter
 
 A new Flutter application.
 
