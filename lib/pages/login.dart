@@ -11,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:rounded_modal/rounded_modal.dart';
 
 void showLoginBottomSheet(BuildContext context, String title, String msg) {
@@ -85,17 +86,19 @@ class _LoginSheetContentState extends State<LoginSheetContent> {
       } else if (response.statusCode == 403) {
         // OTP requesting not allowed
         var json = JSON.jsonDecode(response.body);
+        print(json['detail']);
+        var error = json['detail'].split(new RegExp(r'^(\D)+'))[1];
         assert(json is Map);
         Navigator.of(context).pop();
         Fluttertoast.showToast(
-          msg: json['detail'],
+          msg: 'OTP sending not allowed until: ${DateFormat.Hms().format(DateTime.parse(error).toLocal())}',
           fontSize: 13.0,
           toastLength: Toast.LENGTH_LONG,
           timeInSecForIos: 2,
         );
-
         return null;
       } else if (response.statusCode == 400) {
+        print("Request Code 400");
         return null;
       } else if (response.statusCode >= 500) {
         Fluttertoast.showToast(

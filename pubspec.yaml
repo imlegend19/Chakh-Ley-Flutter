@@ -28,7 +28,7 @@ dependencies:
   pin_code_text_field:
   package_info:
   toast:
-  cached_network_image:
+  cached_network_image: ^2.0.0
   vertical_tabs:
   permission_handler:
   connectivity:
